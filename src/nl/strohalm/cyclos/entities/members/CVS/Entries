@@ -1,0 +1,52 @@
+D/imports////
+D/remarks////
+D/records////
+D/messages////
+D/brokerings////
+D/preferences////
+D/adInterests////
+/Reference.hbm.xml/1.1/Tue Aug 09 13:52:28 2016//
+/RegisteredMember.java/1.1/Tue Aug 09 13:52:28 2016//
+/RegistrationAgreement.java/1.1/Tue Aug 09 13:52:28 2016//
+/TransactionFeedback.hbm.xml/1.1/Tue Aug 09 13:52:28 2016//
+/PendingMemberQuery.java/1.1/Tue Aug 09 13:52:28 2016//
+/MemberQuery.java/1.1/Tue Aug 09 13:52:28 2016//
+/PendingEmailChange.hbm.xml/1.1/Tue Aug 09 13:52:28 2016//
+/ReferenceHistoryLog.java/1.1/Tue Aug 09 13:52:28 2016//
+/MemberTransactionDetailsReportData.java/1.1/Tue Aug 09 13:52:28 2016//
+/Element.java/1.1/Tue Aug 09 13:52:28 2016//
+/MemberTransactionSummaryVO.java/1.1/Tue Aug 09 13:52:28 2016//
+/OperatorQuery.java/1.1/Tue Aug 09 13:52:28 2016//
+/ElementQuery.java/1.1/Tue Aug 09 13:52:28 2016//
+/FullTextOperatorQuery.java/1.1/Tue Aug 09 13:52:28 2016//
+/RegistrationAgreement.hbm.xml/1.1/Tue Aug 09 13:52:28 2016//
+/MemberTransactionSummaryReportData.java/1.1/Tue Aug 09 13:52:28 2016//
+/FullTextMemberQuery.java/1.1/Tue Aug 09 13:52:28 2016//
+/ReferenceHistoryLogQuery.java/1.1/Tue Aug 09 13:52:28 2016//
+/FullTextElementQuery.java/1.1/Tue Aug 09 13:52:28 2016//
+/TransactionFeedbackRequest.java/1.1/Tue Aug 09 13:52:28 2016//
+/RegistrationAgreementLog.java/1.1/Tue Aug 09 13:52:28 2016//
+/Contact.hbm.xml/1.1/Tue Aug 09 13:52:28 2016//
+/PaymentsAwaitingFeedbackQuery.java/1.1/Tue Aug 09 13:52:28 2016//
+/Administrator.hbm.xml/1.1/Tue Aug 09 13:52:28 2016//
+/Administrator.java/1.1/Tue Aug 09 13:52:28 2016//
+/ReferenceHistoryLog.hbm.xml/1.1/Tue Aug 09 13:52:28 2016//
+/Member.java/1.1/Tue Aug 09 13:52:28 2016//
+/BrokeringQuery.java/1.1/Tue Aug 09 13:52:28 2016//
+/Member.hbm.xml/1.1/Tue Aug 09 13:52:28 2016//
+/PendingMember.java/1.1/Tue Aug 09 13:52:28 2016//
+/PendingEmailChange.java/1.1/Tue Aug 09 13:52:28 2016//
+/AdminQuery.java/1.1/Tue Aug 09 13:52:28 2016//
+/TransactionFeedback.java/1.1/Tue Aug 09 13:52:28 2016//
+/MembersTransactionsReportParameters.java/1.1/Tue Aug 09 13:52:28 2016//
+/GeneralReference.java/1.1/Tue Aug 09 13:52:28 2016//
+/Element.hbm.xml/1.1/Tue Aug 09 13:52:28 2016//
+/RegistrationAgreementLog.hbm.xml/1.1/Tue Aug 09 13:52:28 2016//
+/Contact.java/1.1/Tue Aug 09 13:52:28 2016//
+/PendingMember.hbm.xml/1.1/Tue Aug 09 13:52:28 2016//
+/FullTextAdminQuery.java/1.1/Tue Aug 09 13:52:28 2016//
+/Operator.java/1.1/Tue Aug 09 13:52:28 2016//
+/Operator.hbm.xml/1.1/Tue Aug 09 13:52:28 2016//
+/GeneralReference.hbm.xml/1.1/Tue Aug 09 13:52:28 2016//
+/Reference.java/1.1/Tue Aug 09 13:52:28 2016//
+/ReferenceQuery.java/1.1/Tue Aug 09 13:52:28 2016//
