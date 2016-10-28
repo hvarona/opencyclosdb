@@ -33,7 +33,7 @@ import nl.strohalm.cyclos.entities.customization.fields.PaymentCustomFieldValue;
 import nl.strohalm.cyclos.entities.members.Element;
 import nl.strohalm.cyclos.entities.members.Member;
 import nl.strohalm.cyclos.entities.settings.LocalSettings;
-import nl.strohalm.cyclos.services.accounts.guarantees.GuaranteeFeeVO;
+//import nl.strohalm.cyclos.services.accounts.guarantees.GuaranteeFeeVO;
 import nl.strohalm.cyclos.utils.CustomFieldsContainer;
 import nl.strohalm.cyclos.utils.Period;
 import nl.strohalm.cyclos.utils.StringValuedEnum;
@@ -73,8 +73,8 @@ public class Guarantee extends Entity implements CustomFieldsContainer<PaymentCu
 
     private Status                              status;
     private BigDecimal                          amount;
-    private GuaranteeFeeVO                      creditFeeSpec;
-    private GuaranteeFeeVO                      issueFeeSpec;
+//    private GuaranteeFeeVO                      creditFeeSpec;
+//    private GuaranteeFeeVO                      issueFeeSpec;
     private Period                              validity;
     private Calendar                            registrationDate;
     private Certification                       certification;
@@ -123,12 +123,13 @@ public class Guarantee extends Entity implements CustomFieldsContainer<PaymentCu
     }
 
     public BigDecimal getCreditFee() {
-        return isNullFee(creditFeeSpec) ? null : GuaranteesHelper.calculateFee(validity, amount, creditFeeSpec);
+  //      return isNullFee(creditFeeSpec) ? null : GuaranteesHelper.calculateFee(validity, amount, creditFeeSpec);
+  return null;
     }
 
-    public GuaranteeFeeVO getCreditFeeSpec() {
+/*    public GuaranteeFeeVO getCreditFeeSpec() {
         return creditFeeSpec;
-    }
+    }*/
 
     @Override
     public Class<PaymentCustomField> getCustomFieldClass() {
@@ -150,12 +151,13 @@ public class Guarantee extends Entity implements CustomFieldsContainer<PaymentCu
     }
 
     public BigDecimal getIssueFee() {
-        return isNullFee(issueFeeSpec) ? null : GuaranteesHelper.calculateFee(validity, amount, issueFeeSpec);
+//        return isNullFee(issueFeeSpec) ? null : GuaranteesHelper.calculateFee(validity, amount, issueFeeSpec);
+        return null;
     }
 
-    public GuaranteeFeeVO getIssueFeeSpec() {
+    /*public GuaranteeFeeVO getIssueFeeSpec() {
         return issueFeeSpec;
-    }
+    }*/
 
     public Member getIssuer() {
         return issuer;
@@ -212,9 +214,9 @@ public class Guarantee extends Entity implements CustomFieldsContainer<PaymentCu
         this.certification = certification;
     }
 
-    public void setCreditFeeSpec(final GuaranteeFeeVO creditFeeSpec) {
+/*    public void setCreditFeeSpec(final GuaranteeFeeVO creditFeeSpec) {
         this.creditFeeSpec = creditFeeSpec;
-    }
+    }*/
 
     @Override
     public void setCustomValues(final Collection<PaymentCustomFieldValue> customValues) {
@@ -225,9 +227,9 @@ public class Guarantee extends Entity implements CustomFieldsContainer<PaymentCu
         this.guaranteeType = guaranteeType;
     }
 
-    public void setIssueFeeSpec(final GuaranteeFeeVO issueFeeSpec) {
+/*    public void setIssueFeeSpec(final GuaranteeFeeVO issueFeeSpec) {
         this.issueFeeSpec = issueFeeSpec;
-    }
+    }*/
 
     public void setIssuer(final Member issuer) {
         this.issuer = issuer;
@@ -282,8 +284,8 @@ public class Guarantee extends Entity implements CustomFieldsContainer<PaymentCu
         }
     }
 
-    private boolean isNullFee(final GuaranteeFeeVO feeSpec) {
+/*    private boolean isNullFee(final GuaranteeFeeVO feeSpec) {
         return feeSpec == null || feeSpec.getType() == null || feeSpec.getFee() == null;
-    }
+    }*/
 
 }

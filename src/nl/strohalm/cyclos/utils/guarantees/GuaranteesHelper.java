@@ -21,15 +21,15 @@ package nl.strohalm.cyclos.utils.guarantees;
 
 import java.math.BigDecimal;
 
-import nl.strohalm.cyclos.services.accounts.guarantees.GuaranteeFeeVO;
+//import nl.strohalm.cyclos.services.accounts.guarantees.GuaranteeFeeVO;
 import nl.strohalm.cyclos.utils.Amount;
 import nl.strohalm.cyclos.utils.DateHelper;
 import nl.strohalm.cyclos.utils.Period;
 
 public class GuaranteesHelper {
-    public static BigDecimal calculateFee(final Period period, final BigDecimal amount, final GuaranteeFeeVO guaranteeFee) {
+    public static BigDecimal calculateFee(final Period period, final BigDecimal amount/*, final GuaranteeFeeVO guaranteeFee*/) {
         Amount result = null;
-        switch (guaranteeFee.getType()) {
+        /*switch (guaranteeFee.getType()) {
             case FIXED:
                 result = Amount.fixed(guaranteeFee.getFee());
                 // fall down!
@@ -48,6 +48,7 @@ public class GuaranteesHelper {
                 return new BigDecimal(value);
             default:
                 throw new IllegalArgumentException("Can't calculate the guarantee fee: unknown fee type: " + guaranteeFee.getType());
-        }
+        }*/
+        return null;
     }
 }

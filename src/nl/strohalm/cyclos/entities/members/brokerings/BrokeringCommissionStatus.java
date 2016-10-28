@@ -24,7 +24,7 @@ import java.util.Calendar;
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.accounts.fees.transaction.BrokerCommission;
-import nl.strohalm.cyclos.services.transactions.TransactionSummaryVO;
+//import nl.strohalm.cyclos.services.transactions.TransactionSummaryVO;
 import nl.strohalm.cyclos.utils.Amount;
 import nl.strohalm.cyclos.utils.Period;
 
@@ -59,7 +59,7 @@ public class BrokeringCommissionStatus extends Entity {
     private Calendar              creationDate;
     private Calendar              expiryDate;
     private Integer               maxCount;
-    private TransactionSummaryVO  total;
+//    private TransactionSummaryVO  total;
 
     public Amount getAmount() {
         return amount;
@@ -89,9 +89,9 @@ public class BrokeringCommissionStatus extends Entity {
         return period;
     }
 
-    public TransactionSummaryVO getTotal() {
+/*    public TransactionSummaryVO getTotal() {
         return total;
-    }
+    }*/
 
     public BrokerCommission.When getWhen() {
         return when;
@@ -125,9 +125,9 @@ public class BrokeringCommissionStatus extends Entity {
         this.period = period;
     }
 
-    public void setTotal(final TransactionSummaryVO total) {
+  /*  public void setTotal(final TransactionSummaryVO total) {
         this.total = total;
-    }
+    }*/
 
     public void setWhen(final BrokerCommission.When when) {
         this.when = when;

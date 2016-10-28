@@ -19,7 +19,7 @@
  */
 package nl.strohalm.cyclos.entities.members.imports;
 
-import nl.strohalm.cyclos.services.transactions.TransactionSummaryVO;
+//import nl.strohalm.cyclos.services.transactions.TransactionSummaryVO;
 import nl.strohalm.cyclos.utils.DataObject;
 
 /**
@@ -32,7 +32,7 @@ public class MemberImportResult extends DataObject {
     private static final long    serialVersionUID = 8007710493307318018L;
     private int                  total;
     private int                  errors;
-    private TransactionSummaryVO credits;
+  /*  private TransactionSummaryVO credits;
     private TransactionSummaryVO debits;
 
     public TransactionSummaryVO getCredits() {
@@ -42,7 +42,7 @@ public class MemberImportResult extends DataObject {
     public TransactionSummaryVO getDebits() {
         return debits;
     }
-
+*/
     public int getErrors() {
         return errors;
     }
@@ -51,13 +51,13 @@ public class MemberImportResult extends DataObject {
         return total;
     }
 
-    public void setCredits(final TransactionSummaryVO credits) {
+/*    public void setCredits(final TransactionSummaryVO credits) {
         this.credits = credits;
     }
 
     public void setDebits(final TransactionSummaryVO debits) {
         this.debits = debits;
-    }
+    }*/
 
     public void setErrors(final int errors) {
         this.errors = errors;

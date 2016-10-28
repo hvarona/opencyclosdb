@@ -20,32 +20,44 @@
 package nl.strohalm.cyclos.entities;
 
 import java.util.Calendar;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 /**
  * Contains basic information about the Cyclos application
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "application")
 public class Application extends Entity {
 
     /**
      * Defines which algorithm will be used for password hash
+     *
      * @author luis
      */
     public static enum PasswordHash implements StringValuedEnum {
         /**
-         * SHA-256 with per-user salt: The most secure option, used for new databases since Cyclos 3.6
+         * SHA-256 with per-user salt: The most secure option, used for new
+         * databases since Cyclos 3.6
          */
         SHA2_SALT("T"),
-
         /**
-         * SHA-256 alone. Used for compatibility of databases migrated from Cyclos 3.5
+         * SHA-256 alone. Used for compatibility of databases migrated from
+         * Cyclos 3.5
          */
         SHA2("S"),
-
         /**
-         * SHA-256 over MD5. Used for compatibility of databases migrated from Cyclos 3.0
+         * SHA-256 over MD5. Used for compatibility of databases migrated from
+         * Cyclos 3.0
          */
         SHA2_MD5("M");
 
@@ -62,28 +74,48 @@ public class Application extends Entity {
     }
 
     private static final long serialVersionUID = -7552932556180401229L;
-    private String            version;
-    private Calendar          accountStatusEnabledSince;
-    private Calendar          lastIndexRebuidingTime;
-    private PasswordHash      passwordHash;
-    private boolean           online;
 
+    private Long id;
+    private String version;
+    private Calendar accountStatusEnabledSince;
+    private Calendar lastIndexRebuidingTime;
+    private PasswordHash passwordHash;
+    private boolean online;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Column
     public Calendar getAccountStatusEnabledSince() {
         return accountStatusEnabledSince;
     }
 
+    @Column
     public Calendar getLastIndexRebuidingTime() {
         return lastIndexRebuidingTime;
     }
 
+    @Column(name = "pasword_hash")
+    @Enumerated(EnumType.STRING)
     public PasswordHash getPasswordHash() {
         return passwordHash;
     }
 
+    @Column
     public String getVersion() {
         return version;
     }
 
+    @Column(nullable = false)
     public boolean isOnline() {
         return online;
     }
@@ -112,4 +144,5 @@ public class Application extends Entity {
     public String toString() {
         return "Cyclos version " + version;
     }
+
 }

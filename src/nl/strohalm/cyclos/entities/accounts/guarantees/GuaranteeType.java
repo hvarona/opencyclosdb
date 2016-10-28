@@ -23,7 +23,7 @@ import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.accounts.Currency;
 import nl.strohalm.cyclos.entities.accounts.transactions.TransferType;
-import nl.strohalm.cyclos.services.accounts.guarantees.GuaranteeTypeFeeVO;
+//import nl.strohalm.cyclos.services.accounts.guarantees.GuaranteeTypeFeeVO;
 import nl.strohalm.cyclos.utils.StringValuedEnum;
 import nl.strohalm.cyclos.utils.TimePeriod;
 
@@ -111,8 +111,8 @@ public class GuaranteeType extends Entity {
     private TimePeriod         pendingGuaranteeExpiration;
     private TimePeriod         paymentObligationPeriod;
     private Currency           currency;
-    private GuaranteeTypeFeeVO creditFee;
-    private GuaranteeTypeFeeVO issueFee;
+  //  private GuaranteeTypeFeeVO creditFee;
+//    private GuaranteeTypeFeeVO issueFee;
     private FeePayer           creditFeePayer;
     private FeePayer           issueFeePayer;
     private TransferType       loanTransferType;
@@ -124,9 +124,9 @@ public class GuaranteeType extends Entity {
         return authorizedBy;
     }
 
-    public GuaranteeTypeFeeVO getCreditFee() {
+/*    public GuaranteeTypeFeeVO getCreditFee() {
         return creditFee;
-    }
+    }*/
 
     public FeePayer getCreditFeePayer() {
         return creditFeePayer;
@@ -148,9 +148,9 @@ public class GuaranteeType extends Entity {
         return forwardTransferType;
     }
 
-    public GuaranteeTypeFeeVO getIssueFee() {
+  /*  public GuaranteeTypeFeeVO getIssueFee() {
         return issueFee;
-    }
+    }*/
 
     public FeePayer getIssueFeePayer() {
         return issueFeePayer;
@@ -188,9 +188,9 @@ public class GuaranteeType extends Entity {
         this.authorizedBy = authorizedBy;
     }
 
-    public void setCreditFee(final GuaranteeTypeFeeVO creditFee) {
+    /*public void setCreditFee(final GuaranteeTypeFeeVO creditFee) {
         this.creditFee = creditFee;
-    }
+    }*/
 
     public void setCreditFeePayer(final FeePayer creditFeePayer) {
         this.creditFeePayer = creditFeePayer;
@@ -216,9 +216,9 @@ public class GuaranteeType extends Entity {
         this.forwardTransferType = forwardTransferType;
     }
 
-    public void setIssueFee(final GuaranteeTypeFeeVO issueFee) {
+/*    public void setIssueFee(final GuaranteeTypeFeeVO issueFee) {
         this.issueFee = issueFee;
-    }
+    }*/
 
     public void setIssueFeePayer(final FeePayer issueFeePayer) {
         this.issueFeePayer = issueFeePayer;

@@ -19,7 +19,7 @@
  */
 package nl.strohalm.cyclos.entities.accounts.fees.account;
 
-import nl.strohalm.cyclos.services.transactions.TransactionSummaryVO;
+//import nl.strohalm.cyclos.services.transactions.TransactionSummaryVO;
 import nl.strohalm.cyclos.utils.DataObject;
 
 /**
@@ -32,57 +32,57 @@ public class AccountFeeLogDetailsDTO extends DataObject {
 
     private AccountFeeLog        accountFeeLog;
     private int                  skippedMembers;
-    private TransactionSummaryVO transfers;
+/*    private TransactionSummaryVO transfers;
     private TransactionSummaryVO invoices;
     private TransactionSummaryVO acceptedInvoices;
     private TransactionSummaryVO openInvoices;
 
     public TransactionSummaryVO getAcceptedInvoices() {
         return acceptedInvoices;
-    }
+    }*/
 
     public AccountFeeLog getAccountFeeLog() {
         return accountFeeLog;
     }
 
-    public TransactionSummaryVO getInvoices() {
+/*    public TransactionSummaryVO getInvoices() {
         return invoices;
     }
 
     public TransactionSummaryVO getOpenInvoices() {
         return openInvoices;
-    }
+    }*/
 
     public int getSkippedMembers() {
         return skippedMembers;
     }
 
-    public TransactionSummaryVO getTransfers() {
+/*    public TransactionSummaryVO getTransfers() {
         return transfers;
     }
 
     public void setAcceptedInvoices(final TransactionSummaryVO acceptedInvoices) {
         this.acceptedInvoices = acceptedInvoices;
-    }
+    }*/
 
     public void setAccountFeeLog(final AccountFeeLog accountFeeLog) {
         this.accountFeeLog = accountFeeLog;
     }
 
-    public void setInvoices(final TransactionSummaryVO invoices) {
+/*    public void setInvoices(final TransactionSummaryVO invoices) {
         this.invoices = invoices;
     }
 
     public void setOpenInvoices(final TransactionSummaryVO openInvoices) {
         this.openInvoices = openInvoices;
-    }
+    }*/
 
     public void setSkippedMembers(final int skippedMembers) {
         this.skippedMembers = skippedMembers;
     }
 
-    public void setTransfers(final TransactionSummaryVO transfers) {
+/*    public void setTransfers(final TransactionSummaryVO transfers) {
         this.transfers = transfers;
-    }
+    }*/
 
 }

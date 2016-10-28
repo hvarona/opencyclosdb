@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import nl.strohalm.cyclos.access.Permission;
+//import nl.strohalm.cyclos.access.Permission;
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.accounts.guarantees.GuaranteeType;
@@ -123,7 +123,7 @@ public abstract class Group extends Entity implements Comparable<Group> {
     private Collection<Element>          elements;
     private String                       name;
     private Collection<PaymentFilter>    paymentFilters;
-    private Collection<Permission>       permissions;
+//    private Collection<Permission>       permissions;
     private Status                       status           = Status.NORMAL;
     private BasicGroupSettings           basicSettings    = new BasicGroupSettings();
     private Collection<TransferType>     transferTypes;
@@ -213,9 +213,9 @@ public abstract class Group extends Entity implements Comparable<Group> {
         return paymentFilters;
     }
 
-    public Collection<Permission> getPermissions() {
+/*    public Collection<Permission> getPermissions() {
         return permissions;
-    }
+    }*/
 
     public Status getStatus() {
         return status;
@@ -284,9 +284,9 @@ public abstract class Group extends Entity implements Comparable<Group> {
         this.paymentFilters = paymentFilters;
     }
 
-    public void setPermissions(final Collection<Permission> permissions) {
+    /*public void setPermissions(final Collection<Permission> permissions) {
         this.permissions = permissions;
-    }
+    }*/
 
     public void setStatus(final Status status) {
         this.status = status;

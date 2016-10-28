@@ -36,7 +36,7 @@ import nl.strohalm.cyclos.entities.members.Administrator;
 import nl.strohalm.cyclos.entities.members.Member;
 import nl.strohalm.cyclos.entities.members.Operator;
 import nl.strohalm.cyclos.entities.members.records.MemberRecord;
-import nl.strohalm.cyclos.services.transactions.DoPaymentDTO;
+//import nl.strohalm.cyclos.services.transactions.DoPaymentDTO;
 import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -97,8 +97,8 @@ public abstract class CustomField extends Entity {
                 return ADMIN;
             } else if (Operator.class.isAssignableFrom(ownerType)) {
                 return OPERATOR;
-            } else if (Payment.class.isAssignableFrom(ownerType) || DoPaymentDTO.class.isAssignableFrom(ownerType) || Invoice.class.isAssignableFrom(ownerType) || Guarantee.class.isAssignableFrom(ownerType)) {
-                return PAYMENT;
+//            } else if (Payment.class.isAssignableFrom(ownerType) || DoPaymentDTO.class.isAssignableFrom(ownerType) || Invoice.class.isAssignableFrom(ownerType) || Guarantee.class.isAssignableFrom(ownerType)) {
+//                return PAYMENT;
             } else if (LoanGroup.class.isAssignableFrom(ownerType)) {
                 return LOAN_GROUP;
             } else if (MemberRecord.class.isAssignableFrom(ownerType)) {

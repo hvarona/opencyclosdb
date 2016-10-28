@@ -27,11 +27,12 @@ import nl.strohalm.cyclos.entities.groups.GroupFilter;
 import nl.strohalm.cyclos.utils.StringHelper;
 import nl.strohalm.cyclos.utils.StringValuedEnum;
 
-import org.apache.commons.io.filefilter.SuffixFileFilter;
+//import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.lang.StringUtils;
 
 /**
  * This entity is the customization of a display file
+ *
  * @author luis
  */
 public class CustomizedFile extends File {
@@ -51,16 +52,18 @@ public class CustomizedFile extends File {
 
     /**
      * A customized file type
+     *
      * @author luis
      */
     public static enum Type implements StringValuedEnum {
         STATIC_FILE("S", "jsp"), STYLE("C", "css"), HELP("H", "jsp"), APPLICATION_PAGE("A", "jsp");
-        private final String         value;
+        private final String value;
         private final FilenameFilter filter;
 
         private Type(final String value, final String extension) {
             this.value = value;
-            filter = new SuffixFileFilter("." + extension);
+            //          filter = new SuffixFileFilter("." + extension);
+            filter = null;
         }
 
         public FilenameFilter getFilter() {
@@ -73,11 +76,11 @@ public class CustomizedFile extends File {
     }
 
     private static final long serialVersionUID = 3264704140933610339L;
-    private Type              type;
-    private Group             group;
-    private GroupFilter       groupFilter;
-    private String            originalContents;
-    private String            newContents;
+    private Type type;
+    private Group group;
+    private GroupFilter groupFilter;
+    private String originalContents;
+    private String newContents;
 
     public Group getGroup() {
         return group;

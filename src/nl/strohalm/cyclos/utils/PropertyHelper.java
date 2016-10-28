@@ -29,7 +29,7 @@ import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.NullValueInNestedPathException;
+//import org.springframework.beans.NullValueInNestedPathException;
 
 /**
  * Helper class for getting / setting properties by reflection
@@ -92,9 +92,9 @@ public class PropertyHelper {
         } catch (final NestedNullException e) {
             // Ignore... we just had a null
             return null;
-        } catch (final NullValueInNestedPathException e) {
+//        } catch (final NullValueInNestedPathException e) {
             // Ignore... we just had a null
-            return null;
+//            return null;
         } catch (final Exception e) {
             throw new PropertyException(object, property, e);
         }
@@ -174,7 +174,7 @@ public class PropertyHelper {
         }
         try {
             PropertyUtils.setProperty(object, property, value);
-        } catch (final NullValueInNestedPathException e) {
+        //} catch (final NullValueInNestedPathException e) {
             // Ignore... we just had a null
         } catch (final Exception e) {
             throw new PropertyException(object, property, e);

@@ -21,14 +21,14 @@ package nl.strohalm.cyclos.entities.members;
 
 import java.math.BigDecimal;
 
-import nl.strohalm.cyclos.services.transactions.TransactionSummaryVO;
+//import nl.strohalm.cyclos.services.transactions.TransactionSummaryVO;
 
 /**
  * A {@link TransactionSummaryVO}, but having a member id
  * 
  * @author luis
  */
-public class MemberTransactionSummaryVO extends TransactionSummaryVO {
+public class MemberTransactionSummaryVO /*extends TransactionSummaryVO */{
     private static final long serialVersionUID = -372263444840727973L;
     private Long              memberId;
 
@@ -36,7 +36,7 @@ public class MemberTransactionSummaryVO extends TransactionSummaryVO {
     }
 
     public MemberTransactionSummaryVO(final Long memberId, final int count, final BigDecimal amount) {
-        super(count, amount);
+        //super(count, amount);
         this.memberId = memberId;
     }
 

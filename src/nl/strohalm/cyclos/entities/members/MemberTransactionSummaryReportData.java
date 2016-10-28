@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import nl.strohalm.cyclos.entities.accounts.transactions.PaymentFilter;
-import nl.strohalm.cyclos.services.transactions.TransactionSummaryVO;
+//import nl.strohalm.cyclos.services.transactions.TransactionSummaryVO;
 import nl.strohalm.cyclos.utils.DataObject;
 
 import org.apache.commons.collections.MapUtils;
@@ -37,13 +37,13 @@ public class MemberTransactionSummaryReportData extends DataObject {
 
     private static final long                        serialVersionUID = 6613220701881304322L;
     private Member                                   member;
-    private Map<PaymentFilter, TransactionSummaryVO> debits;
+/*    private Map<PaymentFilter, TransactionSummaryVO> debits;
     private Map<PaymentFilter, TransactionSummaryVO> credits;
-
+*/
     public MemberTransactionSummaryReportData() {
     }
 
-    public void addCredits(final PaymentFilter paymentFilter, final TransactionSummaryVO transactions) {
+/*    public void addCredits(final PaymentFilter paymentFilter, final TransactionSummaryVO transactions) {
         if (transactions == null || transactions.getCount() == 0) {
             return;
         }
@@ -69,23 +69,24 @@ public class MemberTransactionSummaryReportData extends DataObject {
 
     public Map<PaymentFilter, TransactionSummaryVO> getDebits() {
         return debits;
-    }
+    }*/
 
     public Member getMember() {
         return member;
     }
 
     public boolean isHasData() {
-        return MapUtils.isNotEmpty(credits) || MapUtils.isNotEmpty(debits);
+        //return MapUtils.isNotEmpty(credits) || MapUtils.isNotEmpty(debits);
+        return false;
     }
 
-    public void setCredits(final Map<PaymentFilter, TransactionSummaryVO> credits) {
+    /*public void setCredits(final Map<PaymentFilter, TransactionSummaryVO> credits) {
         this.credits = credits;
     }
 
     public void setDebits(final Map<PaymentFilter, TransactionSummaryVO> debits) {
         this.debits = debits;
-    }
+    }*/
 
     public void setMember(final Member member) {
         this.member = member;

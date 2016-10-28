@@ -29,7 +29,7 @@ import javax.servlet.ServletContext;
 
 import nl.strohalm.cyclos.entities.settings.LocalSettings.DatePattern;
 import nl.strohalm.cyclos.entities.settings.LocalSettings.TimePattern;
-import nl.strohalm.cyclos.struts.CyclosMessageResources;
+//import nl.strohalm.cyclos.struts.CyclosMessageResources;
 import nl.strohalm.cyclos.utils.conversion.BooleanConverter;
 import nl.strohalm.cyclos.utils.conversion.MessageConverter;
 import nl.strohalm.cyclos.utils.validation.ValidationError;
@@ -40,16 +40,16 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * Helper class for resource bundle access
+ *
  * @author luis
  */
 public final class MessageHelper {
 
-    private CyclosMessageResources messageResources;
-
-    private MessageResolver        messageResolver;
+//    private CyclosMessageResources messageResources;
+    private MessageResolver messageResolver;
 
     public void addMessageResourcesLoadedListener(final MessageResourcesLoadedListener listener) {
-        messageResources.addMessagesLoadedListener(listener);
+        //      messageResources.addMessagesLoadedListener(listener);
     }
 
     /**
@@ -94,17 +94,17 @@ public final class MessageHelper {
             case DD_MM_YYYY_SLASH:
             case DD_MM_YYYY_PERIOD:
             case DD_MM_YYYY_DASH:
-                parts = new String[] { day, month, year };
+                parts = new String[]{day, month, year};
                 break;
             case MM_DD_YYYY_SLASH:
             case MM_DD_YYYY_DASH:
             case MM_DD_YYYY_PERIOD:
-                parts = new String[] { month, day, year };
+                parts = new String[]{month, day, year};
                 break;
             case YYYY_MM_DD_SLASH:
             case YYYY_MM_DD_DASH:
             case YYYY_MM_DD_PERIOD:
-                parts = new String[] { year, month, day };
+                parts = new String[]{year, month, day};
                 break;
         }
         return StringUtils.join(parts, datePattern.getSeparator());
@@ -122,11 +122,11 @@ public final class MessageHelper {
         switch (timePattern) {
             case HH12_MM:
             case HH24_MM:
-                parts = new String[] { hour, minute };
+                parts = new String[]{hour, minute};
                 break;
             case HH12_MM_SS:
             case HH24_MM_SS:
-                parts = new String[] { hour, minute, second };
+                parts = new String[]{hour, minute, second};
                 break;
         }
         return StringUtils.join(parts, ":");
@@ -143,18 +143,19 @@ public final class MessageHelper {
      * Retrieve a message from the servlet context
      */
     public String message(final String key, final Object... args) {
-        try {
+        /*        try {
             return messageResources.getMessage(key, args);
         } catch (final Exception e) {
             return "???" + key + "???";
-        }
+        }*/
+        return null;
     }
 
     public void setMessageResolver(final MessageResolver messageResolver) {
         this.messageResolver = messageResolver;
     }
 
-    public void setMessageResources(final CyclosMessageResources messageResources) {
+    /*public void setMessageResources(final CyclosMessageResources messageResources) {
         this.messageResources = messageResources;
-    }
+    }*/
 }

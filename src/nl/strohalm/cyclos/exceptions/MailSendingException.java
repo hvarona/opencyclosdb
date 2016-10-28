@@ -19,17 +19,18 @@
  */
 package nl.strohalm.cyclos.exceptions;
 
-import org.apache.cxf.common.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Exception in sending mail
+ *
  * @author luis
  */
 public class MailSendingException extends ApplicationException {
 
     private static final long serialVersionUID = 6339637732808928357L;
 
-    private String            detailMessage;
+    private String detailMessage;
 
     public MailSendingException(final String subject) {
         this(subject, null);

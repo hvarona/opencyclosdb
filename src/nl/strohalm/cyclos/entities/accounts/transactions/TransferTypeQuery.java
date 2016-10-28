@@ -30,7 +30,7 @@ import nl.strohalm.cyclos.entities.groups.AdminGroup;
 import nl.strohalm.cyclos.entities.groups.Group;
 import nl.strohalm.cyclos.entities.groups.MemberGroup;
 import nl.strohalm.cyclos.entities.members.Element;
-import nl.strohalm.cyclos.services.transactions.TransactionContext;
+//import nl.strohalm.cyclos.services.transactions.TransactionContext;
 import nl.strohalm.cyclos.utils.query.QueryParameters;
 
 /**
@@ -40,7 +40,7 @@ import nl.strohalm.cyclos.utils.query.QueryParameters;
 public class TransferTypeQuery extends QueryParameters {
 
     private static final long                 serialVersionUID = 5512738126774682465L;
-    private TransactionContext                context;
+//    private TransactionContext                context;
     private String                            name;
     private String                            description;
     private String                            channel;
@@ -87,9 +87,9 @@ public class TransferTypeQuery extends QueryParameters {
         return channel;
     }
 
-    public TransactionContext getContext() {
+/*    public TransactionContext getContext() {
         return context;
-    }
+    }*/
 
     public Currency getCurrency() {
         return currency;
@@ -223,9 +223,9 @@ public class TransferTypeQuery extends QueryParameters {
         this.conciliable = conciliable;
     }
 
-    public void setContext(final TransactionContext context) {
+/*    public void setContext(final TransactionContext context) {
         this.context = context;
-    }
+    }*/
 
     public void setCurrency(final Currency currency) {
         this.currency = currency;

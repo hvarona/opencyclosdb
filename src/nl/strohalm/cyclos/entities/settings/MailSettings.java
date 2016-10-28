@@ -24,8 +24,8 @@ import java.util.Properties;
 import nl.strohalm.cyclos.utils.DataObject;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
+/*import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;*/
 
 /**
  * Groups mail settings
@@ -41,13 +41,13 @@ public class MailSettings extends DataObject {
     private String                   smtpUsername;
     private String                   smtpPassword;
     private boolean                  smtpUseTLS       = false;
-    private transient JavaMailSender mailSender;
+//    private transient JavaMailSender mailSender;
 
     public String getFromMail() {
         return fromMail;
     }
 
-    public JavaMailSender getMailSender() {
+  /*  public JavaMailSender getMailSender() {
         if (mailSender == null) {
             final JavaMailSenderImpl impl = new JavaMailSenderImpl();
             impl.setHost(smtpServer);
@@ -66,7 +66,7 @@ public class MailSettings extends DataObject {
             mailSender = impl;
         }
         return mailSender;
-    }
+    }*/
 
     public String getSmtpPassword() {
         return smtpPassword;
@@ -94,31 +94,31 @@ public class MailSettings extends DataObject {
 
     public void setFromMail(final String fromMail) {
         this.fromMail = fromMail;
-        mailSender = null;
+        //mailSender = null;
     }
 
     public void setSmtpPassword(final String smtpPassword) {
         this.smtpPassword = smtpPassword;
-        mailSender = null;
+        //mailSender = null;
     }
 
     public void setSmtpPort(final int smtpPort) {
         this.smtpPort = smtpPort;
-        mailSender = null;
+        //mailSender = null;
     }
 
     public void setSmtpServer(final String smtpServer) {
         this.smtpServer = smtpServer;
-        mailSender = null;
+        //mailSender = null;
     }
 
     public void setSmtpUsername(final String smtpUsername) {
         this.smtpUsername = smtpUsername;
-        mailSender = null;
+        //mailSender = null;
     }
 
     public void setSmtpUseTLS(final boolean smtpUseTLS) {
         this.smtpUseTLS = smtpUseTLS;
-        mailSender = null;
+        //mailSender = null;
     }
 }

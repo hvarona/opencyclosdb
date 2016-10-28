@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import nl.strohalm.cyclos.entities.settings.LocalSettings;
-import nl.strohalm.cyclos.services.accounts.rates.RatesResultDTO;
+//import nl.strohalm.cyclos.services.accounts.rates.RatesResultDTO;
 import nl.strohalm.cyclos.utils.DataObject;
 import nl.strohalm.cyclos.utils.conversion.UnitsConverter;
 
@@ -43,7 +43,7 @@ public class AccountStatus extends DataObject implements Rated {
     private BigDecimal        reservedAmount   = BigDecimal.ZERO;
     private BigDecimal        creditLimit      = BigDecimal.ZERO;
     private BigDecimal        upperCreditLimit = BigDecimal.ZERO;
-    private RatesResultDTO    rates;
+  //  private RatesResultDTO    rates;
     private Calendar          date;
 
     public Account getAccount() {
@@ -51,9 +51,9 @@ public class AccountStatus extends DataObject implements Rated {
     }
 
     public BigDecimal getaRate() {
-        if (rates != null) {
-            return rates.getaRate();
-        }
+    //    if (rates != null) {
+    //        return rates.getaRate();
+    //    }
         return null;
     }
 
@@ -78,39 +78,39 @@ public class AccountStatus extends DataObject implements Rated {
     }
 
     public BigDecimal getdRate() {
-        if (rates != null) {
-            return rates.getdRate();
-        }
+    //    if (rates != null) {
+    //        return rates.getdRate();
+    //    }
         return null;
     }
 
     @Override
     public Calendar getEmissionDate() {
-        if (rates != null) {
-            return rates.getEmissionDate();
-        }
+     //   if (rates != null) {
+     //       return rates.getEmissionDate();
+     //   }
         return null;
     }
 
     @Override
     public Calendar getExpirationDate() {
-        if (rates != null) {
-            return rates.getExpirationDate();
-        }
+    //    if (rates != null) {
+    //        return rates.getExpirationDate();
+    //    }
         return null;
     }
 
     @Override
     public BigDecimal getiRate() {
-        if (rates != null) {
-            return rates.getiRate();
-        }
+    //    if (rates != null) {
+    //        return rates.getiRate();
+    //    }
         return null;
     }
 
-    public RatesResultDTO getRates() {
+    /*public RatesResultDTO getRates() {
         return rates;
-    }
+    }*/
 
     public BigDecimal getReservedAmount() {
         return reservedAmount;
@@ -132,9 +132,9 @@ public class AccountStatus extends DataObject implements Rated {
     }
 
     public BigDecimal getVirtualRatedBalance() {
-        if (rates != null) {
-            return rates.getVirtualRatedBalance();
-        }
+    //    if (rates != null) {
+    //        return rates.getVirtualRatedBalance();
+    //    }
         return null;
     }
 
@@ -154,9 +154,9 @@ public class AccountStatus extends DataObject implements Rated {
         this.date = date;
     }
 
-    public void setRates(final RatesResultDTO rates) {
+    /*public void setRates(final RatesResultDTO rates) {
         this.rates = rates;
-    }
+    }*/
 
     public void setReservedAmount(final BigDecimal reservedAmount) {
         this.reservedAmount = reservedAmount;
