@@ -20,6 +20,8 @@
 package nl.strohalm.cyclos.entities.members;
 
 import java.util.Collection;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.access.OperatorUser;
@@ -33,6 +35,8 @@ import nl.strohalm.cyclos.utils.CustomFieldsContainer;
  * A member's operator
  * @author luis
  */
+@javax.persistence.Entity
+@DiscriminatorValue (value = "O")
 public class Operator extends Element implements CustomFieldsContainer<OperatorCustomField, OperatorCustomFieldValue> {
 
     public static enum Relationships implements Relationship {
@@ -53,35 +57,43 @@ public class Operator extends Element implements CustomFieldsContainer<OperatorC
     private Collection<OperatorCustomFieldValue> customValues;
 
     @Override
+    @Transient
     public AccountOwner getAccountOwner() {
         return member;
     }
 
+    @Transient
     public Class<OperatorCustomField> getCustomFieldClass() {
         return OperatorCustomField.class;
     }
 
+    @Transient
     public Class<OperatorCustomFieldValue> getCustomFieldValueClass() {
         return OperatorCustomFieldValue.class;
     }
 
+    @Transient
     public Collection<OperatorCustomFieldValue> getCustomValues() {
         return customValues;
     }
 
+    @Transient
     public Member getMember() {
         return member;
     }
 
     @Override
+    @Transient
     public Element.Nature getNature() {
         return Element.Nature.OPERATOR;
     }
 
+    @Transient
     public OperatorGroup getOperatorGroup() {
         return (OperatorGroup) super.getGroup();
     }
 
+    @Transient
     public OperatorUser getOperatorUser() {
         return (OperatorUser) super.getUser();
     }

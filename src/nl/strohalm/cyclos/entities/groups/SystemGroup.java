@@ -21,6 +21,11 @@ package nl.strohalm.cyclos.entities.groups;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.accounts.transactions.TransferType;
@@ -28,16 +33,22 @@ import nl.strohalm.cyclos.entities.customization.documents.Document;
 import nl.strohalm.cyclos.entities.members.messages.MessageCategory;
 
 /**
- * Base class for all system-wide groups, that is, the groups that are managed by a system administrator.<br>
+ * Base class for all system-wide groups, that is, the groups that are managed
+ * by a system administrator.<br>
  * <b>Groups categories:</b>
  * <ul>
  * <li>system-wide: member, admin and broker groups.</li>
- * <li>Others: operator groups (these groups are managed by the owner member).</li>
+ * <li>Others: operator groups (these groups are managed by the owner
+ * member).</li>
  * </ul>
- * 
+ *
  * @author ameyer
  */
+@MappedSuperclass
+@DiscriminatorValue(value = "A")
+@Table
 public abstract class SystemGroup extends Group {
+
     public static enum Relationships implements Relationship {
         DOCUMENTS("documents"), MESSAGE_CATEGORIES("messageCategories"), CHARGEBACK_TRANSFER_TYPES("chargebackTransferTypes");
 
@@ -53,13 +64,13 @@ public abstract class SystemGroup extends Group {
         }
     }
 
-    private static final long           serialVersionUID = 1L;
-    private String                      rootUrl;
-    private String                      loginPageName;
-    private String                      containerUrl;
-    private Collection<Document>        documents;
+    private static final long serialVersionUID = 1L;
+    private String rootUrl;
+    private String loginPageName;
+    private String containerUrl;
+    private Collection<Document> documents;
     private Collection<MessageCategory> messageCategories;
-    private Collection<TransferType>    chargebackTransferTypes;
+    private Collection<TransferType> chargebackTransferTypes;
 
     public void addDocument(final Document document) {
         if (documents == null) {
@@ -69,26 +80,32 @@ public abstract class SystemGroup extends Group {
         documents.add(document);
     }
 
+    @Transient
     public Collection<TransferType> getChargebackTransferTypes() {
         return chargebackTransferTypes;
     }
 
+    @Column(name = "container_url", length = 100)
     public String getContainerUrl() {
         return containerUrl;
     }
 
+    @Transient
     public Collection<Document> getDocuments() {
         return documents;
     }
 
+    @Column(name = "login_page_name", length = 100)
     public String getLoginPageName() {
         return loginPageName;
     }
 
+    @Transient
     public Collection<MessageCategory> getMessageCategories() {
         return messageCategories;
     }
 
+    @Column(name = "root_url", length = 100)
     public String getRootUrl() {
         return rootUrl;
     }

@@ -21,6 +21,11 @@ package nl.strohalm.cyclos.entities.groups;
 
 import java.util.Collection;
 import java.util.HashSet;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.access.Channel;
@@ -36,8 +41,12 @@ import nl.strohalm.cyclos.entities.members.messages.Message;
 
 /**
  * A group of regular members
+ *
  * @author luis
  */
+@Entity
+@Table
+@DiscriminatorValue(value = "M")
 public class MemberGroup extends SystemGroup {
 
     public static enum Relationships implements Relationship {
@@ -54,44 +63,47 @@ public class MemberGroup extends SystemGroup {
         }
     }
 
-    private static final long                      serialVersionUID = 653102929460778599L;
+    private static final long serialVersionUID = 653102929460778599L;
     private Collection<MemberGroupAccountSettings> accountSettings;
-    private Collection<MemberGroup>                canViewProfileOfGroups;
-    private Collection<MemberGroup>                canViewAdsOfGroups;
-    private Collection<AccountType>                canViewInformationOf;
-    private Collection<AccountFee>                 accountFees;
-    private Collection<AdminGroup>                 managedByGroups;
-    private Collection<CustomField>                customFields;
-    private Collection<TransactionFee>             fromTransactionFees;
-    private Collection<TransactionFee>             toTransactionFees;
-    private Collection<MemberGroup>                canIssueCertificationToGroups;
-    private Collection<MemberGroup>                canBuyWithPaymentObligationsFromGroups;
-    private Collection<Message.Type>               defaultMailMessages;
-    private Collection<Message.Type>               smsMessages;
-    private Collection<Message.Type>               defaultSmsMessages;
-    private Collection<Channel>                    channels;
-    private Collection<Channel>                    defaultChannels;
-    private Collection<Channel>                    requestPaymentByChannels;
-    private Collection<GroupFilter>                canViewGroupFilters;
-    private Collection<BrokerGroup>                possibleInitialGroupOf;
-    private CardType                               cardType;
-    private MemberGroupSettings                    memberSettings   = new MemberGroupSettings();
-    private String                                 initialGroupShow;
-    private boolean                                initialGroup;
-    private boolean                                active;
-    private boolean                                defaultAllowChargingSms;
-    private boolean                                defaultAcceptFreeMailing;
-    private boolean                                defaultAcceptPaidMailing;
-    private RegistrationAgreement                  registrationAgreement;
+    private Collection<MemberGroup> canViewProfileOfGroups;
+    private Collection<MemberGroup> canViewAdsOfGroups;
+    private Collection<AccountType> canViewInformationOf;
+    private Collection<AccountFee> accountFees;
+    private Collection<AdminGroup> managedByGroups;
+    private Collection<CustomField> customFields;
+    private Collection<TransactionFee> fromTransactionFees;
+    private Collection<TransactionFee> toTransactionFees;
+    private Collection<MemberGroup> canIssueCertificationToGroups;
+    private Collection<MemberGroup> canBuyWithPaymentObligationsFromGroups;
+    private Collection<Message.Type> defaultMailMessages;
+    private Collection<Message.Type> smsMessages;
+    private Collection<Message.Type> defaultSmsMessages;
+    private Collection<Channel> channels;
+    private Collection<Channel> defaultChannels;
+    private Collection<Channel> requestPaymentByChannels;
+    private Collection<GroupFilter> canViewGroupFilters;
+    private Collection<BrokerGroup> possibleInitialGroupOf;
+    private CardType cardType;
+    private MemberGroupSettings memberSettings = new MemberGroupSettings();
+    private String initialGroupShow;
+    private boolean initialGroup;
+    private boolean active;
+    private boolean defaultAllowChargingSms;
+    private boolean defaultAcceptFreeMailing;
+    private boolean defaultAcceptPaidMailing;
+    private RegistrationAgreement registrationAgreement;
 
+    @Transient
     public Collection<AccountFee> getAccountFees() {
         return accountFees;
     }
 
+    @Transient
     public Collection<MemberGroupAccountSettings> getAccountSettings() {
         return accountSettings;
     }
 
+    @Transient
     public Collection<MemberAccountType> getAccountTypes() {
         final Collection<MemberAccountType> accountTypes = new HashSet<MemberAccountType>();
         if (accountSettings == null) {
@@ -104,66 +116,82 @@ public class MemberGroup extends SystemGroup {
         return accountTypes;
     }
 
+    @Transient
     public Collection<MemberGroup> getCanBuyWithPaymentObligationsFromGroups() {
         return canBuyWithPaymentObligationsFromGroups;
     }
 
+    @Transient
     public Collection<MemberGroup> getCanIssueCertificationToGroups() {
         return canIssueCertificationToGroups;
     }
 
+    @Transient
     public Collection<MemberGroup> getCanViewAdsOfGroups() {
         return canViewAdsOfGroups;
     }
 
+    @Transient
     public Collection<GroupFilter> getCanViewGroupFilters() {
         return canViewGroupFilters;
     }
 
+    @Transient
     public Collection<AccountType> getCanViewInformationOf() {
         return canViewInformationOf;
     }
 
+    @Transient
     public Collection<MemberGroup> getCanViewProfileOfGroups() {
         return canViewProfileOfGroups;
     }
 
+    @Transient
     public CardType getCardType() {
         return cardType;
     }
 
+    @Transient
     public Collection<Channel> getChannels() {
         return channels;
     }
 
+    @Transient
     public Collection<CustomField> getCustomFields() {
         return customFields;
     }
 
+    @Transient
     public Collection<Channel> getDefaultChannels() {
         return defaultChannels;
     }
 
+    @Transient
     public Collection<Message.Type> getDefaultMailMessages() {
         return defaultMailMessages;
     }
 
+    @Transient
     public Collection<Message.Type> getDefaultSmsMessages() {
         return defaultSmsMessages;
     }
 
+    @Transient
     public Collection<TransactionFee> getFromTransactionFees() {
         return fromTransactionFees;
     }
 
+    @Column(length = 100)
     public String getInitialGroupShow() {
         return initialGroupShow;
     }
 
+    @Transient
     public Collection<AdminGroup> getManagedByGroups() {
         return managedByGroups;
     }
 
+    @Transient
     public MemberGroupSettings getMemberSettings() {
         if (memberSettings == null) {
             memberSettings = new MemberGroupSettings();
@@ -171,51 +199,63 @@ public class MemberGroup extends SystemGroup {
         return memberSettings;
     }
 
+    @Transient
     @Override
     public Nature getNature() {
         return Nature.MEMBER;
     }
 
+    @Transient
     public Collection<BrokerGroup> getPossibleInitialGroupOf() {
         return possibleInitialGroupOf;
     }
 
+    @Transient
     public RegistrationAgreement getRegistrationAgreement() {
         return registrationAgreement;
     }
 
+    @Transient
     public Collection<Channel> getRequestPaymentByChannels() {
         return requestPaymentByChannels;
     }
 
+    @Transient
     public Collection<Message.Type> getSmsMessages() {
         return smsMessages;
     }
 
+    @Transient
     public Collection<TransactionFee> getToTransactionFees() {
         return toTransactionFees;
     }
 
+    @Column(name = "member_active")
     public boolean isActive() {
         return active;
     }
 
+    @Transient
     public boolean isBroker() {
         return false;
     }
 
+    @Column(name = "member_default_accept_free_mailing")
     public boolean isDefaultAcceptFreeMailing() {
         return defaultAcceptFreeMailing;
     }
 
+    @Column(name = "member_default_accept_paid_mailing")
     public boolean isDefaultAcceptPaidMailing() {
         return defaultAcceptPaidMailing;
     }
 
+    @Column(name = "member_default_allow_charging_sms")
     public boolean isDefaultAllowChargingSms() {
         return defaultAllowChargingSms;
     }
 
+    @Column(name = "initial_group")
     public boolean isInitialGroup() {
         return initialGroup;
     }

@@ -6,7 +6,7 @@
 <hibernate-mapping>
     <class dynamic-insert="true" dynamic-update="true" name="nl.strohalm.cyclos.entities.access.User" table="users" abstract="true">
         <id name="id" type="long">
-		    <column name="id" sql-type="integer"/>
+            <column name="id" sql-type="integer"/>
             <generator class="foreign">
                 <param name="property">element</param>
             </generator>
@@ -24,14 +24,14 @@
         <property name="lastLogin" column="last_login" type="calendar"/>
         <property name="passwordDate" column="password_date" type="calendar"/>
         <property name="passwordBlockedUntil" column="password_blocked_until" type="calendar"/>
-        <one-to-one name="element" class="nl.strohalm.cyclos.entities.members.Element" constrained="true"/>
         
-		<bag name="loginHistory" cascade="delete" inverse="true">
+        <one-to-one name="element" class="nl.strohalm.cyclos.entities.members.Element" constrained="true"/>
+        <bag name="loginHistory" cascade="delete" inverse="true">
             <key> 
-            	<column name="user_id" sql-type="integer"/>
+                <column name="user_id" sql-type="integer"/>
             </key>
-	        <one-to-many class="nl.strohalm.cyclos.entities.access.LoginHistoryLog"/>
-	    </bag>
+            <one-to-many class="nl.strohalm.cyclos.entities.access.LoginHistoryLog"/>
+        </bag>
 
-	</class>
+    </class>
 </hibernate-mapping>

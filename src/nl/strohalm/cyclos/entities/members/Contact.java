@@ -19,13 +19,23 @@
  */
 package nl.strohalm.cyclos.entities.members;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
 
 /**
  * A member contact
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "contacts")
 public class Contact extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -43,18 +53,30 @@ public class Contact extends Entity {
 
     private static final long serialVersionUID = 9128456589118721030L;
 
-    private Member            contact;
-    private String            notes;
-    private Member            owner;
+    private Member contact;
+    private String notes;
+    private Member owner;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @ManyToOne (targetEntity = nl.strohalm.cyclos.entities.members.Member.class)
+    @JoinColumn (name = "contact_id")
     public Member getContact() {
         return contact;
     }
 
+    @Column
     public String getNotes() {
         return notes;
     }
 
+    @ManyToOne (targetEntity = nl.strohalm.cyclos.entities.members.Member.class)
+    @JoinColumn (name = "owner_id")
     public Member getOwner() {
         return owner;
     }

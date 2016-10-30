@@ -21,6 +21,12 @@ package nl.strohalm.cyclos.entities.members;
 
 import java.util.Calendar;
 import java.util.Collection;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.access.Channel;
@@ -42,8 +48,11 @@ import org.apache.commons.collections.CollectionUtils;
 
 /**
  * A member is a normal Cyclos user. Brokers are members in a broker group.
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@DiscriminatorValue(value = "M")
 public class Member extends Element implements RegisteredMember, AccountOwner {
 
     public static enum Relationships implements Relationship {
@@ -60,135 +69,192 @@ public class Member extends Element implements RegisteredMember, AccountOwner {
         }
     }
 
-    private static final long                    serialVersionUID = -1702931176820698931L;
+    private static final long serialVersionUID = -1702931176820698931L;
 
-    private Calendar                             activationDate;
-    private Collection<Ad>                       ads;
-    private Member                               broker;
-    private boolean                              hideEmail;
-    private Collection<Member>                   brokeredMembers;
-    private Collection<Brokering>                brokerings;
-    private Collection<Brokering>                brokeringsAsBrokered;
-    private Collection<Contact>                  contacts;
-    private Collection<MemberCustomFieldValue>   customValues;
-    private Collection<MemberImage>              images;
-    private Collection<LoanGroup>                loanGroups;
-    private Collection<MemberAlert>              alerts;
-    private Collection<NotificationPreference>   notificationPreferences;
-    private Collection<Channel>                  channels;
+    private Calendar activationDate;
+    private Collection<Ad> ads;
+    private Member broker;
+    private boolean hideEmail;
+    private Collection<Member> brokeredMembers;
+    private Collection<Brokering> brokerings;
+    private Collection<Brokering> brokeringsAsBrokered;
+    private Collection<Contact> contacts;
+    private Collection<MemberCustomFieldValue> customValues;
+    private Collection<MemberImage> images;
+    private Collection<LoanGroup> loanGroups;
+    private Collection<MemberAlert> alerts;
+    private Collection<NotificationPreference> notificationPreferences;
+    private Collection<Channel> channels;
     private Collection<RegistrationAgreementLog> registrationAgreementLogs;
-    private Collection<Card>                     cards;
-    private Collection<MemberPos>                posDevices;
+    private Collection<Card> cards;
+    private Collection<MemberPos> posDevices;
 
+    @Transient
     @Override
     public AccountOwner getAccountOwner() {
         return this;
     }
 
+    @Column(name = "member_activation_date")
     public Calendar getActivationDate() {
         return activationDate;
     }
 
+    @OneToMany(targetEntity = nl.strohalm.cyclos.entities.ads.Ad.class)
+    @JoinColumn(name = "owner_id")
+    @Transient
     public Collection<Ad> getAds() {
         return ads;
     }
 
+    @OneToMany(targetEntity = MemberAlert.class)
+    @JoinColumn(name = "member_id")
+    @Transient
     public Collection<MemberAlert> getAlerts() {
         return alerts;
     }
 
+    @ManyToOne(targetEntity = nl.strohalm.cyclos.entities.members.Member.class)
+    @JoinColumn(name = "member_broker_id")
+    @Transient
     @Override
     public Member getBroker() {
         return broker;
     }
 
+    @OneToMany(targetEntity = nl.strohalm.cyclos.entities.members.Member.class)
+    @JoinColumn(name = "member_broker_id")
+    @Transient
     public Collection<Member> getBrokeredMembers() {
         return brokeredMembers;
     }
 
+    @OneToMany(targetEntity = nl.strohalm.cyclos.entities.members.brokerings.Brokering.class)
+    @JoinColumn(name = "broker_id")
+    @Transient
     public Collection<Brokering> getBrokerings() {
         return brokerings;
     }
 
+    @OneToMany(targetEntity = nl.strohalm.cyclos.entities.members.brokerings.Brokering.class)
+    @JoinColumn(name = "brokered_id")
+    @Transient
     public Collection<Brokering> getBrokeringsAsBrokered() {
         return brokeringsAsBrokered;
     }
 
+    @OneToMany(targetEntity = Card.class)
+    @JoinColumn(name = "owner_id")
+    @Transient
     public Collection<Card> getCards() {
         return cards;
     }
 
     /**
-     * PLEASE DON'T USE THIS ACCESSOR TO GET THE MEMBER'S ENABLED CHANNELS, INSTEAD OF USE
+     * PLEASE DON'T USE THIS ACCESSOR TO GET THE MEMBER'S ENABLED CHANNELS,
+     * INSTEAD OF USE
      * {@link nl.strohalm.cyclos.services.access.AccessService#getChannelsEnabledForMember(Member)}
+     *
      * @return the channels associated to the member (not the enabled ones)
      */
+    @OneToMany(targetEntity = Channel.class)
+    @JoinColumn(name = "member_id")
+    @Transient
     public Collection<Channel> getChannels() {
         return channels;
     }
 
+    @OneToMany(targetEntity = Contact.class)
+    @JoinColumn(name = "owner_id")
+    @Transient
     public Collection<Contact> getContacts() {
         return contacts;
     }
 
+    @Transient
     @Override
     public Class<MemberCustomField> getCustomFieldClass() {
         return MemberCustomField.class;
     }
 
+    @Transient
     @Override
     public Class<MemberCustomFieldValue> getCustomFieldValueClass() {
         return MemberCustomFieldValue.class;
     }
 
+    @OneToMany(targetEntity = MemberCustomFieldValue.class)
+    @JoinColumn(name = "member_id")
+    @Transient
     @Override
     public Collection<MemberCustomFieldValue> getCustomValues() {
         return customValues;
     }
 
+    @OneToMany(targetEntity = nl.strohalm.cyclos.entities.customization.images.MemberImage.class)
+    @JoinColumn(name = "member_id")
+    @Transient
     public Collection<MemberImage> getImages() {
         return images;
     }
 
+    @OneToMany(targetEntity = LoanGroup.class)
+    @JoinColumn(name = "member_id")
+    @Transient
     public Collection<LoanGroup> getLoanGroups() {
         return loanGroups;
     }
 
+    @Transient
     @Override
     public MemberGroup getMemberGroup() {
         return (MemberGroup) super.getGroup();
     }
 
+    @Transient
     public MemberUser getMemberUser() {
         return (MemberUser) super.getUser();
     }
 
+    @Transient
     @Override
     public Element.Nature getNature() {
         return Element.Nature.MEMBER;
     }
 
+    @OneToMany(targetEntity = NotificationPreference.class)
+    @JoinColumn(name = "member")
+    @Transient
     public Collection<NotificationPreference> getNotificationPreferences() {
         return notificationPreferences;
     }
 
+    @OneToMany(targetEntity = MemberPos.class)
+    @JoinColumn(name = "owner_id")
+    @Transient
     public Collection<MemberPos> getPosDevices() {
         return posDevices;
     }
 
+    @OneToMany(targetEntity = RegistrationAgreementLog.class)
+    @JoinColumn(name = "member_id")
+    @Transient
     public Collection<RegistrationAgreementLog> getRegistrationAgreementLogs() {
         return registrationAgreementLogs;
     }
 
+    @Transient
     @Override
     public boolean isActive() {
         return getMemberGroup().isActive() && activationDate != null;
     }
 
+    @Transient
     public boolean isHasImages() {
         return CollectionUtils.isNotEmpty(getImages());
     }
 
+    @Column(name = "hide_email")
     @Override
     public boolean isHideEmail() {
         return hideEmail;

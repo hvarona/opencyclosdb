@@ -22,6 +22,22 @@ package nl.strohalm.cyclos.entities.members;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Indexable;
@@ -38,8 +54,14 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 /**
  * A common classes for members and administrators
+ *
  * @author luis
  */
+//@MappedSuperclass
+@javax.persistence.Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "members")
+@DiscriminatorColumn(name = "subclass", length = 1, discriminatorType = DiscriminatorType.STRING)
 public abstract class Element extends Entity implements Indexable {
 
     public static enum Nature implements StringValuedEnum {
@@ -86,56 +108,82 @@ public abstract class Element extends Entity implements Indexable {
         }
     }
 
-    private static final long           serialVersionUID = 5024785667579155058L;
-    private Calendar                    creationDate;
-    private String                      email;
-    private Group                       group;
-    private String                      name;
-    private User                        user;
+    private static final long serialVersionUID = 5024785667579155058L;
+    private Calendar creationDate;
+    private String email;
+    private Group group;
+    private String name;
+    private User user;
     private Collection<GroupHistoryLog> groupHistoryLogs;
-    private Collection<Remark>          remarks;
-    private Collection<MemberRecord>    memberRecords;
+    private Collection<Remark> remarks;
+    private Collection<MemberRecord> memberRecords;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId(); //To change body of generated methods, choose Tools | Templates.
+    }
 
     /**
      * Returns the account owner that this element represents
      */
+    @Transient
     public abstract AccountOwner getAccountOwner();
 
+    @Column(name = "creation_date", nullable = false)
     public Calendar getCreationDate() {
         return creationDate;
     }
 
+    @Column(length = 100)
     public String getEmail() {
         return email;
     }
 
+    //@ManyToOne(targetEntity = nl.strohalm.cyclos.entities.groups.Group.class)
+    //@JoinColumn(name = "group_id")
+    @Transient
     public Group getGroup() {
         return group;
     }
 
+    //@OneToMany(targetEntity = nl.strohalm.cyclos.entities.groups.GroupHistoryLog.class)
+    //@JoinColumn(name = "element_id")
+    @Transient
     public Collection<GroupHistoryLog> getGroupHistoryLogs() {
         return groupHistoryLogs;
     }
 
+    //@OneToMany(targetEntity = nl.strohalm.cyclos.entities.members.records.MemberRecord.class)
+    //@JoinColumn(name = "element_id")
+    @Transient
     public Collection<MemberRecord> getMemberRecords() {
         return memberRecords;
     }
 
+    @Column(length = 100, nullable = false)
     @Override
     public String getName() {
         return name;
     }
 
+    @Transient
     public abstract Nature getNature();
 
+    //@OneToMany(targetEntity = nl.strohalm.cyclos.entities.members.remarks.Remark.class)
+    //@JoinColumn(name = "subject_id")
+    @Transient
     public Collection<Remark> getRemarks() {
         return remarks;
     }
 
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, targetEntity = nl.strohalm.cyclos.entities.access.User.class)
     public User getUser() {
         return user;
     }
 
+    @Transient
     public String getUsername() {
         return user == null ? null : user.getUsername();
     }
@@ -143,6 +191,7 @@ public abstract class Element extends Entity implements Indexable {
     /**
      * Determine whether this element is active or not
      */
+    @Transient
     public boolean isActive() {
         return group == null ? false : !group.isRemoved();
     }

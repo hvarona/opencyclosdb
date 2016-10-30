@@ -19,16 +19,24 @@
  */
 package nl.strohalm.cyclos.entities.access;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import nl.strohalm.cyclos.entities.members.Administrator;
 
 /**
  * A user for administrators
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@DiscriminatorValue(value = "A")
+@Table
 public class AdminUser extends User {
 
     private static final long serialVersionUID = 8859775065273524059L;
 
+    @Transient
     public Administrator getAdministrator() {
         return (Administrator) super.getElement();
     }

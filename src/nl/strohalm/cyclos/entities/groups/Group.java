@@ -22,6 +22,18 @@ package nl.strohalm.cyclos.entities.groups;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 //import nl.strohalm.cyclos.access.Permission;
 import nl.strohalm.cyclos.entities.Entity;
@@ -37,8 +49,13 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 /**
  * A group of permissions
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "users")
+@DiscriminatorColumn(name = "subclass", discriminatorType = DiscriminatorType.STRING)
 public abstract class Group extends Entity implements Comparable<Group> {
 
     public static enum Nature {
@@ -117,50 +134,63 @@ public abstract class Group extends Entity implements Comparable<Group> {
         }
     }
 
-    private static final long            serialVersionUID = 3079265000327578016L;
+    private static final long serialVersionUID = 3079265000327578016L;
 
-    private String                       description;
-    private Collection<Element>          elements;
-    private String                       name;
-    private Collection<PaymentFilter>    paymentFilters;
+    private String description;
+    private Collection<Element> elements;
+    private String name;
+    private Collection<PaymentFilter> paymentFilters;
 //    private Collection<Permission>       permissions;
-    private Status                       status           = Status.NORMAL;
-    private BasicGroupSettings           basicSettings    = new BasicGroupSettings();
-    private Collection<TransferType>     transferTypes;
-    private Collection<TransferType>     conversionSimulationTTs;
-    private Collection<CustomizedFile>   customizedFiles;
-    private Collection<GroupFilter>      groupFilters;
+    private Status status = Status.NORMAL;
+    private BasicGroupSettings basicSettings = new BasicGroupSettings();
+    private Collection<TransferType> transferTypes;
+    private Collection<TransferType> conversionSimulationTTs;
+    private Collection<CustomizedFile> customizedFiles;
+    private Collection<GroupFilter> groupFilters;
     private Collection<MemberRecordType> memberRecordTypes;
-    private Collection<GuaranteeType>    guaranteeTypes;
-    private Collection<GroupHistoryLog>  historyLogs;
-    private Collection<GroupRemark>      oldRemarks;
-    private Collection<GroupRemark>      newRemarks;
+    private Collection<GuaranteeType> guaranteeTypes;
+    private Collection<GroupHistoryLog> historyLogs;
+    private Collection<GroupRemark> oldRemarks;
+    private Collection<GroupRemark> newRemarks;
 
     @Override
     public int compareTo(final Group o) {
         return name.compareTo(o.getName());
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Transient
     public BasicGroupSettings getBasicSettings() {
         return basicSettings;
     }
 
+    @Transient
     public Collection<TransferType> getConversionSimulationTTs() {
         return conversionSimulationTTs;
     }
 
+    @Transient
     public Collection<CustomizedFile> getCustomizedFiles() {
         return customizedFiles;
     }
 
+    @Transient
     public String getDescription() {
         return description;
     }
 
+    @Transient
     public Collection<Element> getElements() {
         return elements;
     }
 
+    @Transient
     public Collection<GuaranteeType> getEnabledGuaranteeTypes() {
         final Collection<GuaranteeType> all = getGuaranteeTypes();
 
@@ -178,53 +208,64 @@ public abstract class Group extends Entity implements Comparable<Group> {
         return enabled;
     }
 
+    @Transient
     public Collection<GroupFilter> getGroupFilters() {
         return groupFilters;
     }
 
+    @Transient
     public Collection<GuaranteeType> getGuaranteeTypes() {
         return guaranteeTypes;
     }
 
+    @Transient
     public Collection<GroupHistoryLog> getHistoryLogs() {
         return historyLogs;
     }
 
+    @Transient
     public Collection<MemberRecordType> getMemberRecordTypes() {
         return memberRecordTypes;
     }
 
+    @Column(length = 100, nullable = false)
     @Override
     public String getName() {
         return name;
     }
 
+    @Transient
     public abstract Nature getNature();
 
+    @Transient
     public Collection<GroupRemark> getNewRemarks() {
         return newRemarks;
     }
 
+    @Transient
     public Collection<GroupRemark> getOldRemarks() {
         return oldRemarks;
     }
 
+    @Transient
     public Collection<PaymentFilter> getPaymentFilters() {
         return paymentFilters;
     }
 
-/*    public Collection<Permission> getPermissions() {
+    /*    public Collection<Permission> getPermissions() {
         return permissions;
     }*/
-
+    @Enumerated(EnumType.STRING)
     public Status getStatus() {
         return status;
     }
 
+    @Transient
     public Collection<TransferType> getTransferTypes() {
         return transferTypes;
     }
 
+    @Transient
     public boolean isRemoved() {
         return status == Status.REMOVED ? true : false;
     }
@@ -287,7 +328,6 @@ public abstract class Group extends Entity implements Comparable<Group> {
     /*public void setPermissions(final Collection<Permission> permissions) {
         this.permissions = permissions;
     }*/
-
     public void setStatus(final Status status) {
         this.status = status;
     }

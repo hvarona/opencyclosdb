@@ -26,6 +26,18 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -37,8 +49,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * A channel is an user interface to access cyclos functionality. There are some build-in channels, which cannot be removed, that represents the
- * following channels:
+ * A channel is an user interface to access cyclos functionality. There are some
+ * build-in channels, which cannot be removed, that represents the following
+ * channels:
  * <ul>
  * <li>The main web access</li>
  * <li>The wap2 interface (SERVER_ROOT/mobile)</li>
@@ -47,30 +60,40 @@ import org.apache.commons.lang.StringUtils;
  * <li>The pos-web interface (SERVER_ROOT/operator)</li>
  * </ul>
  * Other channels may be registered at will.
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "channels")
 public class Channel extends Entity implements Comparable<Channel> {
 
     /**
      * Which information is used to authenticate the user in a channel
-     * 
+     *
      * @author luis
      */
     public static enum Credentials implements StringValuedEnum {
 
-        /** The default 2 passwords style: login with login password and perform payments with transaction password */
+        /**
+         * The default 2 passwords style: login with login password and perform
+         * payments with transaction password
+         */
         DEFAULT("D"),
-
-        /** The login password only */
+        /**
+         * The login password only
+         */
         LOGIN_PASSWORD("L"),
-
-        /** The transaction password only */
+        /**
+         * The transaction password only
+         */
         TRANSACTION_PASSWORD("T"),
-
-        /** The external pin only */
+        /**
+         * The external pin only
+         */
         PIN("P"),
-
-        /** The card security code */
+        /**
+         * The card security code
+         */
         CARD_SECURITY_CODE("C");
 
         private final String value;
@@ -87,20 +110,25 @@ public class Channel extends Entity implements Comparable<Channel> {
 
     /**
      * Which information is used to identify the user in a channel
-     * 
+     *
      * @author luis
      */
     public static enum Principal implements StringValuedEnum {
-        /** By username */
+        /**
+         * By username
+         */
         USER("U", "login.username"),
-
-        /** By e-mail */
+        /**
+         * By e-mail
+         */
         EMAIL("E", "member.email"),
-
-        /** By card number */
+        /**
+         * By card number
+         */
         CARD("C", "card.card"),
-
-        /** By custom field */
+        /**
+         * By custom field
+         */
         CUSTOM_FIELD("F", null); // The custom field's name is what should be used to display
 
         private final String value;
@@ -142,16 +170,16 @@ public class Channel extends Entity implements Comparable<Channel> {
 
     public static final PrincipalType DEFAULT_PRINCIPAL_TYPE = new PrincipalType(Principal.USER);
 
-    public static final String        WEB                    = "web";
-    public static final String        WAP1                   = "wap1";
-    public static final String        WAP2                   = "wap2";
-    public static final String        WEBSHOP                = "webshop";
-    public static final String        POSWEB                 = "posweb";
-    public static final String        POS                    = "pos";
-    public static final String        REST                   = "rest";
+    public static final String WEB = "web";
+    public static final String WAP1 = "wap1";
+    public static final String WAP2 = "wap2";
+    public static final String WEBSHOP = "webshop";
+    public static final String POSWEB = "posweb";
+    public static final String POS = "pos";
+    public static final String REST = "rest";
     private static final List<String> BUILTIN_CHANNELS;
 
-    private static final long         serialVersionUID       = 1902644598506785461L;
+    private static final long serialVersionUID = 1902644598506785461L;
 
     static {
         final List<String> channels = new ArrayList<String>();
@@ -172,12 +200,12 @@ public class Channel extends Entity implements Comparable<Channel> {
         return BUILTIN_CHANNELS;
     }
 
-    private String                       internalName;
-    private String                       displayName;
-    private Credentials                  credentials;
-    private String                       paymentRequestWebServiceUrl;
+    private String internalName;
+    private String displayName;
+    private Credentials credentials;
+    private String paymentRequestWebServiceUrl;
     private Collection<ChannelPrincipal> principals;
-    private Collection<MemberGroup>      groups;
+    private Collection<MemberGroup> groups;
 
     public boolean allows(final PrincipalType principalType) {
         for (final PrincipalType type : getPrincipalTypes()) {
@@ -197,10 +225,20 @@ public class Channel extends Entity implements Comparable<Channel> {
         }
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     public Credentials getCredentials() {
         return credentials;
     }
 
+    @Transient
     public PrincipalType getDefaultPrincipalType() {
         if (CollectionUtils.isNotEmpty(principals)) {
             ChannelPrincipal defaultPrincipal = null;
@@ -221,27 +259,36 @@ public class Channel extends Entity implements Comparable<Channel> {
         return DEFAULT_PRINCIPAL_TYPE;
     }
 
+    @Column(name = "display_name", nullable = false)
     public String getDisplayName() {
         return displayName;
     }
 
+    @ManyToMany(targetEntity = nl.strohalm.cyclos.entities.groups.MemberGroup.class)
+    @JoinTable(name = "groups_channels",
+            joinColumns = @JoinColumn(name = "channel_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id"))
     public Collection<MemberGroup> getGroups() {
         return groups;
     }
 
+    @Column(length = 50, nullable = false)
     public String getInternalName() {
         return internalName;
     }
 
+    @Transient
     @Override
     public String getName() {
         return displayName;
     }
 
+    @Column(name = "pmt_req_ws_url")
     public String getPaymentRequestWebServiceUrl() {
         return paymentRequestWebServiceUrl;
     }
 
+    @Transient
     public Set<MemberCustomField> getPrincipalCustomFields() {
         final Set<MemberCustomField> fields = new HashSet<MemberCustomField>();
         for (final ChannelPrincipal principal : principals) {
@@ -253,10 +300,13 @@ public class Channel extends Entity implements Comparable<Channel> {
         return fields;
     }
 
+    @OneToMany(targetEntity = nl.strohalm.cyclos.entities.access.ChannelPrincipal.class)
+    @JoinColumn(name = "channel_id")
     public Collection<ChannelPrincipal> getPrincipals() {
         return principals;
     }
 
+    @Transient
     public Set<PrincipalType> getPrincipalTypes() {
         if (CollectionUtils.isEmpty(principals)) {
             return Collections.singleton(DEFAULT_PRINCIPAL_TYPE);
@@ -271,6 +321,7 @@ public class Channel extends Entity implements Comparable<Channel> {
     /**
      * Returns whether payment request is supported by this channel
      */
+    @Transient
     public boolean isPaymentRequestSupported() {
         return StringUtils.isNotEmpty(paymentRequestWebServiceUrl);
     }

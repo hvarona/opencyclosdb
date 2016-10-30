@@ -20,6 +20,13 @@
 package nl.strohalm.cyclos.entities;
 
 import java.util.Calendar;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.ads.Ad;
 import nl.strohalm.cyclos.entities.members.Administrator;
@@ -31,14 +38,16 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 /**
  * Represents an operation which should be applied to the local lucene indexings
- * 
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "index_operations")
 public class IndexOperation extends Entity {
 
     /**
      * The entity over which the operation is applied
-     * 
+     *
      * @author luis
      */
     public enum EntityType implements StringValuedEnum {
@@ -58,7 +67,7 @@ public class IndexOperation extends Entity {
         }
 
         private final Class<? extends Indexable> entityClass;
-        private final String                     value;
+        private final String value;
 
         private EntityType(final Class<? extends Indexable> entityClass, final String value) {
             this.entityClass = entityClass;
@@ -77,7 +86,7 @@ public class IndexOperation extends Entity {
 
     /**
      * The type of operation which should be executed
-     * 
+     *
      * @author luis
      */
     public enum OperationType implements StringValuedEnum {
@@ -96,23 +105,36 @@ public class IndexOperation extends Entity {
 
     private static final long serialVersionUID = -7460146693838037965L;
 
-    private Calendar          date;
-    private EntityType        entityType;
-    private OperationType     operationType;
-    private Long              entityId;
+    private Calendar date;
+    private EntityType entityType;
+    private OperationType operationType;
+    private Long entityId;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column
     public Calendar getDate() {
         return date;
     }
 
+    @Column
     public Long getEntityId() {
         return entityId;
     }
 
+    @Column (name="entity_type")
+    @Enumerated (EnumType.STRING)
     public EntityType getEntityType() {
         return entityType;
     }
 
+    @Column (name="operation_type")
+    @Enumerated (EnumType.STRING)
     public OperationType getOperationType() {
         return operationType;
     }

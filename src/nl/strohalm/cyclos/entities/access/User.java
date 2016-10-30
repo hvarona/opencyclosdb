@@ -21,16 +21,38 @@ package nl.strohalm.cyclos.entities.access;
 
 import java.util.Calendar;
 import java.util.Collection;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.members.Element;
 import nl.strohalm.cyclos.utils.StringValuedEnum;
+import org.hibernate.annotations.Parameter;
 
 /**
  * An user is the entity that contains login / password / transaction
+ *
  * @author luis
  */
+//@MappedSuperclass
+@javax.persistence.Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "users")
+@DiscriminatorColumn(name = "subclass", discriminatorType = DiscriminatorType.STRING)
 public abstract class User extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -66,54 +88,78 @@ public abstract class User extends Entity {
         }
     }
 
-    private static final long           serialVersionUID          = 545429548353183777L;
-    private Element                     element;
-    private String                      salt;
-    private String                      username;
-    private Calendar                    lastLogin;
-    private String                      password;
-    private Calendar                    passwordDate;
-    private Calendar                    passwordBlockedUntil;
-    private String                      transactionPassword;
-    private TransactionPasswordStatus   transactionPasswordStatus = TransactionPasswordStatus.NEVER_CREATED;
+    private static final long serialVersionUID = 545429548353183777L;
+    private Element element;
+    private String salt;
+    private String username;
+    private Calendar lastLogin;
+    private String password;
+    private Calendar passwordDate;
+    private Calendar passwordBlockedUntil;
+    private String transactionPassword;
+    private TransactionPasswordStatus transactionPasswordStatus = TransactionPasswordStatus.NEVER_CREATED;
     private Collection<LoginHistoryLog> loginHistory;
 
+    @GeneratedValue(generator = "myForeignGenerator")
+    @org.hibernate.annotations.GenericGenerator(
+            name = "myForeignGenerator",
+            strategy = "foreign",
+            parameters = @Parameter(name = "property", value = "element")
+    )
+    @Id
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @OneToOne(targetEntity = nl.strohalm.cyclos.entities.members.Element.class)
     public Element getElement() {
         return element;
     }
 
+    @Column(name = "last_login")
     public Calendar getLastLogin() {
         return lastLogin;
     }
 
+    @OneToMany(targetEntity = nl.strohalm.cyclos.entities.access.LoginHistoryLog.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
     public Collection<LoginHistoryLog> getLoginHistory() {
         return loginHistory;
     }
 
+    @Column(length = 64)
     public String getPassword() {
         return password;
     }
 
+    @Column(name = "password_blocked_until")
     public Calendar getPasswordBlockedUntil() {
         return passwordBlockedUntil;
     }
 
+    @Column(name = "password_date")
     public Calendar getPasswordDate() {
         return passwordDate;
     }
 
+    @Column(length = 32)
     public String getSalt() {
         return salt;
     }
 
+    @Column(length = 64, name = "transaction_password")
     public String getTransactionPassword() {
         return transactionPassword;
     }
 
+    @Column(nullable = false, name = "transaction_password_status")
+    @Enumerated(EnumType.STRING)
     public TransactionPasswordStatus getTransactionPasswordStatus() {
         return transactionPasswordStatus;
     }
 
+    @Column(length = 64, nullable = false)
     public String getUsername() {
         return username;
     }
