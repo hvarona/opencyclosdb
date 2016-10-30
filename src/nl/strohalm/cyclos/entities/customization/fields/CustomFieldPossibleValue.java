@@ -19,14 +19,25 @@
  */
 package nl.strohalm.cyclos.entities.customization.fields;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
 
 /**
  * Represents a possible value of an enumerated custom field
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "custom_field_possible_values")
 public class CustomFieldPossibleValue extends Entity {
+
     public static enum Relationships implements Relationship {
         FIELD("field"), PARENT("parent");
         private final String name;
@@ -40,13 +51,13 @@ public class CustomFieldPossibleValue extends Entity {
         }
     }
 
-    private static final long        serialVersionUID = -6580907184218500656L;
+    private static final long serialVersionUID = -6580907184218500656L;
 
-    private CustomField              field;
+    private CustomField field;
     private CustomFieldPossibleValue parent;
-    private String                   value;
-    private boolean                  enabled          = true;
-    private boolean                  defaultValue     = false;
+    private String value;
+    private boolean enabled = true;
+    private boolean defaultValue = false;
 
     public CustomFieldPossibleValue() {
     }
@@ -56,22 +67,36 @@ public class CustomFieldPossibleValue extends Entity {
         this.value = value;
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @ManyToOne(targetEntity = CustomField.class)
+    @JoinColumn(name = "field_id")
     public CustomField getField() {
         return field;
     }
 
+    @ManyToOne(targetEntity = CustomFieldPossibleValue.class)
+    @JoinColumn(name = "parent_id")
     public CustomFieldPossibleValue getParent() {
         return parent;
     }
 
+    @Column(nullable = false)
     public String getValue() {
         return value;
     }
 
+    @Column(name = "is_default", nullable = false)
     public boolean isDefaultValue() {
         return defaultValue;
     }
 
+    @Column(name = "is_enabled", nullable = false)
     public boolean isEnabled() {
         return enabled;
     }

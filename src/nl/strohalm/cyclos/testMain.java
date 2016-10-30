@@ -21,21 +21,10 @@ public class testMain {
         config.setProperty("hibernate.connection.username", "root");
         config.setProperty("hibernate.connection.password", "1234");
         config.setProperty("hibernate.connection.driver.class", "com.mysql.jdbc.Driver");
-
-        config.addAnnotatedClass(nl.strohalm.cyclos.entities.Application.class);
-        config.addAnnotatedClass(nl.strohalm.cyclos.entities.IndexOperation.class);
-        config.addAnnotatedClass(nl.strohalm.cyclos.entities.access.User.class);
-        config.addAnnotatedClass(nl.strohalm.cyclos.entities.members.Element.class);
-        config.addAnnotatedClass(nl.strohalm.cyclos.entities.members.Member.class);
-        config.addAnnotatedClass(nl.strohalm.cyclos.entities.members.Operator.class);
-        config.addAnnotatedClass(nl.strohalm.cyclos.entities.members.Contact.class);
-        config.addAnnotatedClass(nl.strohalm.cyclos.entities.access.AdminUser.class);
-        config.addAnnotatedClass(nl.strohalm.cyclos.entities.access.Channel.class);
-        config.addAnnotatedClass(nl.strohalm.cyclos.entities.access.OperatorUser.class);
-        config.addAnnotatedClass(nl.strohalm.cyclos.entities.access.LoginHistoryLog.class);
-        config.addAnnotatedClass(nl.strohalm.cyclos.entities.groups.Group.class);
-        config.addAnnotatedClass(nl.strohalm.cyclos.entities.groups.SystemGroup.class);
-        config.addAnnotatedClass(nl.strohalm.cyclos.entities.groups.MemberGroup.class);
+        System.out.println("Classes procesadas " + DatabaseClassList.classList.length);
+        for (Class cl : DatabaseClassList.classList) {
+            config.addAnnotatedClass(cl);
+        }
 
         Session session = config.buildSessionFactory().openSession();
         //Transaction tx = session.beginTransaction();

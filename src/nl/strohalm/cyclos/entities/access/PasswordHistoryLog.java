@@ -20,15 +20,27 @@
 package nl.strohalm.cyclos.entities.access;
 
 import java.util.Calendar;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 /**
- * Logs a history of previous passwords used, in order to prevent the same password to be used again
- * 
+ * Logs a history of previous passwords used, in order to prevent the same
+ * password to be used again
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "password_history")
 public class PasswordHistoryLog extends Entity {
 
     public static enum PasswordType implements StringValuedEnum {
@@ -41,23 +53,35 @@ public class PasswordHistoryLog extends Entity {
 
     private static final long serialVersionUID = 6808724316036132120L;
 
-    private User              user;
-    private Calendar          date;
-    private PasswordType      type;
-    private String            password;
+    private User user;
+    private Calendar date;
+    private PasswordType type;
+    private String password;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(nullable = false)
     public Calendar getDate() {
         return date;
     }
 
+    @Column(nullable = false)
     public String getPassword() {
         return password;
     }
 
+    @Enumerated(EnumType.STRING)
     public PasswordType getType() {
         return type;
     }
 
+    @ManyToOne(targetEntity = User.class)
+    @JoinColumn(name = "user_id", nullable = false)
     public User getUser() {
         return user;
     }

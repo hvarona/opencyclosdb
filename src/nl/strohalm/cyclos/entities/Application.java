@@ -75,7 +75,6 @@ public class Application extends Entity {
 
     private static final long serialVersionUID = -7552932556180401229L;
 
-    private Long id;
     private String version;
     private Calendar accountStatusEnabledSince;
     private Calendar lastIndexRebuidingTime;
@@ -86,12 +85,7 @@ public class Application extends Entity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Override
     public Long getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(Long id) {
-        this.id = id;
+        return super.getId();
     }
 
     @Column

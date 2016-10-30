@@ -24,13 +24,26 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.Embedded;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
-import nl.strohalm.cyclos.entities.accounts.guarantees.Guarantee;
 import nl.strohalm.cyclos.entities.accounts.loans.LoanGroup;
-import nl.strohalm.cyclos.entities.accounts.transactions.Invoice;
-import nl.strohalm.cyclos.entities.accounts.transactions.Payment;
 import nl.strohalm.cyclos.entities.ads.Ad;
 import nl.strohalm.cyclos.entities.members.Administrator;
 import nl.strohalm.cyclos.entities.members.Member;
@@ -44,8 +57,13 @@ import org.apache.commons.collections.Predicate;
 
 /**
  * A customized field for a given entity
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "custom_fields")
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "subclass", discriminatorType = DiscriminatorType.STRING)
 public abstract class CustomField extends Entity {
 
     public static enum Control implements StringValuedEnum {
@@ -57,7 +75,7 @@ public abstract class CustomField extends Entity {
         CHECKBOX("checkbox", false),
         MEMBER_AUTOCOMPLETE("member", false);
 
-        private final String  value;
+        private final String value;
         private final boolean useSize;
 
         private Control(final String value, final boolean useSize) {
@@ -201,7 +219,7 @@ public abstract class CustomField extends Entity {
         URL("url", Control.TEXT),
         MEMBER("member", Control.MEMBER_AUTOCOMPLETE);
 
-        private final String        value;
+        private final String value;
         private final List<Control> possibleControls;
 
         private Type(final String value, final Control... possibleControls) {
@@ -219,47 +237,62 @@ public abstract class CustomField extends Entity {
         }
     }
 
-    private static final long                    serialVersionUID = 124467598010653164L;
+    private static final long serialVersionUID = 124467598010653164L;
 
-    private String                               name;
-    private String                               internalName;
-    private String                               description;
-    private String                               allSelectedLabel;
-    private Type                                 type             = Type.STRING;
-    private Control                              control          = Control.TEXT;
-    private Size                                 size             = Size.DEFAULT;
-    private Validation                           validation       = new Validation();
-    private String                               pattern;
-    private Integer                              order            = 0;
+    private String name;
+    private String internalName;
+    private String description;
+    private String allSelectedLabel;
+    private Type type = Type.STRING;
+    private Control control = Control.TEXT;
+    private Size size = Size.DEFAULT;
+    private Validation validation = new Validation();
+    private String pattern;
+    private Integer order = 0;
     private Collection<CustomFieldPossibleValue> possibleValues;
-    private CustomField                          parent;
-    private Collection<CustomField>              children;
+    private CustomField parent;
+    private Collection<CustomField> children;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Column(length = 100)
     public String getAllSelectedLabel() {
         return allSelectedLabel;
     }
 
+    @OneToMany(targetEntity = CustomField.class)
+    @JoinColumn(name = "parent_id")
     public Collection<CustomField> getChildren() {
         return children;
     }
 
+    @Enumerated(EnumType.STRING)
     public Control getControl() {
         return control;
     }
 
+    @Column
     public String getDescription() {
         return description;
     }
 
+    @Column(length = 100, nullable = false)
     public String getInternalName() {
         return internalName;
     }
 
+    @Column(length = 100, nullable = false)
     @Override
     public String getName() {
         return name;
     }
 
+    @Transient
     public Nature getNature() {
         if (this instanceof AdCustomField) {
             return Nature.AD;
@@ -279,22 +312,29 @@ public abstract class CustomField extends Entity {
         return null;
     }
 
+    @Column(name = "order_number", nullable = false)
     public Integer getOrder() {
         return order;
     }
 
+    @ManyToOne(targetEntity = CustomField.class)
+    @JoinColumn(name = "parent_id")
     public CustomField getParent() {
         return parent;
     }
 
+    @Column(length = 100)
     public String getPattern() {
         return pattern;
     }
 
+    @OneToMany(targetEntity = CustomFieldPossibleValue.class)
+    @JoinColumn(name = "field_id")
     public Collection<CustomFieldPossibleValue> getPossibleValues() {
         return possibleValues;
     }
 
+    @Transient
     public Collection<CustomFieldPossibleValue> getPossibleValues(final Boolean onlyEnabled) {
         // Filter enabled possible values
         final Collection<CustomFieldPossibleValue> filteredPossibleValues = new ArrayList<CustomFieldPossibleValue>(possibleValues);
@@ -308,6 +348,7 @@ public abstract class CustomField extends Entity {
         return possibleValues;
     }
 
+    @Transient
     public Collection<CustomFieldPossibleValue> getPossibleValuesByParent(final CustomFieldPossibleValue parentValue, final Boolean onlyEnabled) {
         // When this field has no parent, return all values
         if (parent == null) {
@@ -331,14 +372,17 @@ public abstract class CustomField extends Entity {
         return filteredPossibleValues;
     }
 
+    @Enumerated(EnumType.STRING)
     public Size getSize() {
         return size;
     }
 
+    @Enumerated(EnumType.STRING)
     public Type getType() {
         return type;
     }
 
+    @Embedded
     public Validation getValidation() {
         return validation;
     }

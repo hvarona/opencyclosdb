@@ -20,6 +20,19 @@
 package nl.strohalm.cyclos.entities.members.remarks;
 
 import java.util.Calendar;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -28,8 +41,13 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 /**
  * A remark is an annotation about a member, or event that happened to a member
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "remarks")
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "subclass", discriminatorType = DiscriminatorType.STRING)
 public abstract class Remark extends Entity {
 
     public static enum Nature implements StringValuedEnum {
@@ -64,25 +82,39 @@ public abstract class Remark extends Entity {
     }
 
     private static final long serialVersionUID = 3495444657368796399L;
-    private Element           writer;
-    private Element           subject;
-    private Calendar          date;
-    private String            comments;
+    private Element writer;
+    private Element subject;
+    private Calendar date;
+    private String comments;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column
     public String getComments() {
         return comments;
     }
 
+    @Column(nullable = false)
     public Calendar getDate() {
         return date;
     }
 
+    @Transient
     public abstract Nature getNature();
 
+    @ManyToOne(targetEntity = Element.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "subject_id")
     public Element getSubject() {
         return subject;
     }
 
+    @ManyToOne(targetEntity = Element.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "writer_id")
     public Element getWriter() {
         return writer;
     }

@@ -19,6 +19,15 @@
  */
 package nl.strohalm.cyclos.entities.access;
 
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.access.Channel.Principal;
@@ -26,9 +35,11 @@ import nl.strohalm.cyclos.entities.customization.fields.MemberCustomField;
 
 /**
  * Contains the relationship between a channel and the allowed principals
- * 
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "channels_principals")
 public class ChannelPrincipal extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -46,10 +57,10 @@ public class ChannelPrincipal extends Entity {
     }
 
     private static final long serialVersionUID = -7488098967445663138L;
-    private Channel           channel;
-    private Principal         principal;
+    private Channel channel;
+    private Principal principal;
     private MemberCustomField customField;
-    private boolean           isDefault;
+    private boolean isDefault;
 
     public PrincipalType asPrincipalType() {
         if (customField != null) {
@@ -59,18 +70,31 @@ public class ChannelPrincipal extends Entity {
         }
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @ManyToOne(targetEntity = Channel.class)
+    @JoinColumn(name = "channel_id")
     public Channel getChannel() {
         return channel;
     }
 
+    @ManyToOne(targetEntity = MemberCustomField.class)
+    @JoinColumn(name = "custom_field_id")
     public MemberCustomField getCustomField() {
         return customField;
     }
 
+    @Enumerated(EnumType.STRING)
     public Principal getPrincipal() {
         return principal;
     }
 
+    @Column(name = "is_default")
     public boolean isDefault() {
         return isDefault;
     }

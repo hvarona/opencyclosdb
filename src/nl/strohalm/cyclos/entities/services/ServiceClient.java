@@ -20,6 +20,19 @@
 package nl.strohalm.cyclos.entities.services;
 
 import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -30,8 +43,11 @@ import nl.strohalm.cyclos.entities.members.Member;
 
 /**
  * A remote host that may access specific web services
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "application")
 public class ServiceClient extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -48,79 +64,120 @@ public class ServiceClient extends Entity {
         }
     }
 
-    private static final long     serialVersionUID = -7219751905408334999L;
-    private String                name;
-    private String                username;
-    private String                password;
-    private String                addressBegin;
-    private String                addressEnd;
-    private String                hostname;
-    private Member                member;
-    private boolean               credentialsRequired;
-    private boolean               ignoreRegistrationValidations;
-    private Channel               channel;
+    private static final long serialVersionUID = -7219751905408334999L;
+    private String name;
+    private String username;
+    private String password;
+    private String addressBegin;
+    private String addressEnd;
+    private String hostname;
+    private Member member;
+    private boolean credentialsRequired;
+    private boolean ignoreRegistrationValidations;
+    private Channel channel;
     private Set<ServiceOperation> permissions;
-    private Set<TransferType>     doPaymentTypes;
-    private Set<TransferType>     receivePaymentTypes;
-    private Set<TransferType>     chargebackPaymentTypes;
-    private Set<MemberGroup>      manageGroups;
+    private Set<TransferType> doPaymentTypes;
+    private Set<TransferType> receivePaymentTypes;
+    private Set<TransferType> chargebackPaymentTypes;
+    private Set<MemberGroup> manageGroups;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(name = "address_begin")
     public String getAddressBegin() {
         return addressBegin;
     }
 
+    @Column(name = "address_end")
     public String getAddressEnd() {
         return addressEnd;
     }
 
+    @ManyToOne(targetEntity = Channel.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "channel_id")
     public Channel getChannel() {
         return channel;
     }
 
+    @ManyToMany(targetEntity = TransferType.class)
+    @JoinTable(name = "service_clients_chargeback_payment_types",
+            joinColumns = @JoinColumn(name = "service_client_id"),
+            inverseJoinColumns = @JoinColumn(name = "transfer_type_id"))
     public Set<TransferType> getChargebackPaymentTypes() {
         return chargebackPaymentTypes;
     }
 
+    @ManyToMany(targetEntity = TransferType.class)
+    @JoinTable(name = "service_clients_do_payment_types",
+            joinColumns = @JoinColumn(name = "service_client_id"),
+            inverseJoinColumns = @JoinColumn(name = "transfer_type_id"))
     public Set<TransferType> getDoPaymentTypes() {
         return doPaymentTypes;
     }
 
+    @Column(length = 100, nullable = false)
     public String getHostname() {
         return hostname;
     }
 
+    @ManyToMany(targetEntity = MemberGroup.class)
+    @JoinTable(name = "service_clients_manage_groups",
+            joinColumns = @JoinColumn(name = "service_client_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id"))
     public Set<MemberGroup> getManageGroups() {
         return manageGroups;
     }
 
+    @ManyToOne(targetEntity = Member.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "member_id")
     public Member getMember() {
         return member;
     }
 
+    @Column(length = 100, nullable = false)
+    @Override
     public String getName() {
         return name;
     }
 
+    @Column(length = 100)
     public String getPassword() {
         return password;
     }
 
+    @OneToMany
+    @JoinTable(name = "service_client_permissions",
+            joinColumns = @JoinColumn(name = "service_client_id"),
+            inverseJoinColumns = @JoinColumn(name = "operation"))
+    @Enumerated(EnumType.STRING)
     public Set<ServiceOperation> getPermissions() {
         return permissions;
     }
 
+    @ManyToMany(targetEntity = TransferType.class)
+    @JoinTable(name = "service_clients_receive_payment_types",
+            joinColumns = @JoinColumn(name = "service_client_id"),
+            inverseJoinColumns = @JoinColumn(name = "transfer_type_id"))
     public Set<TransferType> getReceivePaymentTypes() {
         return receivePaymentTypes;
     }
 
+    @Column(length = 100)
     public String getUsername() {
         return username;
     }
 
+    @Column(name = "credentials_required", nullable = false)
     public boolean isCredentialsRequired() {
         return credentialsRequired;
     }
 
+    @Column(name = "ignore_registration_validations", nullable = false)
     public boolean isIgnoreRegistrationValidations() {
         return ignoreRegistrationValidations;
     }

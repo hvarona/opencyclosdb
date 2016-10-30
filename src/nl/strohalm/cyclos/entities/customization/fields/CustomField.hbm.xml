@@ -6,9 +6,9 @@
 <hibernate-mapping>
 
     <class dynamic-insert="true" dynamic-update="true" name="nl.strohalm.cyclos.entities.customization.fields.CustomField" table="custom_fields">
-    	<cache usage="read-write"/>
+        <cache usage="read-write"/>
         <id name="id" type="long">
-		    <column name="id" sql-type="integer"/>
+            <column name="id" sql-type="integer"/>
             <generator class="native"/>
         </id>
         <discriminator column="subclass" length="10"/>
@@ -21,26 +21,26 @@
             <type name="nl.strohalm.cyclos.utils.hibernate.StringValuedEnumType">
                 <param name="enumClassName">nl.strohalm.cyclos.entities.customization.fields.CustomField$Type</param>
             </type>
-		</property>
+        </property>
         <property name="control" column="control" length="10" not-null="true">
             <type name="nl.strohalm.cyclos.utils.hibernate.StringValuedEnumType">
                 <param name="enumClassName">nl.strohalm.cyclos.entities.customization.fields.CustomField$Control</param>
             </type>
-		</property>
+        </property>
         <property name="size" column="size" length="1">
             <type name="nl.strohalm.cyclos.utils.hibernate.StringValuedEnumType">
                 <param name="enumClassName">nl.strohalm.cyclos.entities.customization.fields.CustomField$Size</param>
             </type>
-		</property>
-		<component name="validation" class="nl.strohalm.cyclos.entities.customization.fields.Validation">
-	        <property name="required" column="val_required" not-null="true" type="boolean"/>
-	        <property name="unique" column="val_unique" not-null="true" type="boolean"/>
-	        <property name="lengthConstraint" type="rangeConstraint">
-		        <column name="val_min_length" sql-type="smallint"/>
-		        <column name="val_max_length" sql-type="smallint"/>
-		    </property>
-		    <property name="validatorClass" column="val_class" type="string" length="256"/>
-		</component>
+        </property>
+        <component name="validation" class="nl.strohalm.cyclos.entities.customization.fields.Validation">
+            <property name="required" column="val_required" not-null="true" type="boolean"/>
+            <property name="unique" column="val_unique" not-null="true" type="boolean"/>
+            <property name="lengthConstraint" type="rangeConstraint">
+                <column name="val_min_length" sql-type="smallint"/>
+                <column name="val_max_length" sql-type="smallint"/>
+            </property>
+            <property name="validatorClass" column="val_class" type="string" length="256"/>
+        </component>
         <property name="allSelectedLabel" column="all_selected_label" type="string" length="100"/>
         <property name="pattern" column="pattern" type="string" length="100"/>
         <property name="description" column="description" type="text"/>
@@ -49,21 +49,21 @@
             <column name="parent_id" sql-type="integer"/>
         </many-to-one>
         
-		<bag name="possibleValues" order-by="value" cascade="delete" inverse="true">
-			<cache usage="read-write"/>
+        <bag name="possibleValues" order-by="value" cascade="delete" inverse="true">
+            <cache usage="read-write"/>
             <key> 
-            	<column name="field_id" sql-type="integer"/>
+                <column name="field_id" sql-type="integer"/>
             </key>
-	        <one-to-many class="nl.strohalm.cyclos.entities.customization.fields.CustomFieldPossibleValue"/>
-	    </bag>
+            <one-to-many class="nl.strohalm.cyclos.entities.customization.fields.CustomFieldPossibleValue"/>
+        </bag>
         
-		<bag name="children" order-by="order_number" inverse="true">
-			<cache usage="read-write"/>
+        <bag name="children" order-by="order_number" inverse="true">
+            <cache usage="read-write"/>
             <key> 
-            	<column name="parent_id" sql-type="integer"/>
+                <column name="parent_id" sql-type="integer"/>
             </key>
-	        <one-to-many class="nl.strohalm.cyclos.entities.customization.fields.CustomField"/>
-	    </bag>
-	</class>
+            <one-to-many class="nl.strohalm.cyclos.entities.customization.fields.CustomField"/>
+        </bag>
+    </class>
 	
 </hibernate-mapping>

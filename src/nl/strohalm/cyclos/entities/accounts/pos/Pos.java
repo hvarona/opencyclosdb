@@ -21,6 +21,16 @@ package nl.strohalm.cyclos.entities.accounts.pos;
 
 import java.util.Collection;
 import java.util.Map;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -28,9 +38,11 @@ import nl.strohalm.cyclos.entities.settings.LocalSettings;
 import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 /**
- * 
+ *
  * @author rodrigo
  */
+@javax.persistence.Entity
+@Table(name = "pos")
 public class Pos extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -61,30 +73,45 @@ public class Pos extends Entity {
         }
     }
 
-    private String             posId;
-    private String             description;
-    private MemberPos          memberPos;
+    private String posId;
+    private String description;
+    private MemberPos memberPos;
     private Collection<PosLog> posLog;
-    private Status             status;
+    private Status status;
 
-    private static final long  serialVersionUID = -6054597340850484757L;
+    private static final long serialVersionUID = -6054597340850484757L;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(length = 100)
     public String getDescription() {
         return description;
     }
 
+    @ManyToOne(targetEntity = MemberPos.class)
+    @JoinColumn(name = "member_pos_id")
     public MemberPos getMemberPos() {
         return memberPos;
     }
 
+    @Column(name = "pos_id", length = 64, unique = true)
     public String getPosId() {
         return posId;
     }
 
+    @OneToMany(targetEntity = PosLog.class)
+    @JoinColumn(name = "pos_id")
     public Collection<PosLog> getPosLog() {
         return posLog;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     public Status getStatus() {
         return status;
     }

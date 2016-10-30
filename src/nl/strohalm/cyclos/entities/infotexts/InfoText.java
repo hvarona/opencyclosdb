@@ -22,21 +22,32 @@ package nl.strohalm.cyclos.entities.infotexts;
 import java.util.Calendar;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.utils.Period;
 
 import org.apache.commons.lang.StringUtils;
 
+@javax.persistence.Entity
+@Table(name = "application")
 public class InfoText extends Entity {
 
     private static final long serialVersionUID = 1L;
 
-    private String            subject;
-    private String            body;
-    private boolean           enabled;
-    private Period            validity;
-    private Set<String>       aliases;
+    private String subject;
+    private String body;
+    private boolean enabled;
+    private Period validity;
+    private Set<String> aliases;
 
     public void addAlias(final String alias) {
         if (aliases == null) {
@@ -45,26 +56,50 @@ public class InfoText extends Entity {
         aliases.add(alias);
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @OneToMany(targetEntity = String.class)
+    @JoinTable(name = "info_text_aliases", joinColumns = @JoinColumn(name = "info_text_id"), inverseJoinColumns = @JoinColumn(name = "alias"))
     public Set<String> getAliases() {
         return aliases;
     }
 
+    @Transient
     public String getAliasesString() {
         return StringUtils.join(aliases, ",");
     }
 
+    @Column
     public String getBody() {
         return body;
     }
 
+    @Column
     public String getSubject() {
         return subject;
     }
 
+    @Transient
     public Period getValidity() {
         return validity;
     }
 
+    @Column(name = "begin_date")
+    public Calendar getBeginDate() {
+        return validity.getBegin();
+    }
+
+    @Column(name = "end_date")
+    public Calendar getEndDate() {
+        return validity.getEnd();
+    }
+
+    @Transient
     public boolean isActive() {
 
         if (enabled) {
@@ -79,6 +114,7 @@ public class InfoText extends Entity {
         }
     }
 
+    @Column
     public boolean isEnabled() {
         return enabled;
     }
@@ -101,6 +137,14 @@ public class InfoText extends Entity {
 
     public void setValidity(final Period validity) {
         this.validity = validity;
+    }
+
+    public void setBeginDate(Calendar begin) {
+        validity.setBegin(begin);
+    }
+
+    public void setEndDate(Calendar end) {
+        validity.setEnd(end);
     }
 
     @Override

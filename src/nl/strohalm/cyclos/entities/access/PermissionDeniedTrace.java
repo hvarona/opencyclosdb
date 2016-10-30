@@ -20,25 +20,44 @@
 package nl.strohalm.cyclos.entities.access;
 
 import java.util.Calendar;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.utils.FormatObject;
 
 /**
  * Stores a permission denied trace
- * 
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "permission_denieds")
 public class PermissionDeniedTrace extends Entity {
 
     private static final long serialVersionUID = -2818655809400309210L;
-    private User              user;
-    private Calendar          date;
+    private User user;
+    private Calendar date;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(nullable = false)
     public Calendar getDate() {
         return date;
     }
 
+    @ManyToOne(targetEntity = User.class)
+    @JoinColumn(name = "user_id", nullable = false)
     public User getUser() {
         return user;
     }

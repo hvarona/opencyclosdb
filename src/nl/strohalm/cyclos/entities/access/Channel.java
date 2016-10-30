@@ -182,7 +182,7 @@ public class Channel extends Entity implements Comparable<Channel> {
     private static final long serialVersionUID = 1902644598506785461L;
 
     static {
-        final List<String> channels = new ArrayList<String>();
+        final List<String> channels = new ArrayList<>();
         channels.add(WEB);
         channels.add(WAP1);
         channels.add(WAP2);
@@ -195,6 +195,8 @@ public class Channel extends Entity implements Comparable<Channel> {
 
     /**
      * Returns a list of built-in channels
+     *
+     * @return
      */
     public static List<String> listBuiltin() {
         return BUILTIN_CHANNELS;
@@ -290,7 +292,7 @@ public class Channel extends Entity implements Comparable<Channel> {
 
     @Transient
     public Set<MemberCustomField> getPrincipalCustomFields() {
-        final Set<MemberCustomField> fields = new HashSet<MemberCustomField>();
+        final Set<MemberCustomField> fields = new HashSet<>();
         for (final ChannelPrincipal principal : principals) {
             final MemberCustomField field = principal.getCustomField();
             if (field != null) {
@@ -311,7 +313,7 @@ public class Channel extends Entity implements Comparable<Channel> {
         if (CollectionUtils.isEmpty(principals)) {
             return Collections.singleton(DEFAULT_PRINCIPAL_TYPE);
         }
-        final Set<PrincipalType> principalTypes = new LinkedHashSet<PrincipalType>();
+        final Set<PrincipalType> principalTypes = new LinkedHashSet<>();
         for (final ChannelPrincipal cp : principals) {
             principalTypes.add(cp.asPrincipalType());
         }
@@ -320,6 +322,8 @@ public class Channel extends Entity implements Comparable<Channel> {
 
     /**
      * Returns whether payment request is supported by this channel
+     *
+     * @return
      */
     @Transient
     public boolean isPaymentRequestSupported() {
@@ -351,7 +355,7 @@ public class Channel extends Entity implements Comparable<Channel> {
     }
 
     public void setPrincipalTypes(final Set<PrincipalType> principalTypes, final PrincipalType defaultPrincipalType) {
-        principals = new ArrayList<ChannelPrincipal>();
+        principals = new ArrayList<>();
         for (final PrincipalType principalType : principalTypes) {
             final ChannelPrincipal channelPrincipal = new ChannelPrincipal();
             channelPrincipal.setChannel(this);

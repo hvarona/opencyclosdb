@@ -27,12 +27,11 @@ import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -41,14 +40,12 @@ import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.members.Element;
 import nl.strohalm.cyclos.utils.StringValuedEnum;
-import org.hibernate.annotations.Parameter;
 
 /**
  * An user is the entity that contains login / password / transaction
  *
  * @author luis
  */
-//@MappedSuperclass
 @javax.persistence.Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "users")
@@ -100,19 +97,15 @@ public abstract class User extends Entity {
     private TransactionPasswordStatus transactionPasswordStatus = TransactionPasswordStatus.NEVER_CREATED;
     private Collection<LoginHistoryLog> loginHistory;
 
-    @GeneratedValue(generator = "myForeignGenerator")
-    @org.hibernate.annotations.GenericGenerator(
-            name = "myForeignGenerator",
-            strategy = "foreign",
-            parameters = @Parameter(name = "property", value = "element")
-    )
     @Id
     @Override
     public Long getId() {
         return super.getId();
     }
 
-    @OneToOne(targetEntity = nl.strohalm.cyclos.entities.members.Element.class)
+    @OneToOne(targetEntity = nl.strohalm.cyclos.entities.members.Element.class, cascade = CascadeType.ALL)
+    @MapsId
+    @JoinColumn(name = "id")
     public Element getElement() {
         return element;
     }

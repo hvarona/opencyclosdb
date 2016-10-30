@@ -16,10 +16,10 @@
         <property name="loanSearchAccess" column="member_loan_search_access" length="1" type="mcfAccess"/>
         <property name="adSearchAccess" column="member_ad_search_access" length="1" type="mcfAccess"/>
         <property name="memberCanHide" type="boolean">
-        	<column name="member_can_hide" not-null="true" default="0" />
+            <column name="member_can_hide" not-null="true" default="0" />
         </property>
         <property name="showInPrint" type="boolean">
-        	<column name="member_show_in_print" not-null="true" default="0" />
+            <column name="member_show_in_print" not-null="true" default="0" />
         </property>
         <property name="indexing" column="member_indexing" length="1">
             <type name="nl.strohalm.cyclos.utils.hibernate.StringValuedEnumType">
@@ -27,15 +27,15 @@
             </type>
         </property>
 
-		<bag name="groups" table="member_groups_custom_fields">
-			<key>
-			    <column name="custom_field_id" sql-type="integer"/>
-			</key>
-			<many-to-many class="nl.strohalm.cyclos.entities.groups.MemberGroup">
+        <bag name="groups" table="member_groups_custom_fields">
+            <key>
+                <column name="custom_field_id" sql-type="integer"/>
+            </key>
+            <many-to-many class="nl.strohalm.cyclos.entities.groups.MemberGroup">
                 <column name="group_id" sql-type="integer"/>
-			</many-to-many>
-		</bag>
+            </many-to-many>
+        </bag>
 
-	</subclass>
+    </subclass>
 	
 </hibernate-mapping>

@@ -25,6 +25,15 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -46,12 +55,16 @@ import org.apache.commons.collections.CollectionUtils;
 
 /**
  * Every transfer has a type, which may contain fees and other relevant data
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "transfer_types")
 public class TransferType extends Entity {
 
     /**
      * A transfer type context represents where it can be performed
+     *
      * @author luis
      */
     public static class Context implements Serializable {
@@ -70,7 +83,7 @@ public class TransferType extends Entity {
             return context;
         }
 
-        private boolean payment     = false;
+        private boolean payment = false;
         private boolean selfPayment = false;
 
         public Context() {
@@ -138,51 +151,61 @@ public class TransferType extends Entity {
         }
     }
 
-    private static final long                    serialVersionUID               = -6248433842449336187L;
+    private static final long serialVersionUID = -6248433842449336187L;
 
-    private String                               name;
-    private String                               description;
-    private String                               confirmationMessage;
-    private Context                              context                        = new Context();
-    private boolean                              priority;
-    private boolean                              conciliable;
-    private AccountType                          from;
-    private AccountType                          to;
-    private BigDecimal                           maxAmountPerDay;
-    private BigDecimal                           minAmount;
-    private LoanParameters                       loan;
+    private String name;
+    private String description;
+    private String confirmationMessage;
+    private Context context = new Context();
+    private boolean priority;
+    private boolean conciliable;
+    private AccountType from;
+    private AccountType to;
+    private BigDecimal maxAmountPerDay;
+    private BigDecimal minAmount;
+    private LoanParameters loan;
     private Collection< TransactionFee> transactionFees;
     private Collection< TransactionFee> generatedByTransactionFees;
-    private Collection< AccountFee>     generatedByAccountFees;
-    private Collection< Group>          groups;
-    private Collection< Group>          groupsAsMember;
-    private Collection<PaymentFilter>            paymentFilters;
-    private boolean                              requiresAuthorization;
-    private Collection<AuthorizationLevel>       authorizationLevels;
-    private boolean                              allowsScheduledPayments;
-    private boolean                              requiresFeedback;
-    private boolean                              reserveTotalAmountOnScheduling;
-    private boolean                              allowCancelScheduledPayments;
-    private boolean                              allowBlockScheduledPayments;
-    private boolean                              showScheduledPaymentsToDestination;
-    private boolean                              allowSmsNotification;
-    private Calendar                             feedbackEnabledSince;
-    private TimePeriod                           feedbackExpirationTime;
-    private TimePeriod                           feedbackReplyExpirationTime;
-    private String                               defaultFeedbackComments;
-    private Level                                defaultFeedbackLevel;
-    private Collection<Channel>                  channels;
-    private Member                               fixedDestinationMember;
-    private Collection<PaymentCustomField>       customFields;
-    private Collection<PaymentCustomField>       linkedCustomFields;
-    private String                               transferListenerClass;
-    private TransactionHierarchyVisibility       transactionHierarchyVisibility = TransactionHierarchyVisibility.MEMBER;
+    private Collection< AccountFee> generatedByAccountFees;
+    private Collection< Group> groups;
+    private Collection< Group> groupsAsMember;
+    private Collection<PaymentFilter> paymentFilters;
+    private boolean requiresAuthorization;
+    private Collection<AuthorizationLevel> authorizationLevels;
+    private boolean allowsScheduledPayments;
+    private boolean requiresFeedback;
+    private boolean reserveTotalAmountOnScheduling;
+    private boolean allowCancelScheduledPayments;
+    private boolean allowBlockScheduledPayments;
+    private boolean showScheduledPaymentsToDestination;
+    private boolean allowSmsNotification;
+    private Calendar feedbackEnabledSince;
+    private TimePeriod feedbackExpirationTime;
+    private TimePeriod feedbackReplyExpirationTime;
+    private String defaultFeedbackComments;
+    private Level defaultFeedbackLevel;
+    private Collection<Channel> channels;
+    private Member fixedDestinationMember;
+    private Collection<PaymentCustomField> customFields;
+    private Collection<PaymentCustomField> linkedCustomFields;
+    private String transferListenerClass;
+    private TransactionHierarchyVisibility transactionHierarchyVisibility = TransactionHierarchyVisibility.MEMBER;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
 
     /**
-     * gets all the transaction fees based on a-rate, being the fees with ChargeType A_RATE or MIXED_A_D_RATES
+     * gets all the transaction fees based on a-rate, being the fees with
+     * ChargeType A_RATE or MIXED_A_D_RATES
+     *
      * @return a Collection with A-rated TransactionFees
      * @see #getRatedFees()
      */
+    @Transient
     public Collection< TransactionFee> getARatedFees() {
         final List<TransactionFee> result = new ArrayList<TransactionFee>(transactionFees.size());
         for (final TransactionFee fee : transactionFees) {
@@ -197,10 +220,15 @@ public class TransferType extends Entity {
         return authorizationLevels;
     }
 
+    @ManyToMany(targetEntity = Channel.class)
+    @JoinTable(name = "transfer_types_channels",
+            joinColumns = @JoinColumn(name = "transfer_type_id"),
+            inverseJoinColumns = @JoinColumn(name = "channel_id"))
     public Collection<Channel> getChannels() {
         return channels;
     }
 
+    @Column(name = "confirmation_message")
     public String getConfirmationMessage() {
         return confirmationMessage;
     }
@@ -221,6 +249,7 @@ public class TransferType extends Entity {
         return customFields;
     }
 
+    @Column(name = "default_feedback_comments")
     public String getDefaultFeedbackComments() {
         return defaultFeedbackComments;
     }
@@ -229,12 +258,15 @@ public class TransferType extends Entity {
         return defaultFeedbackLevel;
     }
 
+    @Column(length = 100, nullable = false)
     public String getDescription() {
         return description;
     }
 
     /**
-     * gets all the transaction fees based on d-rate, that is: having ChargeType = D_RATE
+     * gets all the transaction fees based on d-rate, that is: having ChargeType
+     * = D_RATE
+     *
      * @return a Collection with TransactionFees
      * @see #getRatedFees()
      */
@@ -276,6 +308,10 @@ public class TransferType extends Entity {
         return generatedByTransactionFees;
     }
 
+    @ManyToMany(targetEntity = Group.class)
+    @JoinTable(name = "transfer_types_channels",
+            joinColumns = @JoinColumn(name = "transfer_type_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id"))
     public Collection< Group> getGroups() {
         return groups;
     }
@@ -292,14 +328,17 @@ public class TransferType extends Entity {
         return loan;
     }
 
+    @Column(name = "max_amount_per_day")
     public BigDecimal getMaxAmountPerDay() {
         return maxAmountPerDay;
     }
 
+    @Column(name = "min_amount")
     public BigDecimal getMinAmount() {
         return minAmount;
     }
 
+    @Column(length = 100, nullable = false)
     @Override
     public String getName() {
         return name;
@@ -311,6 +350,7 @@ public class TransferType extends Entity {
 
     /**
      * gets all the transaction fees which do use a-rate or d-rate
+     *
      * @return a Collection with TransactionFees using a-rate or d-rate
      * @see #getRatedFees()
      */
@@ -347,22 +387,27 @@ public class TransferType extends Entity {
         return !CollectionUtils.isEmpty(transactionFees);
     }
 
+    @Column(name="allow_block_sched",nullable = false)
     public boolean isAllowBlockScheduledPayments() {
         return allowBlockScheduledPayments;
     }
 
+    @Column(name="allow_cancel_sched",nullable = false)
     public boolean isAllowCancelScheduledPayments() {
         return allowCancelScheduledPayments;
     }
 
+    @Column(name="allow_sms_notification",nullable = false)
     public boolean isAllowSmsNotification() {
         return allowSmsNotification;
     }
 
+    @Column(name="allows_scheduled_payments",nullable = false)
     public boolean isAllowsScheduledPayments() {
         return allowsScheduledPayments;
     }
 
+    @Column(nullable = false)
     public boolean isConciliable() {
         return conciliable;
     }
@@ -396,7 +441,8 @@ public class TransferType extends Entity {
     }
 
     /**
-     * returns true if the TransferType has TransactionFees based on a-rate or d-rate.
+     * returns true if the TransferType has TransactionFees based on a-rate or
+     * d-rate.
      */
     public boolean isHavingRatedFees() {
         if (getRatedFees().size() == 0) {
@@ -409,22 +455,27 @@ public class TransferType extends Entity {
         return loan != null && loan.getType() != null;
     }
 
+    @Column(nullable = false)
     public boolean isPriority() {
         return priority;
     }
 
+    @Column(name = "requires_authorization", nullable = false)
     public boolean isRequiresAuthorization() {
         return requiresAuthorization;
     }
 
+    @Column(name="requires_feedback",nullable = false)
     public boolean isRequiresFeedback() {
         return requiresFeedback;
     }
 
+    @Column(name="reserve_total_on_sched",nullable = false)
     public boolean isReserveTotalAmountOnScheduling() {
         return reserveTotalAmountOnScheduling;
     }
 
+    @Column(name="show_sched_to_dest",nullable = false)
     public boolean isShowScheduledPaymentsToDestination() {
         return showScheduledPaymentsToDestination;
     }

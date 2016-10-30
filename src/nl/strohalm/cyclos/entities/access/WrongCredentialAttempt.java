@@ -20,6 +20,15 @@
 package nl.strohalm.cyclos.entities.access;
 
 import java.util.Calendar;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.accounts.cards.Card;
@@ -28,34 +37,52 @@ import nl.strohalm.cyclos.utils.FormatObject;
 
 /**
  * Entity used to track the number of invalid credential usage attempts
- * 
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "wrong_credential_attempts")
 public class WrongCredentialAttempt extends Entity {
 
-    private static final long   serialVersionUID = -4758213362595274664L;
-    private User                user;
-    private Card                card;
-    private MemberPos           memberPos;
+    private static final long serialVersionUID = -4758213362595274664L;
+    private User user;
+    private Card card;
+    private MemberPos memberPos;
     private Channel.Credentials credentialType;
-    private Calendar            date;
+    private Calendar date;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @ManyToOne(targetEntity = Card.class)
+    @JoinColumn(name = "card_id", nullable = false)
     public Card getCard() {
         return card;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "credential_type")
     public Channel.Credentials getCredentialType() {
         return credentialType;
     }
 
+    @Column(nullable = false)
     public Calendar getDate() {
         return date;
     }
 
+    @ManyToOne(targetEntity = MemberPos.class)
+    @JoinColumn(name = "member_pos_id", nullable = false)
     public MemberPos getMemberPos() {
         return memberPos;
     }
 
+    @ManyToOne(targetEntity = User.class)
+    @JoinColumn(name = "user_id", nullable = false)
     public User getUser() {
         return user;
     }

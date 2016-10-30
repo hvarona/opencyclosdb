@@ -20,20 +20,26 @@
 package nl.strohalm.cyclos.entities.customization.fields;
 
 import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.utils.RangeConstraint;
+import org.hibernate.annotations.Type;
 
 /**
  * Contains data for a custom field validation
+ *
  * @author luis
  */
+@Embeddable
 public class Validation implements Serializable, Cloneable {
 
     private static final long serialVersionUID = -5712666847395055720L;
-    private boolean           required;
-    private boolean           unique;
-    private RangeConstraint   lengthConstraint;
-    private String            validatorClass;
+    private boolean required;
+    private boolean unique;
+    private RangeConstraint lengthConstraint;
+    private String validatorClass;
 
     public Validation() {
         this(false, false, null);
@@ -62,18 +68,24 @@ public class Validation implements Serializable, Cloneable {
         }
     }
 
+    //@Column
+    //@Type(type = "nl.strohalm.cyclos.utils.RangeConstraint")
+    @Transient
     public RangeConstraint getLengthConstraint() {
         return lengthConstraint;
     }
 
+    @Column(name = "val_class")
     public String getValidatorClass() {
         return validatorClass;
     }
 
+    @Column(name = "val_required")
     public boolean isRequired() {
         return required;
     }
 
+    @Column(name = "val_unique")
     public boolean isUnique() {
         return unique;
     }

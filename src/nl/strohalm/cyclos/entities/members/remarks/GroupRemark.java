@@ -19,14 +19,23 @@
  */
 package nl.strohalm.cyclos.entities.members.remarks;
 
+import javax.persistence.CascadeType;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.groups.Group;
 
 /**
  * Records a group change
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@DiscriminatorValue(value = "G")
 public class GroupRemark extends Remark {
+
     public static enum Relationships implements Relationship {
         OLD_GROUP("oldGroup"), NEW_GROUP("newGroup");
         private final String name;
@@ -42,18 +51,23 @@ public class GroupRemark extends Remark {
 
     private static final long serialVersionUID = 4806071178145432817L;
 
-    private Group             newGroup;
-    private Group             oldGroup;
+    private Group newGroup;
+    private Group oldGroup;
 
+    @Transient
     @Override
     public Nature getNature() {
         return Nature.GROUP;
     }
 
+    @ManyToOne(targetEntity = Group.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "new_group_id")
     public Group getNewGroup() {
         return newGroup;
     }
 
+    @ManyToOne(targetEntity = Group.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "old_group_id")
     public Group getOldGroup() {
         return oldGroup;
     }

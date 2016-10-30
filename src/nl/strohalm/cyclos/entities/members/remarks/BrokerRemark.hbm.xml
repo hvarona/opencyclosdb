@@ -6,12 +6,12 @@
 <hibernate-mapping>
 
     <subclass dynamic-insert="true" dynamic-update="true" name="nl.strohalm.cyclos.entities.members.remarks.BrokerRemark" extends="nl.strohalm.cyclos.entities.members.remarks.Remark" discriminator-value="B">
-		<many-to-one name="oldBroker" class="nl.strohalm.cyclos.entities.members.Member">
-		    <column name="old_broker_id" sql-type="integer"/>
-		</many-to-one>
-		<many-to-one name="newBroker" class="nl.strohalm.cyclos.entities.members.Member">
-		    <column name="new_broker_id" sql-type="integer"/>
-		</many-to-one>
+        <many-to-one name="oldBroker" class="nl.strohalm.cyclos.entities.members.Member">
+            <column name="old_broker_id" sql-type="integer"/>
+        </many-to-one>
+        <many-to-one name="newBroker" class="nl.strohalm.cyclos.entities.members.Member">
+            <column name="new_broker_id" sql-type="integer"/>
+        </many-to-one>
     </subclass>
 
 </hibernate-mapping>

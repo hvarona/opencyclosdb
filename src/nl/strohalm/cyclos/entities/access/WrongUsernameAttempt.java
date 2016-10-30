@@ -20,25 +20,41 @@
 package nl.strohalm.cyclos.entities.access;
 
 import java.util.Calendar;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.utils.FormatObject;
 
 /**
  * Entity used to track the number of invalid username usage attempts
- * 
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "wrong_username_attempts")
 public class WrongUsernameAttempt extends Entity {
 
     private static final long serialVersionUID = -4758213362595274664L;
-    private Calendar          date;
-    private String            remoteAddress;
+    private Calendar date;
+    private String remoteAddress;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(nullable = false)
     public Calendar getDate() {
         return date;
     }
 
+    @Column(name = "remote_address", nullable = false)
     public String getRemoteAddress() {
         return remoteAddress;
     }

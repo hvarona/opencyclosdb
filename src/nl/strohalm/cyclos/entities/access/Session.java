@@ -20,6 +20,13 @@
 package nl.strohalm.cyclos.entities.access;
 
 import java.util.Calendar;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -27,9 +34,11 @@ import nl.strohalm.cyclos.utils.FormatObject;
 
 /**
  * Represents a session for an user
- * 
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "sessions")
 public class Session extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -47,33 +56,47 @@ public class Session extends Entity {
     }
 
     private static final long serialVersionUID = 4557047760868996021L;
-    private String            identifier;
-    private Calendar          creationDate;
-    private Calendar          expirationDate;
-    private User              user;
-    private String            remoteAddress;
-    private boolean           posWeb;
+    private String identifier;
+    private Calendar creationDate;
+    private Calendar expirationDate;
+    private User user;
+    private String remoteAddress;
+    private boolean posWeb;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(name = "creation_date", nullable = false)
     public Calendar getCreationDate() {
         return creationDate;
     }
 
+    @Column(name = "expiration_date", nullable = false)
     public Calendar getExpirationDate() {
         return expirationDate;
     }
 
+    @Column(nullable = false)
     public String getIdentifier() {
         return identifier;
     }
 
+    @Column(name = "remote_addr", nullable = false)
     public String getRemoteAddress() {
         return remoteAddress;
     }
 
+    @ManyToOne(targetEntity = User.class)
+    @JoinColumn(name = "user_id", nullable = false)
     public User getUser() {
         return user;
     }
 
+    @Column(name = "pos_web")
     public boolean isPosWeb() {
         return posWeb;
     }

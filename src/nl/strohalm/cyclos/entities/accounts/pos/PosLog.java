@@ -20,46 +20,75 @@
 package nl.strohalm.cyclos.entities.accounts.pos;
 
 import java.util.Calendar;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.members.Element;
 import nl.strohalm.cyclos.entities.members.Member;
 
 /**
- * 
+ *
  * @author rodrigo
  */
+@javax.persistence.Entity
+@Table(name = "pos_logs")
 public class PosLog extends Entity {
 
     private static final long serialVersionUID = -6747020477752004538L;
 
-    private Pos               pos;
-    private Element           by;
-    private Calendar          date;
-    private Pos.Status        posStatus;
-    private MemberPos.Status  memberPosStatus;
-    private Member            assignedTo;
+    private Pos pos;
+    private Element by;
+    private Calendar date;
+    private Pos.Status posStatus;
+    private MemberPos.Status memberPosStatus;
+    private Member assignedTo;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "assignet_to")
     public Member getAssignedTo() {
         return assignedTo;
     }
 
+    @ManyToOne(targetEntity = Element.class)
+    @JoinColumn(name = "by_id")
     public Element getBy() {
         return by;
     }
 
+    @Column(nullable = false)
     public Calendar getDate() {
         return date;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "member_pos_status", nullable = false)
     public MemberPos.Status getMemberPosStatus() {
         return memberPosStatus;
     }
 
+    @ManyToOne(targetEntity = Pos.class)
+    @JoinColumn(name = "pos_id")
     public Pos getPos() {
         return pos;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "pos_status", nullable = false)
     public Pos.Status getPosStatus() {
         return posStatus;
     }

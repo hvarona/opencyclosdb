@@ -20,33 +20,45 @@
 package nl.strohalm.cyclos.entities.access;
 
 import java.util.Calendar;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.members.Member;
 
 /**
  * A user for regular members or brokers
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@DiscriminatorValue(value = "M")
+@Table
 public class MemberUser extends User {
 
     private static final long serialVersionUID = -524317381029059040L;
 
-    private String            pin;
-    private Calendar          pinBlockedUntil;
+    private String pin;
+    private Calendar pinBlockedUntil;
     private transient boolean passwordGenerated;
 
+    @Transient
     public Member getMember() {
         return (Member) super.getElement();
     }
 
+    @Column(length = 64)
     public String getPin() {
         return pin;
     }
 
+    @Column(name = "pin_blocked_until")
     public Calendar getPinBlockedUntil() {
         return pinBlockedUntil;
     }
 
+    @Transient
     public boolean isPasswordGenerated() {
         return passwordGenerated;
     }

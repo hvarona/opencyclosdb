@@ -7,23 +7,23 @@
 
     <class dynamic-insert="true" dynamic-update="true" name="nl.strohalm.cyclos.entities.infotexts.InfoText" table="info_texts">
         <id name="id" type="long">
-		    <column name="id" sql-type="integer"/>
+            <column name="id" sql-type="integer"/>
             <generator class="native"/>
         </id>
-		<property name="subject" column="subject" type="string" length="160" not-null="true"/>
-		<property name="body" column="body" type="text"/>
-		<property name="enabled" column="enabled" type="boolean" not-null="true" />		
-		<property name="validity" type="periodDate">
-			<column name="begin_date" />
-   		    <column name="end_date" />
-		</property>
+        <property name="subject" column="subject" type="string" length="160" not-null="true"/>
+        <property name="body" column="body" type="text"/>
+        <property name="enabled" column="enabled" type="boolean" not-null="true" />		
+        <property name="validity" type="periodDate">
+            <column name="begin_date" />
+            <column name="end_date" />
+        </property>
 		
-		<set name="aliases" table="info_text_aliases" order-by="alias" cascade="all">
-		    <key>
-		    	<column name="info_text_id" sql-type="integer" not-null="true" />
-			</key>		    
-		    <element column="alias" type="string"/>
-		</set>		
+        <set name="aliases" table="info_text_aliases" order-by="alias" cascade="all">
+            <key>
+                <column name="info_text_id" sql-type="integer" not-null="true" />
+            </key>		    
+            <element column="alias" type="string"/>
+        </set>		
     </class>
     
 </hibernate-mapping>

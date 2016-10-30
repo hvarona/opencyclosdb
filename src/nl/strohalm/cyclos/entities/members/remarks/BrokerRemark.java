@@ -19,14 +19,23 @@
  */
 package nl.strohalm.cyclos.entities.members.remarks;
 
+import javax.persistence.CascadeType;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.members.Member;
 
 /**
  * Records a broker change
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@DiscriminatorValue(value = "B")
 public class BrokerRemark extends Remark {
+
     public static enum Relationships implements Relationship {
         NEW_BROKER("newBroker"), OLD_BROKER("oldBroker");
         private final String name;
@@ -42,19 +51,24 @@ public class BrokerRemark extends Remark {
 
     private static final long serialVersionUID = -3209648514982932525L;
 
-    private Member            newBroker;
-    private Member            oldBroker;
-    private boolean           suspendCommission;
+    private Member newBroker;
+    private Member oldBroker;
+    private boolean suspendCommission;
 
+    @Transient
     @Override
     public Nature getNature() {
         return Nature.BROKER;
     }
 
+    @ManyToOne(targetEntity = Member.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "new_broker_id")
     public Member getNewBroker() {
         return newBroker;
     }
 
+    @ManyToOne(targetEntity = Member.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "old_broker_id")
     public Member getOldBroker() {
         return oldBroker;
     }

@@ -19,13 +19,23 @@
  */
 package nl.strohalm.cyclos.entities.settings;
 
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 /**
  * Contains the value of a single setting
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "settings")
 public class Setting extends Entity {
 
     public static enum Type implements StringValuedEnum {
@@ -43,18 +53,29 @@ public class Setting extends Entity {
 
     private static final long serialVersionUID = 8376447152912773532L;
 
-    private String            name;
-    private Type              type;
-    private String            value;
+    private String name;
+    private Type type;
+    private String value;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(nullable = false, length = 100)
+    @Override
     public String getName() {
         return name;
     }
 
+    @Enumerated(EnumType.STRING)
     public Type getType() {
         return type;
     }
 
+    @Column(length = 4096)
     public String getValue() {
         return value;
     }

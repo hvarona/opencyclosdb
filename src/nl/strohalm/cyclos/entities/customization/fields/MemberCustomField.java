@@ -20,6 +20,15 @@
 package nl.strohalm.cyclos.entities.customization.fields;
 
 import java.util.Collection;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.groups.AdminGroup;
@@ -31,12 +40,17 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 /**
  * A custom field for members
+ *
  * @author luis
  */
+@Entity
+@DiscriminatorValue(value = "member")
+@Table
 public class MemberCustomField extends CustomField {
 
     /**
      * Restrict the field usage for specific user types
+     *
      * @author luis
      */
     public static enum Access implements StringValuedEnum {
@@ -53,7 +67,8 @@ public class MemberCustomField extends CustomField {
         }
 
         /**
-         * Return whether this access matches the specified group, given that the member is the broker
+         * Return whether this access matches the specified group, given that
+         * the member is the broker
          */
         public boolean granted(final Group group, final boolean byOwner, final boolean byBroker, final boolean atRegistration, final boolean byWebService) {
             if (byWebService) {
@@ -135,49 +150,67 @@ public class MemberCustomField extends CustomField {
         }
     }
 
-    private static final long       serialVersionUID   = 8982250513905556430L;
-    private Access                  adSearchAccess     = Access.NONE;
-    private Access                  loanSearchAccess   = Access.NONE;
-    private boolean                 memberCanHide      = true;
-    private Access                  memberSearchAccess = Access.NONE;
-    private Access                  visibilityAccess   = Access.OTHER;
-    private Access                  updateAccess       = Access.MEMBER;
-    private boolean                 showInPrint        = true;
-    private Indexing                indexing           = Indexing.MEMBERS_AND_ADS;
+    private static final long serialVersionUID = 8982250513905556430L;
+    private Access adSearchAccess = Access.NONE;
+    private Access loanSearchAccess = Access.NONE;
+    private boolean memberCanHide = true;
+    private Access memberSearchAccess = Access.NONE;
+    private Access visibilityAccess = Access.OTHER;
+    private Access updateAccess = Access.MEMBER;
+    private boolean showInPrint = true;
+    private Indexing indexing = Indexing.MEMBERS_AND_ADS;
     private Collection<MemberGroup> groups;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "member_ad_seach_access")
     public Access getAdSearchAccess() {
         return adSearchAccess;
     }
 
+    @ManyToMany(targetEntity = MemberGroup.class)
+    @JoinTable(name = "member_groups_custom_fields",
+            joinColumns = @JoinColumn(name = "custom_field_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id"))
     public Collection<MemberGroup> getGroups() {
         return groups;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "member_indexing")
     public Indexing getIndexing() {
         return indexing;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "member_loan_seach_access")
     public Access getLoanSearchAccess() {
         return loanSearchAccess;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "member_search_access")
     public Access getMemberSearchAccess() {
         return memberSearchAccess;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "member_update_access")
     public Access getUpdateAccess() {
         return updateAccess;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "member_visibility_access")
     public Access getVisibilityAccess() {
         return visibilityAccess;
     }
 
+    @Column(name = "member_can_hide")
     public boolean isMemberCanHide() {
         return memberCanHide;
     }
 
+    @Column(name = "member_show_in_print")
     public boolean isShowInPrint() {
         return showInPrint;
     }

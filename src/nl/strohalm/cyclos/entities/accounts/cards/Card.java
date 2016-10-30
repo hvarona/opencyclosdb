@@ -22,6 +22,16 @@ package nl.strohalm.cyclos.entities.accounts.cards;
 import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Collection;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -30,8 +40,11 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 /**
  * Represents a card
+ *
  * @author jefferson
  */
+@javax.persistence.Entity
+@Table(name = "cards")
 public class Card extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -63,55 +76,75 @@ public class Card extends Entity {
         }
     }
 
-    private static final long   serialVersionUID = -2401825447192351066L;
+    private static final long serialVersionUID = -2401825447192351066L;
 
-    private CardType            cardType;
-    private BigInteger          cardNumber;
-    private String              cardSecurityCode;
-    private Calendar            creationDate;
-    private Calendar            activationDate;
-    private Calendar            expirationDate;
-    private Calendar            cardSecurityCodeBlockedUntil;
-    private Member              owner;
-    private Status              status;
+    private CardType cardType;
+    private BigInteger cardNumber;
+    private String cardSecurityCode;
+    private Calendar creationDate;
+    private Calendar activationDate;
+    private Calendar expirationDate;
+    private Calendar cardSecurityCodeBlockedUntil;
+    private Member owner;
+    private Status status;
     private Collection<CardLog> logs;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(name = "activation_date")
     public Calendar getActivationDate() {
         return activationDate;
     }
 
+    @Column(name = "card_number", unique = true)
     public BigInteger getCardNumber() {
         return cardNumber;
     }
 
+    @Column(name = "card_security_code", length = 64)
     public String getCardSecurityCode() {
         return cardSecurityCode;
     }
 
+    @Column(name = "card_security_code_blocked_until")
     public Calendar getCardSecurityCodeBlockedUntil() {
         return cardSecurityCodeBlockedUntil;
     }
 
+    @ManyToOne(targetEntity = CardType.class)
+    @JoinColumn(name = "card_type_id")
     public CardType getCardType() {
         return cardType;
     }
 
+    @Column(name = "creation_date")
     public Calendar getCreationDate() {
         return creationDate;
     }
 
+    @Column(name = "expiration_date")
     public Calendar getExpirationDate() {
         return expirationDate;
     }
 
+    @OneToMany(targetEntity = CardLog.class)
+    @JoinColumn(name = "card_id")
     public Collection<CardLog> getLogs() {
         return logs;
     }
 
+    @ManyToOne(targetEntity = CardType.class)
+    @JoinColumn(name = "owner_id")
     public Member getOwner() {
         return owner;
     }
 
+    @Enumerated(EnumType.STRING)
     public Status getStatus() {
         return status;
     }
