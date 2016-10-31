@@ -5,13 +5,13 @@
 
 <hibernate-mapping>
 
-	<subclass dynamic-insert="true" dynamic-update="true" name="nl.strohalm.cyclos.entities.members.Administrator" extends="nl.strohalm.cyclos.entities.members.Element" discriminator-value="A">
-		<bag name="customValues" cascade="delete" inverse="true">
+    <subclass dynamic-insert="true" dynamic-update="true" name="nl.strohalm.cyclos.entities.members.Administrator" extends="nl.strohalm.cyclos.entities.members.Element" discriminator-value="A">
+        <bag name="customValues" cascade="delete" inverse="true">
             <key> 
-            	<column name="admin_id" sql-type="integer"/>
+                <column name="admin_id" sql-type="integer"/>
             </key>
-	        <one-to-many class="nl.strohalm.cyclos.entities.customization.fields.AdminCustomFieldValue"/>
-	    </bag>
+            <one-to-many class="nl.strohalm.cyclos.entities.customization.fields.AdminCustomFieldValue"/>
+        </bag>
     </subclass>
     
 </hibernate-mapping>

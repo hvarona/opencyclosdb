@@ -6,7 +6,7 @@
 <hibernate-mapping>
 
     <subclass dynamic-insert="true" dynamic-update="true" name="nl.strohalm.cyclos.entities.accounts.InitializableRateParameters" extends="nl.strohalm.cyclos.entities.accounts.RateParameters" abstract="true"  >
-		<property name="initValue" update="false" column="init_value" type="big_decimal" precision="15" scale="6" />
+        <property name="initValue" update="false" column="init_value" type="big_decimal" precision="15" scale="6" />
         <property name="initDate" update="false" column="init_date" type="calendar" />
     </subclass>
 

@@ -1,20 +1,20 @@
 /*
-    This file is part of Cyclos (www.cyclos.org).
-    A project of the Social Trade Organisation (www.socialtrade.org).
+ This file is part of Cyclos (www.cyclos.org).
+ A project of the Social Trade Organisation (www.socialtrade.org).
 
-    Cyclos is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+ Cyclos is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-    Cyclos is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+ Cyclos is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Cyclos; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ You should have received a copy of the GNU General Public License
+ along with Cyclos; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  */
 package nl.strohalm.cyclos.entities.accounts.transactions;
@@ -23,6 +23,14 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.accounts.Account;
@@ -40,12 +48,17 @@ import nl.strohalm.cyclos.entities.settings.LocalSettings;
 import org.apache.commons.lang.ObjectUtils;
 
 /**
- * A unit transfer between two accounts. A transaction may be performed with several transfers (ex: additional fees)
+ * A unit transfer between two accounts. A transaction may be performed with
+ * several transfers (ex: additional fees)
+ *
  * @author luis
  */
+@Entity
+@Table(name = "transfers")
 public class Transfer extends Payment implements Rated {
 
     public static enum Relationships implements Relationship {
+
         ACCOUNT_FEE_LOG("accountFeeLog"), CHILDREN("children"),
         CHARGED_BACK_BY("chargedBackBy"), LOAN_PAYMENT("loanPayment"),
         PARENT("parent"), CHARGEBACK_OF("chargebackOf"),
@@ -65,36 +78,47 @@ public class Transfer extends Payment implements Rated {
         }
     }
 
-    private static final long                 serialVersionUID = -4749387454425166686L;
-    private AccountFeeLog                     accountFeeLog;
-    private Collection<Transfer>              children;
-    private Transfer                          chargedBackBy;
-    private String                            transactionNumber;
-    private String                            traceNumber;
-    private Long                              clientId;
-    private String                            traceData;
-    private LoanPayment                       loanPayment;
-    private Transfer                          parent;
-    private Transfer                          chargebackOf;
-    private TransactionFee                    transactionFee;
-    private Element                           receiver;
-    private ExternalTransfer                  externalTransfer;
+    private static final long serialVersionUID = -4749387454425166686L;
+    private AccountFeeLog accountFeeLog;
+    private Collection<Transfer> children;
+    private Transfer chargedBackBy;
+    private String transactionNumber;
+    private String traceNumber;
+    private Long clientId;
+    private String traceData;
+    private LoanPayment loanPayment;
+    private Transfer parent;
+    private Transfer chargebackOf;
+    private TransactionFee transactionFee;
+    private Element receiver;
+    private ExternalTransfer externalTransfer;
     private Collection<TransferAuthorization> authorizations;
-    private AuthorizationLevel                nextAuthorizationLevel;
-    private ScheduledPayment                  scheduledPayment;
-    private BrokerCommissionContract          brokerCommissionContract;
-    private Calendar                          expirationDate;
-    private Calendar                          emissionDate;
-    private BigDecimal                        iRate;
-    private transient Transfer                root;
+    private AuthorizationLevel nextAuthorizationLevel;
+    private ScheduledPayment scheduledPayment;
+    private BrokerCommissionContract brokerCommissionContract;
+    private Calendar expirationDate;
+    private Calendar emissionDate;
+    private BigDecimal iRate;
+    private transient Transfer root;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @ManyToOne(targetEntity = AccountFeeLog.class)
+    @JoinColumn(name = "account_fee_log_id")
     public AccountFeeLog getAccountFeeLog() {
         return accountFeeLog;
     }
 
     /**
-     * Returns the amount as a positive number, even when it's negative (i.e. chargeback)
+     * Returns the amount as a positive number, even when it's negative (i.e.
+     * chargeback)
      */
+    @Transient
     public BigDecimal getActualAmount() {
         final BigDecimal amount = getAmount();
         return amount == null ? null : amount.abs();
@@ -103,12 +127,15 @@ public class Transfer extends Payment implements Rated {
     /**
      * Returns the process date if not null, date otherwise
      */
+    @ManyToOne(targetEntity = AccountFeeLog.class)
+    @JoinColumn(name = "account_fee_log_id")
     public Calendar getActualDate() {
         return getProcessDate() == null ? getDate() : getProcessDate();
     }
 
     /**
-     * When the amount is negative (i.e. chargeback), returns the to account instead
+     * When the amount is negative (i.e. chargeback), returns the to account
+     * instead
      */
     public Account getActualFrom() {
         final BigDecimal amount = getAmount();
@@ -116,14 +143,16 @@ public class Transfer extends Payment implements Rated {
     }
 
     /**
-     * When the amount is negative (i.e. chargeback), returns the to account owner instead
+     * When the amount is negative (i.e. chargeback), returns the to account
+     * owner instead
      */
     public AccountOwner getActualFromOwner() {
         return getActualFrom().getOwner();
     }
 
     /**
-     * When the amount is negative (i.e. chargeback), returns the from account instead
+     * When the amount is negative (i.e. chargeback), returns the from account
+     * instead
      */
     public Account getActualTo() {
         final BigDecimal amount = getAmount();
@@ -131,7 +160,8 @@ public class Transfer extends Payment implements Rated {
     }
 
     /**
-     * When the amount is negative (i.e. chargeback), returns the from account owner instead
+     * When the amount is negative (i.e. chargeback), returns the from account
+     * owner instead
      */
     public AccountOwner getActualToOwner() {
         return getActualTo().getOwner();
@@ -222,10 +252,14 @@ public class Transfer extends Payment implements Rated {
 
     /**
      * Optional.
+     *
      * @returns the data set by the client making a payment.<br>
-     * As an example: it could be used to link a payment with its notifications (payment received).<br>
-     * It depends on the client side then there is no guarantee of uniqueness between different transfer.<br>
-     * Note: It has nothing to do with the (unique) pair <traceNumber, clientId> (used to query transactions by those values).
+     * As an example: it could be used to link a payment with its notifications
+     * (payment received).<br>
+     * It depends on the client side then there is no guarantee of uniqueness
+     * between different transfer.<br>
+     * Note: It has nothing to do with the (unique) pair <traceNumber, clientId>
+     * (used to query transactions by those values).
      */
     public String getTraceData() {
         return traceData;
@@ -247,14 +281,16 @@ public class Transfer extends Payment implements Rated {
     }
 
     /**
-     * When the amount is negative (i.e. chargeback), returns whether the to account is a system account
+     * When the amount is negative (i.e. chargeback), returns whether the to
+     * account is a system account
      */
     public boolean isActuallyFromSystem() {
         return getActualFromOwner() instanceof SystemAccountOwner;
     }
 
     /**
-     * When the amount is negative (i.e. chargeback), returns whether the from account is a system account
+     * When the amount is negative (i.e. chargeback), returns whether the from
+     * account is a system account
      */
     public boolean isActuallyToSystem() {
         return getActualToOwner() instanceof SystemAccountOwner;

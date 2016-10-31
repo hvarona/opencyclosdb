@@ -1,40 +1,51 @@
 /*
-    This file is part of Cyclos (www.cyclos.org).
-    A project of the Social Trade Organisation (www.socialtrade.org).
+ This file is part of Cyclos (www.cyclos.org).
+ A project of the Social Trade Organisation (www.socialtrade.org).
 
-    Cyclos is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+ Cyclos is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-    Cyclos is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+ Cyclos is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Cyclos; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ You should have received a copy of the GNU General Public License
+ along with Cyclos; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  */
 package nl.strohalm.cyclos.entities.accounts;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.utils.FormatObject;
 
 /**
- * Contains the pre-calculated balance and amount reservation for an account at a given date. The date is EXCLUSIVE: transfers which happened on the
- * exact time of the closing date are NOT included in this ClosedAccountBalance.
- * 
+ * Contains the pre-calculated balance and amount reservation for an account at
+ * a given date. The date is EXCLUSIVE: transfers which happened on the exact
+ * time of the closing date are NOT included in this ClosedAccountBalance.
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "closed_account_balances")
 public class ClosedAccountBalance extends Entity {
 
     public static enum Relationships implements Relationship {
+
         ACCOUNT("account");
         private final String name;
 
@@ -49,23 +60,35 @@ public class ClosedAccountBalance extends Entity {
     }
 
     private static final long serialVersionUID = -7158093358048047225L;
-    private Account           account;
-    private Calendar          date;
-    private BigDecimal        balance          = BigDecimal.ZERO;
-    private BigDecimal        reserved         = BigDecimal.ZERO;
+    private Account account;
+    private Calendar date;
+    private BigDecimal balance = BigDecimal.ZERO;
+    private BigDecimal reserved = BigDecimal.ZERO;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @ManyToOne(targetEntity = Account.class)
+    @JoinColumn(name = "account_id", nullable = false)
     public Account getAccount() {
         return account;
     }
 
+    @Column(nullable = false)
     public BigDecimal getBalance() {
         return balance;
     }
 
+    @Column(nullable = false)
     public Calendar getDate() {
         return date;
     }
 
+    @Column(nullable = false)
     public BigDecimal getReserved() {
         return reserved;
     }

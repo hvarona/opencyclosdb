@@ -19,6 +19,10 @@
  */
 package nl.strohalm.cyclos.entities.accounts;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import nl.strohalm.cyclos.entities.accounts.transactions.ScheduledPayment;
 
 /**
@@ -26,11 +30,15 @@ import nl.strohalm.cyclos.entities.accounts.transactions.ScheduledPayment;
  * 
  * @author luis
  */
+@Entity
+@DiscriminatorValue(value = "S")
 public class ScheduledPaymentAmountReservation extends AmountReservation {
 
     private static final long serialVersionUID = 141681541648224471L;
     private ScheduledPayment  scheduledPayment;
 
+    @ManyToOne(targetEntity = ScheduledPayment.class)
+    @JoinColumn(name="scheduled_payment_id")
     public ScheduledPayment getScheduledPayment() {
         return scheduledPayment;
     }

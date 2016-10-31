@@ -21,6 +21,8 @@ package nl.strohalm.cyclos.entities.accounts;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
 import nl.strohalm.cyclos.utils.FormatObject;
 
@@ -29,6 +31,8 @@ import nl.strohalm.cyclos.utils.FormatObject;
  * date and disabling date.
  * @author rinke
  */
+@Entity
+@DiscriminatorValue(value = "I")
 public class IRateParameters extends RateParameters {
 
     private static final long serialVersionUID = -6527552933018241467L;

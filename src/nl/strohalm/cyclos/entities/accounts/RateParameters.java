@@ -1,40 +1,57 @@
 /*
-    This file is part of Cyclos (www.cyclos.org).
-    A project of the Social Trade Organisation (www.socialtrade.org).
+ This file is part of Cyclos (www.cyclos.org).
+ A project of the Social Trade Organisation (www.socialtrade.org).
 
-    Cyclos is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+ Cyclos is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-    Cyclos is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+ Cyclos is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Cyclos; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ You should have received a copy of the GNU General Public License
+ along with Cyclos; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  */
 package nl.strohalm.cyclos.entities.accounts;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.utils.Period;
 
 /**
- * parent class for all RateParameters. These classes store the parameters of rate configuration on the currency.
- * 
+ * parent class for all RateParameters. These classes store the parameters of
+ * rate configuration on the currency.
+ *
  * @author Rinke
- * 
+ *
  */
+@javax.persistence.Entity
+@Table(name = "rate_parameters")
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "subclass")
 abstract public class RateParameters extends Entity {
 
     public static enum Relatonships implements Relationship {
+
         CURRENCY("currency");
 
         private final String name;
@@ -51,39 +68,54 @@ abstract public class RateParameters extends Entity {
 
     private static final long serialVersionUID = 3436424608100999408L;
 
-    private Currency          currency;
-    private Calendar          date;
-    private BigDecimal        creationValue;
-    private Calendar          enabledSince;
-    private Calendar          disabledSince;
-    private Calendar          reinitDate;
+    private Currency currency;
+    private Calendar date;
+    private BigDecimal creationValue;
+    private Calendar enabledSince;
+    private Calendar disabledSince;
+    private Calendar reinitDate;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(name = "creation_values")
     public BigDecimal getCreationValue() {
         return creationValue;
     }
 
+    @ManyToOne(targetEntity = Currency.class)
+    @JoinColumn(name = "currency_id", nullable = false)
     public Currency getCurrency() {
         return currency;
     }
 
+    @Column(nullable = false)
     public Calendar getDate() {
         return date;
     }
 
+    @Column(name = "disabled_since")
     public Calendar getDisabledSince() {
         return disabledSince;
     }
 
+    @Transient
     public Period getEnabledPeriod() {
         final Period period = Period.between(enabledSince, disabledSince);
         period.setUseTime(true);
         return period;
     }
 
+    @Column(name = "enabled_since")
     public Calendar getEnabledSince() {
         return enabledSince;
     }
 
+    @Column(name = "reinit_date")
     public Calendar getReinitDate() {
         return reinitDate;
     }

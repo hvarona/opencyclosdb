@@ -19,12 +19,17 @@
  */
 package nl.strohalm.cyclos.entities.accounts;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
 
 /**
  * An amount reservation by a payment pending authorization
  * 
  * @author luis
  */
+@Entity
+@DiscriminatorValue(value = "P")
 public class PendingAuthorizationAmountReservation extends BaseTransferAmountReservation {
 
     private static final long serialVersionUID = 6099996462908908019L;

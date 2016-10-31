@@ -7,20 +7,20 @@
 
     <subclass dynamic-insert="true" dynamic-update="true" name="nl.strohalm.cyclos.entities.accounts.MemberAccountType" extends="nl.strohalm.cyclos.entities.accounts.AccountType" discriminator-value="M">
 
-		<bag name="accounts" inverse="true" cascade="delete">
-			<key column="type_id"/>
-			<one-to-many class="nl.strohalm.cyclos.entities.accounts.MemberAccount"/>
-    	</bag>    	
+        <bag name="accounts" inverse="true" cascade="delete">
+            <key column="type_id"/>
+            <one-to-many class="nl.strohalm.cyclos.entities.accounts.MemberAccount"/>
+        </bag>    	
 
-		<bag name="settings" inverse="true" cascade="delete">
-			<key column="type_id"/>
-			<one-to-many class="nl.strohalm.cyclos.entities.accounts.MemberGroupAccountSettings"/>
-    	</bag>    	
+        <bag name="settings" inverse="true" cascade="delete">
+            <key column="type_id"/>
+            <one-to-many class="nl.strohalm.cyclos.entities.accounts.MemberGroupAccountSettings"/>
+        </bag>    	
         
         <bag name="accountFees" inverse="true" cascade="delete">
-		    <key column="account_type_id"/>
-			<one-to-many class="nl.strohalm.cyclos.entities.accounts.fees.account.AccountFee"/>
-		</bag>
+            <key column="account_type_id"/>
+            <one-to-many class="nl.strohalm.cyclos.entities.accounts.fees.account.AccountFee"/>
+        </bag>
 
     </subclass>
     
