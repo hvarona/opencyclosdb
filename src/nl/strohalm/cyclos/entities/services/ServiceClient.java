@@ -1,27 +1,29 @@
 /*
-    This file is part of Cyclos (www.cyclos.org).
-    A project of the Social Trade Organisation (www.socialtrade.org).
+ This file is part of Cyclos (www.cyclos.org).
+ A project of the Social Trade Organisation (www.socialtrade.org).
 
-    Cyclos is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+ Cyclos is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-    Cyclos is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+ Cyclos is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Cyclos; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ You should have received a copy of the GNU General Public License
+ along with Cyclos; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  */
 package nl.strohalm.cyclos.entities.services;
 
 import java.util.Set;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
@@ -51,6 +53,7 @@ import nl.strohalm.cyclos.entities.members.Member;
 public class ServiceClient extends Entity {
 
     public static enum Relationships implements Relationship {
+
         MEMBER("member"), CHANNEL("channel"), PERMISSIONS("permissions"), DO_PAYMENT_TYPES("doPaymentTypes"), RECEIVE_PAYMENT_TYPES("receivePaymentTypes"), CHARGEBACK_PAYMENT_TYPES("chargebackPaymentTypes"), MANAGE_GROUPS("mnageGroups");
         private final String name;
 
@@ -150,10 +153,10 @@ public class ServiceClient extends Entity {
         return password;
     }
 
-    @OneToMany
-    @JoinTable(name = "service_client_permissions",
-            joinColumns = @JoinColumn(name = "service_client_id"),
-            inverseJoinColumns = @JoinColumn(name = "operation"))
+    @ElementCollection(targetClass = ServiceOperation.class)
+    @CollectionTable(name = "service_client_permissions",
+            joinColumns = @JoinColumn(name = "service_client_id"))
+    @Column(name = "operation", nullable = false)
     @Enumerated(EnumType.STRING)
     public Set<ServiceOperation> getPermissions() {
         return permissions;

@@ -1,25 +1,31 @@
 /*
-    This file is part of Cyclos (www.cyclos.org).
-    A project of the Social Trade Organisation (www.socialtrade.org).
+ This file is part of Cyclos (www.cyclos.org).
+ A project of the Social Trade Organisation (www.socialtrade.org).
 
-    Cyclos is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+ Cyclos is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-    Cyclos is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+ Cyclos is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Cyclos; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ You should have received a copy of the GNU General Public License
+ along with Cyclos; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  */
 package nl.strohalm.cyclos.entities.groups;
 
 import java.util.Collection;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.accounts.SystemAccountType;
@@ -29,11 +35,15 @@ import nl.strohalm.cyclos.entities.members.records.MemberRecordType;
 
 /**
  * A group of administrators
+ *
  * @author luis
  */
+@Entity
+@DiscriminatorValue(value = "A")
 public class AdminGroup extends SystemGroup {
 
     public static enum Relationships implements Relationship {
+
         TRANSFER_TYPES_AS_MEMBER("transferTypesAsMember"), MANAGES_GROUPS("managesGroups"), VIEW_INFORMATION_OF("viewInformationOf"), VIEW_CONNECTED_ADMINS_OF("viewConnectedAdminsOf"), CONNECTED_ADMINS_VIEWED_BY("connectedAdminsViewedBy"), ADMIN_CUSTOM_FIELDS("adminCustomFields"), VIEW_MEMBER_RECORD_TYPES("viewMemberRecordTypes"), CREATE_MEMBER_RECORD_TYPES("createMemberRecordTypes"), MODIFY_MEMBER_RECORD_TYPES("modifyMemberRecordTypes"), DELETE_MEMBER_RECORD_TYPES("deleteMemberRecordTypes"), VIEW_ADMIN_RECORD_TYPES("viewAdminRecordTypes"), CREATE_ADMIN_RECORD_TYPES("createAdminRecordTypes"), MODIFY_ADMIN_RECORD_TYPES("modifyAdminRecordTypes"), DELETE_ADMIN_RECORD_TYPES("deleteAdminRecordTypes");
 
         private final String name;
@@ -48,80 +58,137 @@ public class AdminGroup extends SystemGroup {
         }
     }
 
-    private static final long             serialVersionUID = 327847242923171219L;
+    private static final long serialVersionUID = 327847242923171219L;
 
-    private Collection<TransferType>      transferTypesAsMember;
-    private Collection<MemberGroup>       managesGroups;
+    private Collection<TransferType> transferTypesAsMember;
+    private Collection<MemberGroup> managesGroups;
     private Collection<SystemAccountType> viewInformationOf;
-    private Collection<AdminGroup>        viewConnectedAdminsOf;
-    private Collection<AdminGroup>        connectedAdminsViewedBy;
-    private Collection<AdminCustomField>  adminCustomFields;
-    private Collection<MemberRecordType>  viewAdminRecordTypes;
-    private Collection<MemberRecordType>  createAdminRecordTypes;
-    private Collection<MemberRecordType>  modifyAdminRecordTypes;
-    private Collection<MemberRecordType>  deleteAdminRecordTypes;
-    private Collection<MemberRecordType>  viewMemberRecordTypes;
-    private Collection<MemberRecordType>  createMemberRecordTypes;
-    private Collection<MemberRecordType>  modifyMemberRecordTypes;
-    private Collection<MemberRecordType>  deleteMemberRecordTypes;
+    private Collection<AdminGroup> viewConnectedAdminsOf;
+    private Collection<AdminGroup> connectedAdminsViewedBy;
+    private Collection<AdminCustomField> adminCustomFields;
+    private Collection<MemberRecordType> viewAdminRecordTypes;
+    private Collection<MemberRecordType> createAdminRecordTypes;
+    private Collection<MemberRecordType> modifyAdminRecordTypes;
+    private Collection<MemberRecordType> deleteAdminRecordTypes;
+    private Collection<MemberRecordType> viewMemberRecordTypes;
+    private Collection<MemberRecordType> createMemberRecordTypes;
+    private Collection<MemberRecordType> modifyMemberRecordTypes;
+    private Collection<MemberRecordType> deleteMemberRecordTypes;
 
+    @ManyToMany(targetEntity = AdminCustomField.class)
+    @JoinTable(name = "admin_groups_custom_fields",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "custom_field_id"))
     public Collection<AdminCustomField> getAdminCustomFields() {
         return adminCustomFields;
     }
 
+    @ManyToMany(targetEntity = AdminGroup.class)
+    @JoinTable(name = "admin_view_connected_users_of",
+            joinColumns = @JoinColumn(name = "viewed_group_id"),
+            inverseJoinColumns = @JoinColumn(name = "viewer_group_id"))
     public Collection<AdminGroup> getConnectedAdminsViewedBy() {
         return connectedAdminsViewedBy;
     }
 
+    @ManyToMany(targetEntity = MemberRecordType.class)
+    @JoinTable(name = "admin_groups_create_admin_record_types",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "member_record_type_id"))
     public Collection<MemberRecordType> getCreateAdminRecordTypes() {
         return createAdminRecordTypes;
     }
 
+    @ManyToMany(targetEntity = MemberRecordType.class)
+    @JoinTable(name = "admin_groups_create_member_record_types",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "member_record_type_id"))
     public Collection<MemberRecordType> getCreateMemberRecordTypes() {
         return createMemberRecordTypes;
     }
 
+    @ManyToMany(targetEntity = MemberRecordType.class)
+    @JoinTable(name = "admin_groups_delete_admin_record_types",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "member_record_type_id"))
     public Collection<MemberRecordType> getDeleteAdminRecordTypes() {
         return deleteAdminRecordTypes;
     }
 
+    @ManyToMany(targetEntity = MemberRecordType.class)
+    @JoinTable(name = "admin_groups_delete_member_record_types",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "member_record_type_id"))
     public Collection<MemberRecordType> getDeleteMemberRecordTypes() {
         return deleteMemberRecordTypes;
     }
 
+    @ManyToMany(targetEntity = MemberGroup.class)
+    @JoinTable(name = "admin_manages_member_groups",
+            joinColumns = @JoinColumn(name = "manager_group_id"),
+            inverseJoinColumns = @JoinColumn(name = "managed_group_id"))
     public Collection<MemberGroup> getManagesGroups() {
         return managesGroups;
     }
 
+    @ManyToMany(targetEntity = MemberRecordType.class)
+    @JoinTable(name = "admin_groups_modify_admin_record_types",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "member_record_type_id"))
     public Collection<MemberRecordType> getModifyAdminRecordTypes() {
         return modifyAdminRecordTypes;
     }
 
+    @ManyToMany(targetEntity = MemberRecordType.class)
+    @JoinTable(name = "admin_groups_modify_member_record_types",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "member_record_type_id"))
     public Collection<MemberRecordType> getModifyMemberRecordTypes() {
         return modifyMemberRecordTypes;
     }
 
+    @Transient
     @Override
     public Nature getNature() {
         return Nature.ADMIN;
     }
 
+    @ManyToMany(targetEntity = TransferType.class)
+    @JoinTable(name = "groups_transfer_types_as_member",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "transfer_type_id"))
     public Collection<TransferType> getTransferTypesAsMember() {
         return transferTypesAsMember;
     }
 
+    @ManyToMany(targetEntity = MemberRecordType.class)
+    @JoinTable(name = "admin_groups_admin_record_types",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "member_record_type_id"))
     public Collection<MemberRecordType> getViewAdminRecordTypes() {
         return viewAdminRecordTypes;
     }
 
+    @ManyToMany(targetEntity = AdminGroup.class)
+    @JoinTable(name = "admin_view_connected_users_of",
+            joinColumns = @JoinColumn(name = "viewer_group_id"),
+            inverseJoinColumns = @JoinColumn(name = "viewed_group_id"))
     public Collection<AdminGroup> getViewConnectedAdminsOf() {
         return viewConnectedAdminsOf;
     }
 
+    @ManyToMany(targetEntity = SystemAccountType.class)
+    @JoinTable(name = "admin_view_account_information",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "account_type_id"))
     public Collection<SystemAccountType> getViewInformationOf() {
         return viewInformationOf;
     }
 
+    @ManyToMany(targetEntity = MemberRecordType.class)
+    @JoinTable(name = "admin_groups_member_record_types",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "member_record_type_id"))
     public Collection<MemberRecordType> getViewMemberRecordTypes() {
         return viewMemberRecordTypes;
     }

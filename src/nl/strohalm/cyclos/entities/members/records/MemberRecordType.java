@@ -1,25 +1,36 @@
 /*
-    This file is part of Cyclos (www.cyclos.org).
-    A project of the Social Trade Organisation (www.socialtrade.org).
+ This file is part of Cyclos (www.cyclos.org).
+ A project of the Social Trade Organisation (www.socialtrade.org).
 
-    Cyclos is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+ Cyclos is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-    Cyclos is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+ Cyclos is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Cyclos; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ You should have received a copy of the GNU General Public License
+ along with Cyclos; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  */
 package nl.strohalm.cyclos.entities.members.records;
 
 import java.util.Collection;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -31,11 +42,15 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 /**
  * Defines a group of custom fields for a member
+ *
  * @author Jefferson Magno
  */
+@javax.persistence.Entity
+@Table(name = "member_record_types")
 public class MemberRecordType extends Entity {
 
     public static enum Layout implements StringValuedEnum {
+
         FLAT("F"), LIST("L");
         private final String value;
 
@@ -49,7 +64,8 @@ public class MemberRecordType extends Entity {
     }
 
     public static enum Relationships implements Relationship {
-        FIELDS("fields"), GROUPS("groups"), VIEWABLE_BY_ADMIN_GROUPS("viewableByAdminGroups"), CREATABLE_BY_ADMIN_GROUPS("creatableByAdminGroups"), UPDATABLE_BY_ADMIN_GROUPS("updatableByAdminGroups"), DELETABLE_BY_ADMIN_GROUPS("deletableByAdminGroups"), VIEWABLE_BY_BROKER_GROUPS("viewableByBrokerGroups"), CREATABLE_BY_BROKER_GROUPS("creatableByBrokerGroups"), UPDATABLE_BY_BROKER_GROUPS("updatableByBrokerGroups"), DELETABLE_BY_BROKER_GROUPS("deletableByBrokerGroups"), ;
+
+        FIELDS("fields"), GROUPS("groups"), VIEWABLE_BY_ADMIN_GROUPS("viewableByAdminGroups"), CREATABLE_BY_ADMIN_GROUPS("creatableByAdminGroups"), UPDATABLE_BY_ADMIN_GROUPS("updatableByAdminGroups"), DELETABLE_BY_ADMIN_GROUPS("deletableByAdminGroups"), VIEWABLE_BY_BROKER_GROUPS("viewableByBrokerGroups"), CREATABLE_BY_BROKER_GROUPS("creatableByBrokerGroups"), UPDATABLE_BY_BROKER_GROUPS("updatableByBrokerGroups"), DELETABLE_BY_BROKER_GROUPS("deletableByBrokerGroups"),;
         private final String name;
 
         private Relationships(final String name) {
@@ -61,84 +77,137 @@ public class MemberRecordType extends Entity {
         }
     }
 
-    private static final long                   serialVersionUID = -1708482580670924301L;
-    private String                              name;
-    private String                              label;
-    private String                              description;
+    private static final long serialVersionUID = -1708482580670924301L;
+    private String name;
+    private String label;
+    private String description;
     private Collection<MemberRecordCustomField> fields;
-    private Collection<Group>                   groups;
-    private Collection<AdminGroup>              viewableByAdminGroups;
-    private Collection<AdminGroup>              creatableByAdminGroups;
-    private Collection<AdminGroup>              updatableByAdminGroups;
-    private Collection<AdminGroup>              deletableByAdminGroups;
-    private Collection<BrokerGroup>             viewableByBrokerGroups;
-    private Collection<BrokerGroup>             creatableByBrokerGroups;
-    private Collection<BrokerGroup>             updatableByBrokerGroups;
-    private Collection<BrokerGroup>             deletableByBrokerGroups;
-    private Layout                              layout;
-    private boolean                             editable;
-    private boolean                             showMenuItem;
+    private Collection<Group> groups;
+    private Collection<AdminGroup> viewableByAdminGroups;
+    private Collection<AdminGroup> creatableByAdminGroups;
+    private Collection<AdminGroup> updatableByAdminGroups;
+    private Collection<AdminGroup> deletableByAdminGroups;
+    private Collection<BrokerGroup> viewableByBrokerGroups;
+    private Collection<BrokerGroup> creatableByBrokerGroups;
+    private Collection<BrokerGroup> updatableByBrokerGroups;
+    private Collection<BrokerGroup> deletableByBrokerGroups;
+    private Layout layout;
+    private boolean editable;
+    private boolean showMenuItem;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @ManyToMany(targetEntity = AdminGroup.class)
+    @JoinTable(name = "admin_groups_create_member_record_types",
+            joinColumns = @JoinColumn(name = "member_record_type_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id"))
     public Collection<AdminGroup> getCreatableByAdminGroups() {
         return creatableByAdminGroups;
     }
 
+    @ManyToMany(targetEntity = BrokerGroup.class)
+    @JoinTable(name = "broker_groups_create_member_record_types",
+            joinColumns = @JoinColumn(name = "member_record_type_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id"))
     public Collection<BrokerGroup> getCreatableByBrokerGroups() {
         return creatableByBrokerGroups;
     }
 
+    @ManyToMany(targetEntity = AdminGroup.class)
+    @JoinTable(name = "admin_groups_delete_member_record_types",
+            joinColumns = @JoinColumn(name = "member_record_type_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id"))
     public Collection<AdminGroup> getDeletableByAdminGroups() {
         return deletableByAdminGroups;
     }
 
+    @ManyToMany(targetEntity = BrokerGroup.class)
+    @JoinTable(name = "broker_groups_delete_member_record_types",
+            joinColumns = @JoinColumn(name = "member_record_type_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id"))
     public Collection<BrokerGroup> getDeletableByBrokerGroups() {
         return deletableByBrokerGroups;
     }
 
+    @Column
     public String getDescription() {
         return description;
     }
 
+    @OneToMany(targetEntity = MemberRecordCustomField.class)
+    @JoinColumn(name = "member_record_type_id")
     public Collection<MemberRecordCustomField> getFields() {
         return fields;
     }
 
+    @ManyToMany(targetEntity = Group.class)
+    @JoinTable(name = "groups_member_record_types",
+            joinColumns = @JoinColumn(name = "member_record_type_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id"))
     public Collection<Group> getGroups() {
         return groups;
     }
 
+    @Column(nullable = false, length = 100)
     public String getLabel() {
         return label;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     public Layout getLayout() {
         return layout;
     }
 
+    @Column(nullable = false, length = 100)
+    @Override
     public String getName() {
         return name;
     }
 
+    @ManyToMany(targetEntity = AdminGroup.class)
+    @JoinTable(name = "admin_groups_modify_member_record_types",
+            joinColumns = @JoinColumn(name = "member_record_type_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id"))
     public Collection<AdminGroup> getUpdatableByAdminGroups() {
         return updatableByAdminGroups;
     }
 
+    @ManyToMany(targetEntity = BrokerGroup.class)
+    @JoinTable(name = "broker_groups_modify_member_record_types",
+            joinColumns = @JoinColumn(name = "member_record_type_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id"))
     public Collection<BrokerGroup> getUpdatableByBrokerGroups() {
         return updatableByBrokerGroups;
     }
 
+    @ManyToMany(targetEntity = AdminGroup.class)
+    @JoinTable(name = "admin_groups_member_record_types",
+            joinColumns = @JoinColumn(name = "member_record_type_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id"))
     public Collection<AdminGroup> getViewableByAdminGroups() {
         return viewableByAdminGroups;
     }
 
+    @ManyToMany(targetEntity = BrokerGroup.class)
+    @JoinTable(name = "broker_groups_member_record_types",
+            joinColumns = @JoinColumn(name = "member_record_type_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id"))
     public Collection<BrokerGroup> getViewableByBrokerGroups() {
         return viewableByBrokerGroups;
     }
 
+    @Column(nullable = false)
     public boolean isEditable() {
         return editable;
     }
 
+    @Column(nullable = false, length = 100)
     public boolean isShowMenuItem() {
         return showMenuItem;
     }

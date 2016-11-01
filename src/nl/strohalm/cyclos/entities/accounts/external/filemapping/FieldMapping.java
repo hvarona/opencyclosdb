@@ -1,24 +1,33 @@
 /*
-    This file is part of Cyclos (www.cyclos.org).
-    A project of the Social Trade Organisation (www.socialtrade.org).
+ This file is part of Cyclos (www.cyclos.org).
+ A project of the Social Trade Organisation (www.socialtrade.org).
 
-    Cyclos is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+ Cyclos is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-    Cyclos is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+ Cyclos is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Cyclos; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ You should have received a copy of the GNU General Public License
+ along with Cyclos; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  */
 package nl.strohalm.cyclos.entities.accounts.external.filemapping;
 
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.customization.fields.MemberCustomField;
@@ -26,40 +35,55 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 /**
  * Maps a specific field inside a transactions file
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "field_mappings")
 public class FieldMapping extends Entity {
 
     /**
      * The field inside Cyclos that this field mapping refers
+     *
      * @author luis
      */
     public static enum Field implements StringValuedEnum {
-        /** The field is ignored */
+
+        /**
+         * The field is ignored
+         */
         IGNORED("ig", null),
-
-        /** The field is the member ID */
+        /**
+         * The field is the member ID
+         */
         MEMBER_ID("id", "memberId"),
-
-        /** The field is the member username */
+        /**
+         * The field is the member username
+         */
         MEMBER_USERNAME("un", "memberUsername"),
-
-        /** The field is the value of a member custom field */
+        /**
+         * The field is the value of a member custom field
+         */
         MEMBER_CUSTOM_FIELD("cf", "memberFieldValues"),
-
-        /** The field is the payment type code */
+        /**
+         * The field is the payment type code
+         */
         TYPE("tp", "typeCode"),
-
-        /** The field is the payment description */
+        /**
+         * The field is the payment description
+         */
         DESCRIPTION("dc", "description"),
-
-        /** The field is the payment date */
+        /**
+         * The field is the payment date
+         */
         DATE("dt", "date"),
-
-        /** The field is the payment amount */
+        /**
+         * The field is the payment amount
+         */
         AMOUNT("am", "amount"),
-
-        /** The field is the a flag to set the amount to negative */
+        /**
+         * The field is the a flag to set the amount to negative
+         */
         NEGATE_AMOUNT("na", "negateAmount");
 
         private final String value;
@@ -80,6 +104,7 @@ public class FieldMapping extends Entity {
     }
 
     public static enum Relationships implements Relationship {
+
         FILE_MAPPING("fileMapping"), MEMBER_FIELD("memberField");
         private final String name;
 
@@ -93,28 +118,43 @@ public class FieldMapping extends Entity {
     }
 
     private static final long serialVersionUID = -8059629760396294846L;
-    private FileMapping       fileMapping;
-    private int               order;
-    private String            name;
-    private Field             field;
+    private FileMapping fileMapping;
+    private int order;
+    private String name;
+    private Field field;
     private MemberCustomField memberField;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     public Field getField() {
         return field;
     }
 
+    @ManyToOne(targetEntity = FileMapping.class)
+    @JoinColumn(name = "file_mapping_id", nullable = false)
     public FileMapping getFileMapping() {
         return fileMapping;
     }
 
+    @ManyToOne(targetEntity = FileMapping.class)
+    @JoinColumn(name = "member_field_id")
     public MemberCustomField getMemberField() {
         return memberField;
     }
 
+    @Column(length = 50, nullable = false)
     public String getName() {
         return name;
     }
 
+    @Column(nullable = false)
     public int getOrder() {
         return order;
     }

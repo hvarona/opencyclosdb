@@ -98,6 +98,7 @@ public class Currency extends Entity {
         return iRateParameters;
     }
 
+    @Transient
     public BigDecimal getMinimalD() {
         if (isEnableDRate()) {
             return dRateParameters.getMinimalD();

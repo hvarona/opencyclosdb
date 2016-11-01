@@ -1,20 +1,20 @@
 /*
-    This file is part of Cyclos (www.cyclos.org).
-    A project of the Social Trade Organisation (www.socialtrade.org).
+ This file is part of Cyclos (www.cyclos.org).
+ A project of the Social Trade Organisation (www.socialtrade.org).
 
-    Cyclos is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+ Cyclos is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-    Cyclos is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+ Cyclos is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Cyclos; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ You should have received a copy of the GNU General Public License
+ along with Cyclos; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  */
 package nl.strohalm.cyclos.entities.accounts.transactions;
@@ -117,10 +117,12 @@ public class TransferType extends Entity {
     }
 
     public static enum Direction {
+
         FROM, TO, BOTH
     }
 
     public static enum Relationships implements Relationship {
+
         FROM("from"), GROUPS("groups"), GROUPS_AS_MEMBER("groupsAsMember"), TO("to"), TRANSACTION_FEES("transactionFees"), GENERATED_BY_TRANSACTION_FEES("generatedByTransactionFees"), GENERATED_BY_ACCOUNT_FEES("generatedByAccountFees"), PAYMENT_FILTERS("paymentFilters"), AUTHORIZATION_LEVELS("authorizationLevels"), CUSTOM_FIELDS("customFields"), LINKED_CUSTOM_FIELDS("linkedCustomFields"), CHANNELS("channels");
         private final String name;
 
@@ -135,6 +137,7 @@ public class TransferType extends Entity {
     }
 
     public static enum TransactionHierarchyVisibility implements StringValuedEnum {
+
         ADMIN("A"), BROKER("B"), MEMBER("M");
         private final String value;
 
@@ -332,7 +335,7 @@ public class TransferType extends Entity {
 
     @Column(name = "feedback_reply_expiration_time_field")
     @Enumerated(EnumType.STRING)
-    public Field getFeedbackReplyExperationTimeNField() {
+    public Field getFeedbackReplyExperationTimeField() {
         return feedbackReplyExpirationTime.getField();
     }
 
@@ -348,14 +351,16 @@ public class TransferType extends Entity {
         return from;
     }
 
-    @OneToMany(targetEntity = TransactionFee.class)
-    @JoinColumn(name = "transfer_type_id")
+    //@OneToMany(targetEntity = TransactionFee.class)
+    //@JoinColumn(name = "transfer_type_id")
+    @Transient
     public Collection< AccountFee> getGeneratedByAccountFees() {
         return generatedByAccountFees;
     }
 
-    @OneToMany(targetEntity = TransactionFee.class)
-    @JoinColumn(name = "generated_type_id")
+    //@OneToMany(targetEntity = TransactionFee.class)
+    //@JoinColumn(name = "generated_type_id")
+    @Transient
     public Collection< TransactionFee> getGeneratedByTransactionFees() {
         return generatedByTransactionFees;
     }
@@ -405,10 +410,11 @@ public class TransferType extends Entity {
         return name;
     }
 
-    @ManyToMany(targetEntity = PaymentFilter.class)
-    @JoinTable(name = "transfer_types_payment_filters",
-            joinColumns = @JoinColumn(name = "transfer_type_id"),
-            inverseJoinColumns = @JoinColumn(name = "payment_filter_id"))
+    //@ManyToMany(targetEntity = PaymentFilter.class)
+    //@JoinTable(name = "transfer_types_payment_filters",
+//            joinColumns = @JoinColumn(name = "transfer_type_id"),
+//            inverseJoinColumns = @JoinColumn(name = "payment_filter_id"))
+    @Transient
     public Collection<PaymentFilter> getPaymentFilters() {
         return paymentFilters;
     }
@@ -436,12 +442,15 @@ public class TransferType extends Entity {
         return to;
     }
 
-    @OneToMany(targetEntity = TransactionFee.class)
-    @JoinColumn(name = "original_type_id")
+    //@OneToMany(targetEntity = TransactionFee.class)
+    //@JoinColumn(name = "original_type_id")
+    @Transient
     public Collection< TransactionFee> getTransactionFees() {
         return transactionFees;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tx_hierarchy_visibility")
     public TransactionHierarchyVisibility getTransactionHierarchyVisibility() {
         return transactionHierarchyVisibility;
     }

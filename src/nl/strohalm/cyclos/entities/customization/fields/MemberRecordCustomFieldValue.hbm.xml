@@ -6,9 +6,9 @@
 <hibernate-mapping>
 
     <subclass dynamic-insert="true" dynamic-update="true" name="nl.strohalm.cyclos.entities.customization.fields.MemberRecordCustomFieldValue" extends="nl.strohalm.cyclos.entities.customization.fields.CustomFieldValue" discriminator-value="record">
-		<many-to-one name="memberRecord" class="nl.strohalm.cyclos.entities.members.records.MemberRecord">
-		    <column name="member_record_id" sql-type="integer"/>
-		</many-to-one>
-	</subclass>
+        <many-to-one name="memberRecord" class="nl.strohalm.cyclos.entities.members.records.MemberRecord">
+            <column name="member_record_id" sql-type="integer"/>
+        </many-to-one>
+    </subclass>
 	
 </hibernate-mapping>

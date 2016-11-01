@@ -1,25 +1,35 @@
 /*
-    This file is part of Cyclos (www.cyclos.org).
-    A project of the Social Trade Organisation (www.socialtrade.org).
+ This file is part of Cyclos (www.cyclos.org).
+ A project of the Social Trade Organisation (www.socialtrade.org).
 
-    Cyclos is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+ Cyclos is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-    Cyclos is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+ Cyclos is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Cyclos; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ You should have received a copy of the GNU General Public License
+ along with Cyclos; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  */
 package nl.strohalm.cyclos.entities.accounts.external;
 
 import java.util.Collection;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -28,15 +38,20 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 /**
  * Represents a type for an external transfer
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "external_transfer_types")
 public class ExternalTransferType extends Entity {
 
     /**
      * An action to execute with this transfer type
+     *
      * @author luis
      */
     public static enum Action implements StringValuedEnum {
+
         IGNORE("I"), GENERATE_SYSTEM_PAYMENT("P"), GENERATE_MEMBER_PAYMENT("M"), DISCARD_LOAN("L"), CONCILIATE_PAYMENT("C");
 
         private final String value;
@@ -51,6 +66,7 @@ public class ExternalTransferType extends Entity {
     }
 
     public static enum Relationships implements Relationship {
+
         ACCOUNT("account"), TRANSFER_TYPE("transferType"), TRANSFERS("transfers");
         private final String name;
 
@@ -63,39 +79,56 @@ public class ExternalTransferType extends Entity {
         }
     }
 
-    private static final long            serialVersionUID = 4958639810768991285L;
-    private ExternalAccount              account;
-    private String                       name;
-    private String                       description;
-    private String                       code;
-    private Action                       action;
-    private TransferType                 transferType;
+    private static final long serialVersionUID = 4958639810768991285L;
+    private ExternalAccount account;
+    private String name;
+    private String description;
+    private String code;
+    private Action action;
+    private TransferType transferType;
     private Collection<ExternalTransfer> transfers;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @ManyToOne(targetEntity = ExternalAccount.class)
+    @JoinColumn(name = "account_id")
     public ExternalAccount getAccount() {
         return account;
     }
 
+    @Enumerated(EnumType.STRING)
     public Action getAction() {
         return action;
     }
 
+    @Column(length = 20, nullable = false)
     public String getCode() {
         return code;
     }
 
+    @Column
     public String getDescription() {
         return description;
     }
 
+    @Column(length = 50, nullable = false)
     public String getName() {
         return name;
     }
 
+    @OneToMany(targetEntity = ExternalTransfer.class)
+    @JoinColumn(name = "type_id")
     public Collection<ExternalTransfer> getTransfers() {
         return transfers;
     }
 
+    @ManyToOne(targetEntity = TransferType.class)
+    @JoinColumn(name = "transfer_type_id")
     public TransferType getTransferType() {
         return transferType;
     }

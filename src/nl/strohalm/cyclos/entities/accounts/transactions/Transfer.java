@@ -204,8 +204,7 @@ public class Transfer extends Payment implements Rated {
     /**
      * Returns the process date if not null, date otherwise
      */
-    @ManyToOne(targetEntity = AccountFeeLog.class)
-    @JoinColumn(name = "account_fee_log_id")
+    @Transient
     public Calendar getActualDate() {
         return getProcessDate() == null ? getDate() : getProcessDate();
     }
@@ -254,8 +253,9 @@ public class Transfer extends Payment implements Rated {
         return authorizations;
     }
 
-    @ManyToOne(targetEntity = BrokerCommissionContract.class)
-    @JoinColumn(name = "broker_commission_contract_id")
+    //@ManyToOne(targetEntity = BrokerCommissionContract.class)
+    //@JoinColumn(name = "broker_commission_contract_id")
+    @Transient
     public BrokerCommissionContract getBrokerCommissionContract() {
         return brokerCommissionContract;
     }
@@ -310,8 +310,9 @@ public class Transfer extends Payment implements Rated {
         return iRate;
     }
 
-    @ManyToOne(targetEntity = LoanPayment.class)
-    @JoinColumn(name = "loan_payment_id")
+    //@ManyToOne(targetEntity = LoanPayment.class)
+    //@JoinColumn(name = "loan_payment_id")
+    @Transient
     public LoanPayment getLoanPayment() {
         return loanPayment;
     }
@@ -370,7 +371,7 @@ public class Transfer extends Payment implements Rated {
      * Note: It has nothing to do with the (unique) pair <traceNumber, clientId>
      * (used to query transactions by those values).
      */
-    @Column(name = "client_id", nullable = true, length = 50)
+    @Column(name = "trace_data", nullable = true, length = 50)
     public String getTraceData() {
         return traceData;
     }
@@ -383,8 +384,9 @@ public class Transfer extends Payment implements Rated {
         return traceNumber;
     }
 
-    @ManyToOne(targetEntity = TransactionFee.class)
-    @JoinColumn(name = "transaction_fee_id")
+    //@ManyToOne(targetEntity = TransactionFee.class)
+    //@JoinColumn(name = "transaction_fee_id")
+    @Transient
     public TransactionFee getTransactionFee() {
         return transactionFee;
     }

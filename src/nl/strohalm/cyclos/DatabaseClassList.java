@@ -57,6 +57,14 @@ public class DatabaseClassList {
         nl.strohalm.cyclos.entities.accounts.cards.Card.class,
         nl.strohalm.cyclos.entities.accounts.cards.CardType.class,
         nl.strohalm.cyclos.entities.accounts.cards.CardLog.class,
+        //nl.strohalm.cyclos.entities.accounts.external
+        nl.strohalm.cyclos.entities.accounts.external.ExternalAccount.class,
+        nl.strohalm.cyclos.entities.accounts.external.ExternalTransfer.class,
+        nl.strohalm.cyclos.entities.accounts.external.ExternalTransferImport.class,
+        nl.strohalm.cyclos.entities.accounts.external.ExternalTransferType.class,
+        //nl.strohalm.cyclos.entities.accounts.external.filemapping
+        nl.strohalm.cyclos.entities.accounts.external.filemapping.FieldMapping.class,
+        nl.strohalm.cyclos.entities.accounts.external.filemapping.FileMapping.class,
         //nl.strohalm.cyclos.entities.accounts.fees.account
         nl.strohalm.cyclos.entities.accounts.fees.account.AccountFee.class,
         nl.strohalm.cyclos.entities.accounts.fees.account.AccountFeeAmount.class,
@@ -67,8 +75,13 @@ public class DatabaseClassList {
         nl.strohalm.cyclos.entities.accounts.pos.Pos.class,
         nl.strohalm.cyclos.entities.accounts.pos.PosLog.class,
         //nl.strohalm.cyclos.entities.accounts.transactions
+        nl.strohalm.cyclos.entities.accounts.transactions.AuthorizationLevel.class,
+        nl.strohalm.cyclos.entities.accounts.transactions.Invoice.class,
+        nl.strohalm.cyclos.entities.accounts.transactions.InvoicePayment.class,
+        nl.strohalm.cyclos.entities.accounts.transactions.PaymentFilter.class,
         nl.strohalm.cyclos.entities.accounts.transactions.ScheduledPayment.class,
         nl.strohalm.cyclos.entities.accounts.transactions.Transfer.class,
+        nl.strohalm.cyclos.entities.accounts.transactions.TransferAuthorization.class,
         nl.strohalm.cyclos.entities.accounts.transactions.TransferType.class,
         //nl.strohalm.cyclos.entities.customization.binaryfiles
         nl.strohalm.cyclos.entities.customization.binaryfiles.BinaryFile.class,
@@ -80,18 +93,32 @@ public class DatabaseClassList {
         nl.strohalm.cyclos.entities.members.Element.class,
         nl.strohalm.cyclos.entities.members.Member.class,
         nl.strohalm.cyclos.entities.members.Operator.class,
+        //nl.strohalm.cyclos.entities.members.records
+        nl.strohalm.cyclos.entities.members.records.MemberRecord.class,
+        nl.strohalm.cyclos.entities.members.records.MemberRecordType.class,
         //nl.strohalm.cyclos.entities.members.remarks
         nl.strohalm.cyclos.entities.members.remarks.BrokerRemark.class,
         nl.strohalm.cyclos.entities.members.remarks.GroupRemark.class,
         nl.strohalm.cyclos.entities.members.remarks.Remark.class,
         //nl.strohalm.cyclos.entities.groups
+        nl.strohalm.cyclos.entities.groups.AdminGroup.class,
+        nl.strohalm.cyclos.entities.groups.BrokerGroup.class,
         nl.strohalm.cyclos.entities.groups.Group.class,
         nl.strohalm.cyclos.entities.groups.SystemGroup.class,
         nl.strohalm.cyclos.entities.groups.MemberGroup.class,
+        //nl.strohalm.cyclos.entities.customization.documents
+        nl.strohalm.cyclos.entities.customization.documents.Document.class,
         //nl.strohalm.cyclos.entities.customization.fields
+        nl.strohalm.cyclos.entities.customization.fields.AdminCustomField.class,
+        nl.strohalm.cyclos.entities.customization.fields.AdminCustomFieldValue.class,
         nl.strohalm.cyclos.entities.customization.fields.CustomField.class,
+        nl.strohalm.cyclos.entities.customization.fields.CustomFieldValue.class,
         nl.strohalm.cyclos.entities.customization.fields.CustomFieldPossibleValue.class,
         nl.strohalm.cyclos.entities.customization.fields.MemberCustomField.class,
+        nl.strohalm.cyclos.entities.customization.fields.MemberRecordCustomField.class,
+        nl.strohalm.cyclos.entities.customization.fields.MemberRecordCustomFieldValue.class,
+        nl.strohalm.cyclos.entities.customization.fields.PaymentCustomField.class,
+        nl.strohalm.cyclos.entities.customization.fields.PaymentCustomFieldValue.class,
         //nl.strohalm.cyclos.entities.services
         nl.strohalm.cyclos.entities.services.ServiceClient.class,
         //nl.strohalm.cyclos.entities.settings

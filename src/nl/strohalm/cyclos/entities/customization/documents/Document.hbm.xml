@@ -6,32 +6,32 @@
 <hibernate-mapping>
 
     <class dynamic-insert="true" dynamic-update="true" name="nl.strohalm.cyclos.entities.customization.documents.Document" table="documents" abstract="true">
-    	<cache usage="read-write"/>
+        <cache usage="read-write"/>
         <id name="id" type="long">
-		    <column name="id" sql-type="integer"/>
+            <column name="id" sql-type="integer"/>
             <generator class="native"/>
         </id>
         <discriminator column="subclass" type="string" length="1"/>
         <property name="name" column="name" not-null="true" type="string" length="100"/>
         <property name="description" column="description" type="text"/>
-		<bag name="groups" table="groups_documents">
-			<cache usage="read-write"/>
-			<key>
-			    <column name="document_id" sql-type="integer"/>
-			</key>
-			<many-to-many class="nl.strohalm.cyclos.entities.groups.SystemGroup">
+        <bag name="groups" table="groups_documents">
+            <cache usage="read-write"/>
+            <key>
+                <column name="document_id" sql-type="integer"/>
+            </key>
+            <many-to-many class="nl.strohalm.cyclos.entities.groups.SystemGroup">
                 <column name="group_id" sql-type="integer"/>
-			</many-to-many>
-		</bag>
-		<bag name="brokerGroups" table="broker_groups_documents">
-			<cache usage="read-write"/>
-			<key>
-			    <column name="document_id" sql-type="integer"/>
-			</key>
-			<many-to-many class="nl.strohalm.cyclos.entities.groups.BrokerGroup">
+            </many-to-many>
+        </bag>
+        <bag name="brokerGroups" table="broker_groups_documents">
+            <cache usage="read-write"/>
+            <key>
+                <column name="document_id" sql-type="integer"/>
+            </key>
+            <many-to-many class="nl.strohalm.cyclos.entities.groups.BrokerGroup">
                 <column name="group_id" sql-type="integer"/>
-			</many-to-many>
-		</bag>
-	</class>
+            </many-to-many>
+        </bag>
+    </class>
 
 </hibernate-mapping>
