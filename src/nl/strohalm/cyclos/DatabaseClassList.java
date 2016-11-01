@@ -57,10 +57,19 @@ public class DatabaseClassList {
         nl.strohalm.cyclos.entities.accounts.cards.Card.class,
         nl.strohalm.cyclos.entities.accounts.cards.CardType.class,
         nl.strohalm.cyclos.entities.accounts.cards.CardLog.class,
+        //nl.strohalm.cyclos.entities.accounts.fees.account
+        nl.strohalm.cyclos.entities.accounts.fees.account.AccountFee.class,
+        nl.strohalm.cyclos.entities.accounts.fees.account.AccountFeeAmount.class,
+        nl.strohalm.cyclos.entities.accounts.fees.account.AccountFeeLog.class,
+        nl.strohalm.cyclos.entities.accounts.fees.account.MemberAccountFeeLog.class,
         //nl.strohalm.cyclos.entities.accounts.pos
         nl.strohalm.cyclos.entities.accounts.pos.MemberPos.class,
         nl.strohalm.cyclos.entities.accounts.pos.Pos.class,
         nl.strohalm.cyclos.entities.accounts.pos.PosLog.class,
+        //nl.strohalm.cyclos.entities.accounts.transactions
+        nl.strohalm.cyclos.entities.accounts.transactions.ScheduledPayment.class,
+        nl.strohalm.cyclos.entities.accounts.transactions.Transfer.class,
+        nl.strohalm.cyclos.entities.accounts.transactions.TransferType.class,
         //nl.strohalm.cyclos.entities.customization.binaryfiles
         nl.strohalm.cyclos.entities.customization.binaryfiles.BinaryFile.class,
         //nl.strohalm.cyclos.entities.infotexts.InfoText

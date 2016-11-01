@@ -23,12 +23,16 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -41,6 +45,7 @@ import nl.strohalm.cyclos.entities.accounts.external.ExternalTransfer;
 import nl.strohalm.cyclos.entities.accounts.fees.account.AccountFeeLog;
 import nl.strohalm.cyclos.entities.accounts.fees.transaction.TransactionFee;
 import nl.strohalm.cyclos.entities.accounts.loans.LoanPayment;
+import nl.strohalm.cyclos.entities.customization.fields.PaymentCustomFieldValue;
 import nl.strohalm.cyclos.entities.members.Element;
 import nl.strohalm.cyclos.entities.members.brokerings.BrokerCommissionContract;
 import nl.strohalm.cyclos.entities.settings.LocalSettings;
@@ -105,13 +110,85 @@ public class Transfer extends Payment implements Rated {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Override
     public Long getId() {
-        return super.getId(); //To change body of generated methods, choose Tools | Templates.
+        return super.getId();
     }
 
     @ManyToOne(targetEntity = AccountFeeLog.class)
     @JoinColumn(name = "account_fee_log_id")
     public AccountFeeLog getAccountFeeLog() {
         return accountFeeLog;
+    }
+
+    @ManyToOne(targetEntity = TransferType.class)
+    @JoinColumn(name = "type_id")
+    @Override
+    public TransferType getType() {
+        return super.getType();
+    }
+
+    @ManyToOne(targetEntity = Account.class)
+    @JoinColumn(name = "to_account_id", nullable = false)
+    @Override
+    public Account getTo() {
+        return super.getTo();
+    }
+
+    @ManyToOne(targetEntity = Account.class)
+    @JoinColumn(name = "from_account_id", nullable = false)
+    @Override
+    public Account getFrom() {
+        return super.getFrom();
+    }
+
+    @Column(nullable = false)
+    @Override
+    public Calendar getDate() {
+        return super.getDate();
+    }
+
+    @Column(nullable = false)
+    @Override
+    public BigDecimal getAmount() {
+        return super.getAmount();
+    }
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Override
+    public Status getStatus() {
+        return super.getStatus();
+    }
+
+    @Column(name = "process_date")
+    @Override
+    public Calendar getProcessDate() {
+        return super.getProcessDate();
+    }
+
+    @Column(name = "feedback_deadline")
+    @Override
+    public Calendar getTransactionFeedbackDeadline() {
+        return super.getTransactionFeedbackDeadline();
+    }
+
+    @ManyToOne(targetEntity = Element.class)
+    @JoinColumn(name = "by_id")
+    @Override
+    public Element getBy() {
+        return super.getBy();
+    }
+
+    @Column
+    @Override
+    public String getDescription() {
+        return super.getDescription();
+    }
+
+    @OneToMany(targetEntity = PaymentCustomFieldValue.class)
+    @JoinColumn(name = "transfer_id")
+    @Override
+    public Collection<PaymentCustomFieldValue> getCustomValues() {
+        return super.getCustomValues();
     }
 
     /**
@@ -137,6 +214,7 @@ public class Transfer extends Payment implements Rated {
      * When the amount is negative (i.e. chargeback), returns the to account
      * instead
      */
+    @Transient
     public Account getActualFrom() {
         final BigDecimal amount = getAmount();
         return amount == null || amount.compareTo(BigDecimal.ZERO) >= 0 ? getFrom() : getTo();
@@ -146,6 +224,7 @@ public class Transfer extends Payment implements Rated {
      * When the amount is negative (i.e. chargeback), returns the to account
      * owner instead
      */
+    @Transient
     public AccountOwner getActualFromOwner() {
         return getActualFrom().getOwner();
     }
@@ -154,6 +233,7 @@ public class Transfer extends Payment implements Rated {
      * When the amount is negative (i.e. chargeback), returns the from account
      * instead
      */
+    @Transient
     public Account getActualTo() {
         final BigDecimal amount = getAmount();
         return amount == null || amount.compareTo(BigDecimal.ZERO) >= 0 ? getTo() : getFrom();
@@ -163,26 +243,37 @@ public class Transfer extends Payment implements Rated {
      * When the amount is negative (i.e. chargeback), returns the from account
      * owner instead
      */
+    @Transient
     public AccountOwner getActualToOwner() {
         return getActualTo().getOwner();
     }
 
+    @OneToMany(targetEntity = TransferAuthorization.class)
+    @JoinColumn(name = "transfer_id")
     public Collection<TransferAuthorization> getAuthorizations() {
         return authorizations;
     }
 
+    @ManyToOne(targetEntity = BrokerCommissionContract.class)
+    @JoinColumn(name = "broker_commission_contract_id")
     public BrokerCommissionContract getBrokerCommissionContract() {
         return brokerCommissionContract;
     }
 
+    @ManyToOne(targetEntity = Transfer.class)
+    @JoinColumn(name = "chargedback_of_id")
     public Transfer getChargebackOf() {
         return chargebackOf;
     }
 
+    @ManyToOne(targetEntity = Transfer.class)
+    @JoinColumn(name = "chargedback_by_id")
     public Transfer getChargedBackBy() {
         return chargedBackBy;
     }
 
+    @OneToMany(targetEntity = Transfer.class)
+    @JoinColumn(name = "parent_id")
     public Collection<Transfer> getChildren() {
         return children;
     }
@@ -190,50 +281,66 @@ public class Transfer extends Payment implements Rated {
     /**
      * @return the (optional) client id that generates the transfer
      */
+    @Column(name = "client_id", nullable = true, length = 100)
     public Long getClientId() {
         return clientId;
     }
 
+    @Column(name = "emission_date")
     @Override
     public Calendar getEmissionDate() {
         return emissionDate;
     }
 
+    @Column(name = "expiration_date")
     @Override
     public Calendar getExpirationDate() {
         return expirationDate;
     }
 
+    @ManyToOne(targetEntity = ExternalTransfer.class)
+    @JoinColumn(name = "external_transfer_id")
     public ExternalTransfer getExternalTransfer() {
         return externalTransfer;
     }
 
+    @Column(name = "i_rate")
     @Override
     public BigDecimal getiRate() {
         return iRate;
     }
 
+    @ManyToOne(targetEntity = LoanPayment.class)
+    @JoinColumn(name = "loan_payment_id")
     public LoanPayment getLoanPayment() {
         return loanPayment;
     }
 
+    @Transient
     @Override
     public Nature getNature() {
         return Nature.TRANSFER;
     }
 
+    @ManyToOne(targetEntity = AuthorizationLevel.class)
+    @JoinColumn(name = "next_authorization_level_id")
     public AuthorizationLevel getNextAuthorizationLevel() {
         return nextAuthorizationLevel;
     }
 
+    @ManyToOne(targetEntity = Transfer.class)
+    @JoinColumn(name = "parent_id")
     public Transfer getParent() {
         return parent;
     }
 
+    @ManyToOne(targetEntity = Element.class)
+    @JoinColumn(name = "receiver_id")
     public Element getReceiver() {
         return receiver;
     }
 
+    @Transient
     public Transfer getRootTransfer() {
         if (root == null) {
             Transfer topMost = this;
@@ -246,6 +353,8 @@ public class Transfer extends Payment implements Rated {
         return root;
     }
 
+    @ManyToOne(targetEntity = ScheduledPayment.class)
+    @JoinColumn(name = "scheduled_payment_id")
     public ScheduledPayment getScheduledPayment() {
         return scheduledPayment;
     }
@@ -261,6 +370,7 @@ public class Transfer extends Payment implements Rated {
      * Note: It has nothing to do with the (unique) pair <traceNumber, clientId>
      * (used to query transactions by those values).
      */
+    @Column(name = "client_id", nullable = true, length = 50)
     public String getTraceData() {
         return traceData;
     }
@@ -268,14 +378,18 @@ public class Transfer extends Payment implements Rated {
     /**
      * @return the (optional) trace number generated by a client
      */
+    @Column(name = "trace_number", nullable = true)
     public String getTraceNumber() {
         return traceNumber;
     }
 
+    @ManyToOne(targetEntity = TransactionFee.class)
+    @JoinColumn(name = "transaction_fee_id")
     public TransactionFee getTransactionFee() {
         return transactionFee;
     }
 
+    @Column(name = "transaction_number", length = 100)
     public String getTransactionNumber() {
         return transactionNumber;
     }
@@ -284,6 +398,7 @@ public class Transfer extends Payment implements Rated {
      * When the amount is negative (i.e. chargeback), returns whether the to
      * account is a system account
      */
+    @Transient
     public boolean isActuallyFromSystem() {
         return getActualFromOwner() instanceof SystemAccountOwner;
     }
@@ -292,14 +407,17 @@ public class Transfer extends Payment implements Rated {
      * When the amount is negative (i.e. chargeback), returns whether the from
      * account is a system account
      */
+    @Transient
     public boolean isActuallyToSystem() {
         return getActualToOwner() instanceof SystemAccountOwner;
     }
 
+    @Transient
     public boolean isProcessedAtDifferentDate() {
         return !ObjectUtils.equals(getDate(), getProcessDate());
     }
 
+    @Transient
     public boolean isRoot() {
         return parent == null;
     }

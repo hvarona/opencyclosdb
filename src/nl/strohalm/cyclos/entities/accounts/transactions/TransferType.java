@@ -26,12 +26,18 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -50,6 +56,7 @@ import nl.strohalm.cyclos.entities.members.Member;
 import nl.strohalm.cyclos.entities.members.Reference.Level;
 import nl.strohalm.cyclos.utils.StringValuedEnum;
 import nl.strohalm.cyclos.utils.TimePeriod;
+import nl.strohalm.cyclos.utils.TimePeriod.Field;
 
 import org.apache.commons.collections.CollectionUtils;
 
@@ -67,6 +74,7 @@ public class TransferType extends Entity {
      *
      * @author luis
      */
+    @Embeddable
     public static class Context implements Serializable {
 
         private static final long serialVersionUID = -7966654322680432255L;
@@ -89,10 +97,12 @@ public class TransferType extends Entity {
         public Context() {
         }
 
+        @Column(name = "allowed_payment")
         public boolean isPayment() {
             return payment;
         }
 
+        @Column(name = "allowed_self_payment")
         public boolean isSelfPayment() {
             return selfPayment;
         }
@@ -216,6 +226,8 @@ public class TransferType extends Entity {
         return result;
     }
 
+    @OneToMany(targetEntity = AuthorizationLevel.class)
+    @JoinColumn(name = "type_id")
     public Collection<AuthorizationLevel> getAuthorizationLevels() {
         return authorizationLevels;
     }
@@ -233,10 +245,12 @@ public class TransferType extends Entity {
         return confirmationMessage;
     }
 
+    @Embedded
     public Context getContext() {
         return context;
     }
 
+    @Transient
     public Currency getCurrency() {
         try {
             return from.getCurrency();
@@ -245,6 +259,8 @@ public class TransferType extends Entity {
         }
     }
 
+    @OneToMany(targetEntity = PaymentCustomField.class)
+    @JoinColumn(name = "transfer_type_id")
     public Collection<PaymentCustomField> getCustomFields() {
         return customFields;
     }
@@ -254,6 +270,8 @@ public class TransferType extends Entity {
         return defaultFeedbackComments;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "default_feedback_level")
     public Level getDefaultFeedbackLevel() {
         return defaultFeedbackLevel;
     }
@@ -270,6 +288,7 @@ public class TransferType extends Entity {
      * @return a Collection with TransactionFees
      * @see #getRatedFees()
      */
+    @Transient
     public Collection< TransactionFee> getDRatedFees() {
         final List<TransactionFee> result = new ArrayList<TransactionFee>(transactionFees.size());
         for (final TransactionFee fee : transactionFees) {
@@ -280,30 +299,63 @@ public class TransferType extends Entity {
         return result;
     }
 
+    @Column(name = "feedback_enabled_since")
     public Calendar getFeedbackEnabledSince() {
         return feedbackEnabledSince;
     }
 
+    @Transient
     public TimePeriod getFeedbackExpirationTime() {
         return feedbackExpirationTime;
     }
 
+    @Column(name = "feedback_expiration_time_number")
+    public int getFeedbackExperationTimeNumber() {
+        return feedbackExpirationTime.getNumber();
+    }
+
+    @Column(name = "feedback_expiration_time_field")
+    @Enumerated(EnumType.STRING)
+    public Field getFeedbackExperationTimeField() {
+        return feedbackExpirationTime.getField();
+    }
+
+    @Transient
     public TimePeriod getFeedbackReplyExpirationTime() {
         return feedbackReplyExpirationTime;
     }
 
+    @Column(name = "feedback_reply_expiration_time_number")
+    public int getFeedbackReplyExperationTimeNumber() {
+        return feedbackReplyExpirationTime.getNumber();
+    }
+
+    @Column(name = "feedback_reply_expiration_time_field")
+    @Enumerated(EnumType.STRING)
+    public Field getFeedbackReplyExperationTimeNField() {
+        return feedbackReplyExpirationTime.getField();
+    }
+
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "fixed_destination_member_id")
     public Member getFixedDestinationMember() {
         return fixedDestinationMember;
     }
 
+    @ManyToOne(targetEntity = AccountType.class)
+    @JoinColumn(name = "from_account_type_id")
     public AccountType getFrom() {
         return from;
     }
 
+    @OneToMany(targetEntity = TransactionFee.class)
+    @JoinColumn(name = "transfer_type_id")
     public Collection< AccountFee> getGeneratedByAccountFees() {
         return generatedByAccountFees;
     }
 
+    @OneToMany(targetEntity = TransactionFee.class)
+    @JoinColumn(name = "generated_type_id")
     public Collection< TransactionFee> getGeneratedByTransactionFees() {
         return generatedByTransactionFees;
     }
@@ -316,14 +368,23 @@ public class TransferType extends Entity {
         return groups;
     }
 
+    @ManyToMany(targetEntity = Group.class)
+    @JoinTable(name = "groups_transfer_types_as_member",
+            joinColumns = @JoinColumn(name = "transfer_type_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id"))
     public Collection< Group> getGroupsAsMember() {
         return groupsAsMember;
     }
 
+    @ManyToMany(targetEntity = PaymentCustomField.class)
+    @JoinTable(name = "transfer_types_linked_custom_fields",
+            joinColumns = @JoinColumn(name = "transfer_type_id"),
+            inverseJoinColumns = @JoinColumn(name = "field_id"))
     public Collection<PaymentCustomField> getLinkedCustomFields() {
         return linkedCustomFields;
     }
 
+    @Embedded
     public LoanParameters getLoan() {
         return loan;
     }
@@ -344,6 +405,10 @@ public class TransferType extends Entity {
         return name;
     }
 
+    @ManyToMany(targetEntity = PaymentFilter.class)
+    @JoinTable(name = "transfer_types_payment_filters",
+            joinColumns = @JoinColumn(name = "transfer_type_id"),
+            inverseJoinColumns = @JoinColumn(name = "payment_filter_id"))
     public Collection<PaymentFilter> getPaymentFilters() {
         return paymentFilters;
     }
@@ -354,6 +419,7 @@ public class TransferType extends Entity {
      * @return a Collection with TransactionFees using a-rate or d-rate
      * @see #getRatedFees()
      */
+    @Transient
     public Collection< TransactionFee> getRatedFees() {
         final List<TransactionFee> result = new ArrayList<TransactionFee>(transactionFees.size());
         for (final TransactionFee fee : transactionFees) {
@@ -364,10 +430,14 @@ public class TransferType extends Entity {
         return result;
     }
 
+    @ManyToOne(targetEntity = AccountType.class)
+    @JoinColumn(name = "to_account_type_id")
     public AccountType getTo() {
         return to;
     }
 
+    @OneToMany(targetEntity = TransactionFee.class)
+    @JoinColumn(name = "original_type_id")
     public Collection< TransactionFee> getTransactionFees() {
         return transactionFees;
     }
@@ -376,6 +446,7 @@ public class TransferType extends Entity {
         return transactionHierarchyVisibility;
     }
 
+    @Column(name = "transfer_listener_class")
     public String getTransferListenerClass() {
         return transferListenerClass;
     }
@@ -387,22 +458,22 @@ public class TransferType extends Entity {
         return !CollectionUtils.isEmpty(transactionFees);
     }
 
-    @Column(name="allow_block_sched",nullable = false)
+    @Column(name = "allow_block_sched", nullable = false)
     public boolean isAllowBlockScheduledPayments() {
         return allowBlockScheduledPayments;
     }
 
-    @Column(name="allow_cancel_sched",nullable = false)
+    @Column(name = "allow_cancel_sched", nullable = false)
     public boolean isAllowCancelScheduledPayments() {
         return allowCancelScheduledPayments;
     }
 
-    @Column(name="allow_sms_notification",nullable = false)
+    @Column(name = "allow_sms_notification", nullable = false)
     public boolean isAllowSmsNotification() {
         return allowSmsNotification;
     }
 
-    @Column(name="allows_scheduled_payments",nullable = false)
+    @Column(name = "allows_scheduled_payments", nullable = false)
     public boolean isAllowsScheduledPayments() {
         return allowsScheduledPayments;
     }
@@ -412,10 +483,12 @@ public class TransferType extends Entity {
         return conciliable;
     }
 
+    @Transient
     public boolean isFromMember() {
         return !isFromSystem();
     }
 
+    @Transient
     public boolean isFromSystem() {
         return from.getNature() == AccountType.Nature.SYSTEM;
     }
@@ -423,6 +496,7 @@ public class TransferType extends Entity {
     /**
      * returns true if the TransferType has TransactionFees based on a-rate.
      */
+    @Transient
     public boolean isHavingAratedFees() {
         if (getARatedFees().size() == 0) {
             return false;
@@ -433,6 +507,7 @@ public class TransferType extends Entity {
     /**
      * returns true if the TransferType has TransactionFees based on d-rate.
      */
+    @Transient
     public boolean isHavingDratedFees() {
         if (getDRatedFees().size() == 0) {
             return false;
@@ -444,6 +519,7 @@ public class TransferType extends Entity {
      * returns true if the TransferType has TransactionFees based on a-rate or
      * d-rate.
      */
+    @Transient
     public boolean isHavingRatedFees() {
         if (getRatedFees().size() == 0) {
             return false;
@@ -451,6 +527,7 @@ public class TransferType extends Entity {
         return true;
     }
 
+    @Transient
     public boolean isLoanType() {
         return loan != null && loan.getType() != null;
     }
@@ -465,25 +542,27 @@ public class TransferType extends Entity {
         return requiresAuthorization;
     }
 
-    @Column(name="requires_feedback",nullable = false)
+    @Column(name = "requires_feedback", nullable = false)
     public boolean isRequiresFeedback() {
         return requiresFeedback;
     }
 
-    @Column(name="reserve_total_on_sched",nullable = false)
+    @Column(name = "reserve_total_on_sched", nullable = false)
     public boolean isReserveTotalAmountOnScheduling() {
         return reserveTotalAmountOnScheduling;
     }
 
-    @Column(name="show_sched_to_dest",nullable = false)
+    @Column(name = "show_sched_to_dest", nullable = false)
     public boolean isShowScheduledPaymentsToDestination() {
         return showScheduledPaymentsToDestination;
     }
 
+    @Transient
     public boolean isToMember() {
         return !isToSystem();
     }
 
+    @Transient
     public boolean isToSystem() {
         return to.getNature() == AccountType.Nature.SYSTEM;
     }
@@ -548,8 +627,24 @@ public class TransferType extends Entity {
         this.feedbackExpirationTime = feedbackExpirationTime;
     }
 
+    public void setFeedbackExperationTimeNumber(int number) {
+        feedbackExpirationTime.setNumber(number);
+    }
+
+    public void setFeedbackExperationTimeField(Field field) {
+        feedbackExpirationTime.setField(field);
+    }
+
     public void setFeedbackReplyExpirationTime(final TimePeriod feedbackReplyExpirationTime) {
         this.feedbackReplyExpirationTime = feedbackReplyExpirationTime;
+    }
+
+    public void setFeedbackReplyExperationTimeNumber(int number) {
+        feedbackReplyExpirationTime.setNumber(number);
+    }
+
+    public void setFeedbackReplyExperationTimeField(Field field) {
+        feedbackReplyExpirationTime.setField(field);
     }
 
     public void setFixedDestinationMember(final Member fixedDestinationMember) {

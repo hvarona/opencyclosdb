@@ -21,16 +21,34 @@ package nl.strohalm.cyclos.entities.accounts.transactions;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.accounts.Account;
 import nl.strohalm.cyclos.entities.accounts.AccountOwner;
+import nl.strohalm.cyclos.entities.customization.fields.PaymentCustomFieldValue;
+import nl.strohalm.cyclos.entities.members.Element;
 
 /**
  * A scheduled payment is a set of transfers grouped in a single logical entity.
+ *
  * @author luis, Jefferson Magno
  */
+@Entity
+@Table(name = "scheduled_payments")
 public class ScheduledPayment extends Payment {
 
     public static enum Relationships implements Relationship {
@@ -48,13 +66,93 @@ public class ScheduledPayment extends Payment {
     }
 
     private static final long serialVersionUID = 7335050802424888764L;
-    private boolean           reserveAmount;
-    private boolean           showToReceiver;
-    private List<Transfer>    transfers;
+    private boolean reserveAmount;
+    private boolean showToReceiver;
+    private List<Transfer> transfers;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @ManyToOne(targetEntity = TransferType.class)
+    @JoinColumn(name = "type_id")
+    @Override
+    public TransferType getType() {
+        return super.getType();
+    }
+
+    @ManyToOne(targetEntity = Account.class)
+    @JoinColumn(name = "to_account_id", nullable = false)
+    @Override
+    public Account getTo() {
+        return super.getTo();
+    }
+
+    @ManyToOne(targetEntity = Account.class)
+    @JoinColumn(name = "from_account_id", nullable = false)
+    @Override
+    public Account getFrom() {
+        return super.getFrom();
+    }
+
+    @Column(nullable = false)
+    @Override
+    public Calendar getDate() {
+        return super.getDate();
+    }
+
+    @Column(nullable = false)
+    @Override
+    public BigDecimal getAmount() {
+        return super.getAmount();
+    }
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Override
+    public Status getStatus() {
+        return super.getStatus();
+    }
+
+    @ManyToOne(targetEntity = Element.class)
+    @JoinColumn(name = "by_id")
+    @Override
+    public Element getBy() {
+        return super.getBy();
+    }
+
+    @Column(name = "process_date")
+    @Override
+    public Calendar getProcessDate() {
+        return super.getProcessDate();
+    }
+
+    @Column(name = "feedback_deadline")
+    @Override
+    public Calendar getTransactionFeedbackDeadline() {
+        return super.getTransactionFeedbackDeadline();
+    }
+
+    @Column
+    @Override
+    public String getDescription() {
+        return super.getDescription();
+    }
+
+    @OneToMany(targetEntity = PaymentCustomFieldValue.class)
+    @JoinColumn(name = "scheduled_payment_id")
+    @Override
+    public Collection<PaymentCustomFieldValue> getCustomValues() {
+        return super.getCustomValues();
+    }
 
     /**
      * Returns the date of the first not processed transfer
      */
+    @Transient
     @Override
     public Calendar getActualDate() {
         Calendar actualDate = null;
@@ -69,21 +167,25 @@ public class ScheduledPayment extends Payment {
         return actualDate != null ? actualDate : lastDate;
     }
 
+    @Transient
     @Override
     public Account getActualFrom() {
         return getFrom();
     }
 
+    @Transient
     @Override
     public AccountOwner getActualFromOwner() {
         return getFromOwner();
     }
 
+    @Transient
     @Override
     public Account getActualTo() {
         return getTo();
     }
 
+    @Transient
     @Override
     public AccountOwner getActualToOwner() {
         return getToOwner();
@@ -92,6 +194,7 @@ public class ScheduledPayment extends Payment {
     /**
      * Returns the index of the first not processed transfer
      */
+    @Transient
     public Integer getFirstOpenPaymentIndex() {
         int index = 0;
         for (final Transfer transfer : transfers) {
@@ -104,8 +207,10 @@ public class ScheduledPayment extends Payment {
     }
 
     /**
-     * Returns the first not processed transfer or null if all transfers had already been processed
+     * Returns the first not processed transfer or null if all transfers had
+     * already been processed
      */
+    @Transient
     public Transfer getFirstOpenTransfer() {
         Transfer firstOpenPayment = null;
         for (final Transfer transfer : transfers) {
@@ -117,15 +222,18 @@ public class ScheduledPayment extends Payment {
         return firstOpenPayment;
     }
 
+    @Transient
     @Override
     public Nature getNature() {
         return Nature.SCHEDULED_PAYMENT;
     }
 
+    @Transient
     public int getNumberOfParcels() {
         return transfers.size();
     }
 
+    @Transient
     public BigDecimal getProcessedPaymentAmount() {
         BigDecimal total = new BigDecimal(0);
         for (final Transfer transfer : transfers) {
@@ -139,6 +247,7 @@ public class ScheduledPayment extends Payment {
     /**
      * Returns thenumber of processed payments
      */
+    @Transient
     public int getProcessedPaymentCount() {
         int count = 0;
         for (final Transfer transfer : transfers) {
@@ -149,14 +258,18 @@ public class ScheduledPayment extends Payment {
         return count;
     }
 
+    @OneToMany(targetEntity = Transfer.class)
+    @JoinColumn(name = "scheduled_payment_id")
     public List<Transfer> getTransfers() {
         return transfers;
     }
 
+    @Column(name = "reserve_amount", nullable = false)
     public boolean isReserveAmount() {
         return reserveAmount;
     }
 
+    @Column(name = "show_to_receiver", nullable = false)
     public boolean isShowToReceiver() {
         return showToReceiver;
     }

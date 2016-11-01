@@ -17,36 +17,44 @@
         <many-to-one name="to" class="nl.strohalm.cyclos.entities.accounts.AccountType">
             <column name="to_account_type_id" sql-type="integer" not-null="true"/>
         </many-to-one>
+        
         <component name="context" class="nl.strohalm.cyclos.entities.accounts.transactions.TransferType$Context">
             <property name="payment" column="allowed_payment" not-null="true" type="boolean"/>
             <property name="selfPayment" column="allowed_self_payment" not-null="true" type="boolean"/>
-        </component>        
+        </component> 
+               
         <property name="confirmationMessage" column="confirmation_message" type="text"/>
         
         <property name="transferListenerClass" column="transfer_listener_class" type="string" length="200" />
         <property name="feedbackEnabledSince" column="feedback_enabled_since" type="calendar_date" />
+        
         <property name="feedbackExpirationTime" type="timePeriod" >
             <column name="feedback_expiration_time_number" />
             <column name="feedback_expiration_time_field" />
         </property>
+        
         <property name="feedbackReplyExpirationTime" type="timePeriod" >
             <column name="feedback_reply_expiration_time_number" />
             <column name="feedback_reply_expiration_time_field" />
         </property>
+        
         <property name="defaultFeedbackLevel">
             <column name="default_feedback_level" sql-type="tinyint" />
             <type name="nl.strohalm.cyclos.utils.hibernate.IntValuedEnumType">
                 <param name="enumClassName">nl.strohalm.cyclos.entities.members.Reference$Level</param>
             </type>
         </property>
+        
         <many-to-one name="fixedDestinationMember" class="nl.strohalm.cyclos.entities.members.Member">
             <column name="fixed_destination_member_id" sql-type="integer"/>
         </many-to-one>
+        
         <property name="transactionHierarchyVisibility" column="tx_hierarchy_visibility" length="1">
             <type name="nl.strohalm.cyclos.utils.hibernate.StringValuedEnumType">
                 <param name="enumClassName">nl.strohalm.cyclos.entities.accounts.transactions.TransferType$TransactionHierarchyVisibility</param>
             </type>
         </property>
+        
         <component name="loan" class="nl.strohalm.cyclos.entities.accounts.loans.LoanParameters">
             <property name="type" column="loan_type" length="1">
                 <type name="nl.strohalm.cyclos.utils.hibernate.StringValuedEnumType">
@@ -56,28 +64,30 @@
             <many-to-one name="repaymentType" class="nl.strohalm.cyclos.entities.accounts.transactions.TransferType">
                 <column name="loan_repayment_type_id" sql-type="integer"/>
             </many-to-one>
-            <property name="grantFee" type="amount">
-                <column name="loan_grant_fee_value" precision="15" scale="6"/>
-                <column name="loan_grant_fee_type" length="1"/>
-            </property>
             <many-to-one name="grantFeeRepaymentType" class="nl.strohalm.cyclos.entities.accounts.transactions.TransferType">
                 <column name="loan_grant_fee_type_id" sql-type="integer"/>
             </many-to-one>
-            <property name="monthlyInterest" column="loan_monthly_interest" type="big_decimal" precision="15" scale="6"/>
             <many-to-one name="monthlyInterestRepaymentType" class="nl.strohalm.cyclos.entities.accounts.transactions.TransferType">
                 <column name="loan_monthly_interest_type_id" sql-type="integer"/>
             </many-to-one>
+            <many-to-one name="expirationFeeRepaymentType" class="nl.strohalm.cyclos.entities.accounts.transactions.TransferType">
+                <column name="loan_expiration_fee_type_id" sql-type="integer"/>
+            </many-to-one>
+            <many-to-one name="expirationDailyInterestRepaymentType" class="nl.strohalm.cyclos.entities.accounts.transactions.TransferType">
+                <column name="loan_exp_daily_interest_type_id" sql-type="integer"/>
+            </many-to-one>
+            
+            <property name="grantFee" type="amount">
+                <column name="loan_grant_fee_value" precision="15" scale="6"/>
+                <column name="loan_grant_fee_type" length="1"/>
+            </property>            
+            <property name="monthlyInterest" column="loan_monthly_interest" type="big_decimal" precision="15" scale="6"/>
+            
             <property name="expirationFee" type="amount">
                 <column name="loan_expiration_fee_value" precision="15" scale="6"/>
                 <column name="loan_expiration_fee_type" length="1"/>
             </property>
-            <many-to-one name="expirationFeeRepaymentType" class="nl.strohalm.cyclos.entities.accounts.transactions.TransferType">
-                <column name="loan_expiration_fee_type_id" sql-type="integer"/>
-            </many-to-one>
             <property name="expirationDailyInterest" column="loan_expiration_daily_interest" type="big_decimal" precision="15" scale="6"/>
-            <many-to-one name="expirationDailyInterestRepaymentType" class="nl.strohalm.cyclos.entities.accounts.transactions.TransferType">
-                <column name="loan_exp_daily_interest_type_id" sql-type="integer"/>
-            </many-to-one>
             <property name="repaymentDays" type="int">
                 <column name="loan_repayment_days" sql-type="integer"/>
             </property>
@@ -108,6 +118,7 @@
             </key>
             <one-to-many class="nl.strohalm.cyclos.entities.accounts.fees.transaction.TransactionFee"/>
         </bag>
+        
         <bag name="generatedByAccountFees" inverse="true" cascade="delete">
             <cache usage="read-write"/>
             <key>
@@ -115,6 +126,7 @@
             </key>
             <one-to-many class="nl.strohalm.cyclos.entities.accounts.fees.account.AccountFee"/>
         </bag>
+        
         <bag name="paymentFilters" table="transfer_types_payment_filters">
             <cache usage="read-write"/>
             <key>
@@ -124,6 +136,7 @@
                 <column name="payment_filter_id" sql-type="integer"/>
             </many-to-many>
         </bag>
+        
         <bag name="authorizationLevels" inverse="true" cascade="delete" order-by="level">
             <cache usage="read-write"/>
             <key>
@@ -131,6 +144,7 @@
             </key>
             <one-to-many class="nl.strohalm.cyclos.entities.accounts.transactions.AuthorizationLevel"/>
         </bag>
+        
         <bag name="customFields" cascade="delete" inverse="true" order-by="order_number">
             <cache usage="read-write"/>
             <key>
@@ -138,6 +152,7 @@
             </key>
             <one-to-many class="nl.strohalm.cyclos.entities.customization.fields.PaymentCustomField"/>
         </bag>	    
+        
         <bag name="linkedCustomFields" table="transfer_types_linked_custom_fields">
             <cache usage="read-write"/>
             <key>

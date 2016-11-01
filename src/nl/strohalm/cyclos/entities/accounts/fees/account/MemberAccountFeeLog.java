@@ -21,6 +21,14 @@ package nl.strohalm.cyclos.entities.accounts.fees.account;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -30,9 +38,11 @@ import nl.strohalm.cyclos.entities.members.Member;
 
 /**
  * Relates a member to an account fee log
- * 
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "member_account_fee_logs")
 public class MemberAccountFeeLog extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -54,39 +64,54 @@ public class MemberAccountFeeLog extends Entity {
     }
 
     private static final long serialVersionUID = -3632964253062346212L;
-    private Calendar          date;
-    private boolean           success;
-    private int               rechargeAttempt;
-    private Member            member;
-    private BigDecimal        amount;
-    private AccountFeeLog     accountFeeLog;
-    private Transfer          transfer;
-    private Invoice           invoice;
+    private Calendar date;
+    private boolean success;
+    private int rechargeAttempt;
+    private Member member;
+    private BigDecimal amount;
+    private AccountFeeLog accountFeeLog;
+    private Transfer transfer;
+    private Invoice invoice;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
 
     public AccountFeeLog getAccountFeeLog() {
         return accountFeeLog;
     }
 
+    @Column(precision = 15, scale = 6)
     public BigDecimal getAmount() {
         return amount;
     }
 
+    @Column(nullable = false)
     public Calendar getDate() {
         return date;
     }
 
+    @ManyToOne(targetEntity = Invoice.class)
+    @JoinColumn(name = "invoice_id")
     public Invoice getInvoice() {
         return invoice;
     }
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "member_id")
     public Member getMember() {
         return member;
     }
 
+    @Column(nullable = false)
     public int getRechargeAttempt() {
         return rechargeAttempt;
     }
 
+    @Transient
     public Status getStatus() {
         if (!success) {
             return Status.ERROR;
@@ -99,10 +124,13 @@ public class MemberAccountFeeLog extends Entity {
         }
     }
 
+    @ManyToOne(targetEntity = Transfer.class)
+    @JoinColumn(name = "transfer_id")
     public Transfer getTransfer() {
         return transfer;
     }
 
+    @Column(nullable = false)
     public boolean isSuccess() {
         return success;
     }

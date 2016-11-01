@@ -23,6 +23,13 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Calendar;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.accounts.transactions.TransferType;
 import nl.strohalm.cyclos.utils.Amount;
@@ -33,26 +40,31 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
  * Contains parameters on TransferTypes to configure loans
+ *
  * @author luis
  */
+@Embeddable
 public class LoanParameters implements Serializable, Cloneable {
+
     private static final long serialVersionUID = -2308200961589222771L;
-    private Loan.Type         type;
-    private Integer           repaymentDays;
-    private TransferType      repaymentType;
-    private BigDecimal        monthlyInterest;
-    private TransferType      monthlyInterestRepaymentType;
-    private Amount            grantFee;
-    private TransferType      grantFeeRepaymentType;
-    private Amount            expirationFee;
-    private TransferType      expirationFeeRepaymentType;
-    private BigDecimal        expirationDailyInterest;
-    private TransferType      expirationDailyInterestRepaymentType;
-    private TransferType      originalTransferType;
+    private Loan.Type type;
+    private Integer repaymentDays;
+    private TransferType repaymentType;
+    private BigDecimal monthlyInterest;
+    private TransferType monthlyInterestRepaymentType;
+    private Amount grantFee;
+    private TransferType grantFeeRepaymentType;
+    private Amount expirationFee;
+    private TransferType expirationFeeRepaymentType;
+    private BigDecimal expirationDailyInterest;
+    private TransferType expirationDailyInterestRepaymentType;
+    private TransferType originalTransferType;
 
     /**
      * Calculates the grant fee to the given amount
-     * @return 0 if no grant fee, the applied grant fee otherwise (ie: if grant fee = 3%, returns 30 for amount = 1000)
+     *
+     * @return 0 if no grant fee, the applied grant fee otherwise (ie: if grant
+     * fee = 3%, returns 30 for amount = 1000)
      */
     public BigDecimal calculateGrantFee(final BigDecimal amount) {
         if (grantFee == null || grantFee.getValue() == null || amount.compareTo(BigDecimal.ZERO) != 1) {
@@ -72,7 +84,9 @@ public class LoanParameters implements Serializable, Cloneable {
 
     /**
      * Calculates the monthly interests for the given parameters
-     * @return 0 if no monthly interests, or the applied interests otherwise (ie: if monthly interests = 1%, paymentCount = 1 and delay = 0, returns
+     *
+     * @return 0 if no monthly interests, or the applied interests otherwise
+     * (ie: if monthly interests = 1%, paymentCount = 1 and delay = 0, returns
      * 10 for amount = 1000)
      */
     public BigDecimal calculateMonthlyInterests(final BigDecimal amount, final int paymentCount, Calendar grantDate, Calendar firstExpirationDate, final MathContext mathContext) {
@@ -101,8 +115,11 @@ public class LoanParameters implements Serializable, Cloneable {
     }
 
     /**
-     * Calculates the expiration fee, if any, for the given loan payment parameters
-     * @return 0 if no expiration fee, the applied expiration fee otherwise (ie: if expiration fee = 3%, returns 3 for amount = 100)
+     * Calculates the expiration fee, if any, for the given loan payment
+     * parameters
+     *
+     * @return 0 if no expiration fee, the applied expiration fee otherwise (ie:
+     * if expiration fee = 3%, returns 3 for amount = 100)
      */
     public BigDecimal calculatePaymentExpirationFee(final BigDecimal amount, final int diff) {
         if (expirationFee != null && expirationFee.getValue() != null) {
@@ -114,9 +131,12 @@ public class LoanParameters implements Serializable, Cloneable {
     }
 
     /**
-     * Calculates the expiration daily interest, if any, for the given loan payment parameters
-     * @return 0 if no interest, the applied interest otherwise (ie: if expiration daily interest fee = 1%, on 5 days after expiration, returns 1 for
-     * amount = 100)
+     * Calculates the expiration daily interest, if any, for the given loan
+     * payment parameters
+     *
+     * @return 0 if no interest, the applied interest otherwise (ie: if
+     * expiration daily interest fee = 1%, on 5 days after expiration, returns 1
+     * for amount = 100)
      */
     public BigDecimal calculatePaymentExpirationInterest(final BigDecimal amount, final int diff, final MathContext mathContext) {
         if (expirationDailyInterest != null) {
@@ -161,58 +181,98 @@ public class LoanParameters implements Serializable, Cloneable {
         return eb.isEquals();
     }
 
+    @Column(name = "loan_expiration_daily_interest", precision = 15, scale = 6)
     public BigDecimal getExpirationDailyInterest() {
         return expirationDailyInterest;
     }
 
+    @Transient
     public Amount getExpirationDailyInterestAmount() {
         return expirationDailyInterest == null ? null : Amount.percentage(expirationDailyInterest);
     }
 
+    @ManyToOne(targetEntity = TransferType.class)
+    @JoinColumn(name = "loan_exp_daily_interest_type_id")
     public TransferType getExpirationDailyInterestRepaymentType() {
         return expirationDailyInterestRepaymentType;
     }
 
+    @Transient
     public Amount getExpirationFee() {
         return expirationFee;
     }
 
+    @Column(name = "loan_expiration_fee_value")
+    public BigDecimal getExpirationFeeValue() {
+        return expirationFee.getValue();
+    }
+
+    @Column(name = "loan_expiration_fee_type")
+    public Amount.Type getExpirationFeeType() {
+        return expirationFee.getType();
+    }
+
+    @ManyToOne(targetEntity = TransferType.class)
+    @JoinColumn(name = "loan_expiration_fee_type_id")
     public TransferType getExpirationFeeRepaymentType() {
         return expirationFeeRepaymentType;
     }
 
+    @Transient
     public Amount getGrantFee() {
         return grantFee;
     }
 
+    @Column(name = "loan_grant_fee_value")
+    public BigDecimal getGrantFeeValue() {
+        return grantFee.getValue();
+    }
+
+    @Column(name = "loan_grant_fee_type")
+    public Amount.Type getGrantFeeType() {
+        return grantFee.getType();
+    }
+
+    @ManyToOne(targetEntity = TransferType.class)
+    @JoinColumn(name = "loan_grant_fee_type_id")
     public TransferType getGrantFeeRepaymentType() {
         return grantFeeRepaymentType;
     }
 
+    @Column(name = "loan_monthly_interest", precision = 15, scale = 6)
     public BigDecimal getMonthlyInterest() {
         return monthlyInterest;
     }
 
+    @Transient
     public Amount getMonthlyInterestAmount() {
         return monthlyInterest == null ? null : Amount.percentage(monthlyInterest);
     }
 
+    @ManyToOne(targetEntity = TransferType.class)
+    @JoinColumn(name = "loan_monthly_interest_type_id")
     public TransferType getMonthlyInterestRepaymentType() {
         return monthlyInterestRepaymentType;
     }
 
+    @Transient
     public TransferType getOriginalTransferType() {
         return originalTransferType;
     }
 
+    @Column(name = "loan_repayment_days")
     public Integer getRepaymentDays() {
         return repaymentDays;
     }
 
+    @ManyToOne(targetEntity = TransferType.class)
+    @JoinColumn(name = "loan_repayment_type_id")
     public TransferType getRepaymentType() {
         return repaymentType;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column
     public Loan.Type getType() {
         return type;
     }
@@ -242,12 +302,28 @@ public class LoanParameters implements Serializable, Cloneable {
         this.expirationFee = expirationFee;
     }
 
+    public void setExpirationFeeValue(BigDecimal value) {
+        expirationFee.setValue(value);
+    }
+
+    public void setExpirationFeeType(Amount.Type type) {
+        expirationFee.setType(type);
+    }
+
     public void setExpirationFeeRepaymentType(final TransferType expirationFeeRepaymentType) {
         this.expirationFeeRepaymentType = expirationFeeRepaymentType;
     }
 
     public void setGrantFee(final Amount grantFee) {
         this.grantFee = grantFee;
+    }
+
+    public void setGrantFeeValue(BigDecimal value) {
+        grantFee.setValue(value);
+    }
+
+    public void setGrantFeeType(Amount.Type type) {
+        grantFee.setType(type);
     }
 
     public void setGrantFeeRepaymentType(final TransferType grantFeeRepaymentType) {
