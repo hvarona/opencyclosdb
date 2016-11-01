@@ -132,7 +132,7 @@ public class FieldMapping extends Entity {
     }
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "field", nullable = false, length = 50)
     public Field getField() {
         return field;
     }
@@ -143,18 +143,19 @@ public class FieldMapping extends Entity {
         return fileMapping;
     }
 
-    @ManyToOne(targetEntity = FileMapping.class)
+    @ManyToOne(targetEntity = MemberCustomField.class)
     @JoinColumn(name = "member_field_id")
     public MemberCustomField getMemberField() {
         return memberField;
     }
 
     @Column(length = 50, nullable = false)
+    @Override
     public String getName() {
         return name;
     }
 
-    @Column(nullable = false)
+    @Column(name = "order_index", nullable = false)
     public int getOrder() {
         return order;
     }

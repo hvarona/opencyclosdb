@@ -100,6 +100,7 @@ public class ExternalAccount extends Entity {
     }
 
     @Column(length = 50, nullable = false)
+    @Override
     public String getName() {
         return name;
     }

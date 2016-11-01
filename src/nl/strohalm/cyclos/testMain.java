@@ -21,6 +21,7 @@ public class testMain {
          config.setProperty("hibernate.connection.username", "root");
          config.setProperty("hibernate.connection.password", "1234");
          config.setProperty("hibernate.connection.driver.class", "com.mysql.jdbc.Driver");
+         config.setProperty("hibernate.show_sql", "true");
          System.out.println("Classes procesadas " + DatabaseClassList.classList.length);
          for (Class cl : DatabaseClassList.classList) {
          config.addAnnotatedClass(cl);
