@@ -24,8 +24,9 @@ import java.util.Collection;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-
-import javax.persistence.Transient;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.accounts.transactions.TransferType;
@@ -80,7 +81,10 @@ public abstract class SystemGroup extends Group {
         documents.add(document);
     }
 
-    @Transient
+    @ManyToMany(targetEntity = TransferType.class)
+    @JoinTable(name = "groups_chargeback_transfer_types",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "transfer_type_id"))
     public Collection<TransferType> getChargebackTransferTypes() {
         return chargebackTransferTypes;
     }
@@ -90,17 +94,23 @@ public abstract class SystemGroup extends Group {
         return containerUrl;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = Document.class)
+    @JoinTable(name = "groups_documents",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "document_id"))
     public Collection<Document> getDocuments() {
         return documents;
     }
 
-    @Column(name = "login_page_name", length = 100)
+    @Column(name = "login_page_name", length = 20)
     public String getLoginPageName() {
         return loginPageName;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = MessageCategory.class)
+    @JoinTable(name = "can_view_message_categories",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
     public Collection<MessageCategory> getMessageCategories() {
         return messageCategories;
     }

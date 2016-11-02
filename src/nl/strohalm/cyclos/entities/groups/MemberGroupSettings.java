@@ -1,26 +1,27 @@
 /*
-    This file is part of Cyclos (www.cyclos.org).
-    A project of the Social Trade Organisation (www.socialtrade.org).
+ This file is part of Cyclos (www.cyclos.org).
+ A project of the Social Trade Organisation (www.socialtrade.org).
 
-    Cyclos is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+ Cyclos is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-    Cyclos is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+ Cyclos is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Cyclos; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ You should have received a copy of the GNU General Public License
+ along with Cyclos; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  */
 package nl.strohalm.cyclos.entities.groups;
 
 import java.math.BigDecimal;
 import java.util.Set;
+import javax.persistence.Embeddable;
 
 import nl.strohalm.cyclos.entities.accounts.transactions.TransferType;
 import nl.strohalm.cyclos.utils.DataObject;
@@ -30,31 +31,31 @@ import nl.strohalm.cyclos.utils.TimePeriod;
 
 /**
  * Settings of a member group
+ *
  * @author luis
  */
+@Embeddable
 public class MemberGroupSettings extends DataObject {
 
     /**
      * Determines in which registrations the e-mail validation will be used
-     * 
+     *
      * @author luis
      */
     public static enum EmailValidation implements StringValuedEnum {
+
         /**
          * Either a public registration or an user editing his own profile
          */
         USER("U"),
-
         /**
          * An admin registering an user / editing an user profile
          */
         ADMIN("A"),
-
         /**
          * A broker registering an user / editing an user profile
          */
         BROKER("B"),
-
         /**
          * Either a registration or profile modification by web service
          */
@@ -74,9 +75,11 @@ public class MemberGroupSettings extends DataObject {
 
     /**
      * Controls the external advertisement publication
+     *
      * @author luis
      */
     public static enum ExternalAdPublication implements StringValuedEnum {
+
         ALLOW_CHOICE("C"), ENABLED("E"), DISABLED("D");
 
         private final String value;
@@ -91,57 +94,57 @@ public class MemberGroupSettings extends DataObject {
         }
     }
 
-    private static final long     serialVersionUID             = -5279193799739646568L;
+    private static final long serialVersionUID = -5279193799739646568L;
 
     // Access and external access
-    private Set<EmailValidation>  emailValidation;
-    private RangeConstraint       pinLength                    = new RangeConstraint(4, 4);
-    private int                   maxPinWrongTries             = 3;
-    private TimePeriod            pinBlockTimeAfterMaxTries    = new TimePeriod(1, TimePeriod.Field.DAYS);
+    private Set<EmailValidation> emailValidation;
+    private RangeConstraint pinLength = new RangeConstraint(4, 4);
+    private int maxPinWrongTries = 3;
+    private TimePeriod pinBlockTimeAfterMaxTries = new TimePeriod(1, TimePeriod.Field.DAYS);
 
     // Notifications
-    private TransferType          smsChargeTransferType;
+    private TransferType smsChargeTransferType;
 
     // this is the amount to be charged for the a smsAdditionalCharged
-    private BigDecimal            smsChargeAmount;
-    private int                   smsFree                      = 0;
-    private int                   smsAdditionalCharged         = 1;
-    private int                   smsShowFreeThreshold         = 50;
-    private TimePeriod            smsAdditionalChargedPeriod   = new TimePeriod(1, TimePeriod.Field.MONTHS);
-    private String                smsContextClassName;
+    private BigDecimal smsChargeAmount;
+    private int smsFree = 0;
+    private int smsAdditionalCharged = 1;
+    private int smsShowFreeThreshold = 50;
+    private TimePeriod smsAdditionalChargedPeriod = new TimePeriod(1, TimePeriod.Field.MONTHS);
+    private String smsContextClassName;
 
     // Registration
-    private boolean               sendPasswordByEmail          = true;
+    private boolean sendPasswordByEmail = true;
 
-    private TimePeriod            expireMembersAfter           = null;
+    private TimePeriod expireMembersAfter = null;
 
-    private MemberGroup           groupAfterExpiration         = null;
+    private MemberGroup groupAfterExpiration = null;
 
-    private int                   maxImagesPerMember           = 3;
+    private int maxImagesPerMember = 3;
 
     // Advertisements
-    private int                   maxAdsPerMember              = 10;
+    private int maxAdsPerMember = 10;
 
-    private boolean               enablePermanentAds           = true;
-    private TimePeriod            defaultAdPublicationTime     = new TimePeriod(1, TimePeriod.Field.MONTHS);
-    private TimePeriod            maxAdPublicationTime         = new TimePeriod(3, TimePeriod.Field.MONTHS);
+    private boolean enablePermanentAds = true;
+    private TimePeriod defaultAdPublicationTime = new TimePeriod(1, TimePeriod.Field.MONTHS);
+    private TimePeriod maxAdPublicationTime = new TimePeriod(3, TimePeriod.Field.MONTHS);
 
-    private ExternalAdPublication externalAdPublication        = ExternalAdPublication.ENABLED;
-    private int                   maxAdImagesPerMember         = 3;
-    private int                   maxAdDescriptionSize         = 2048;
+    private ExternalAdPublication externalAdPublication = ExternalAdPublication.ENABLED;
+    private int maxAdImagesPerMember = 3;
+    private int maxAdDescriptionSize = 2048;
     // Scheduled payments
-    private int                   maxSchedulingPayments        = 36;
+    private int maxSchedulingPayments = 36;
 
-    private TimePeriod            maxSchedulingPeriod          = new TimePeriod(3, TimePeriod.Field.YEARS);
+    private TimePeriod maxSchedulingPeriod = new TimePeriod(3, TimePeriod.Field.YEARS);
     // Loans
-    private boolean               viewLoansByGroup             = true;
-    private boolean               repayLoanByGroup             = true;
+    private boolean viewLoansByGroup = true;
+    private boolean repayLoanByGroup = true;
     // Pos
-    private boolean               allowMakePayment             = false;
-    private int                   maxPosSchedulingPayments     = 6;
-    private int                   numberOfCopies               = 2;
-    private int                   resultPageSize               = 5;
-    private boolean               showPosWebPaymentDescription = false;
+    private boolean allowMakePayment = false;
+    private int maxPosSchedulingPayments = 6;
+    private int numberOfCopies = 2;
+    private int resultPageSize = 5;
+    private boolean showPosWebPaymentDescription = false;
 
     public TimePeriod getDefaultAdPublicationTime() {
         return defaultAdPublicationTime;
@@ -157,7 +160,9 @@ public class MemberGroupSettings extends DataObject {
 
     public ExternalAdPublication getExternalAdPublication() {
         return externalAdPublication;
-    };
+    }
+
+    ;
 
     public MemberGroup getGroupAfterExpiration() {
         return groupAfterExpiration;

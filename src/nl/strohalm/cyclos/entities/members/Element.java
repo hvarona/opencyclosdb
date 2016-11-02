@@ -141,23 +141,20 @@ public abstract class Element extends Entity implements Indexable {
         return email;
     }
 
-    //@ManyToOne(targetEntity = nl.strohalm.cyclos.entities.groups.Group.class)
-    //@JoinColumn(name = "group_id")
-    @Transient
+    @ManyToOne(targetEntity = nl.strohalm.cyclos.entities.groups.Group.class)
+    @JoinColumn(name = "group_id")
     public Group getGroup() {
         return group;
     }
 
-    //@OneToMany(targetEntity = nl.strohalm.cyclos.entities.groups.GroupHistoryLog.class)
-    //@JoinColumn(name = "element_id")
-    @Transient
+    @OneToMany(targetEntity = nl.strohalm.cyclos.entities.groups.GroupHistoryLog.class)
+    @JoinColumn(name = "element_id")
     public Collection<GroupHistoryLog> getGroupHistoryLogs() {
         return groupHistoryLogs;
     }
 
-    //@OneToMany(targetEntity = nl.strohalm.cyclos.entities.members.records.MemberRecord.class)
-    //@JoinColumn(name = "element_id")
-    @Transient
+    @OneToMany(targetEntity = nl.strohalm.cyclos.entities.members.records.MemberRecord.class)
+    @JoinColumn(name = "element_id")
     public Collection<MemberRecord> getMemberRecords() {
         return memberRecords;
     }
@@ -171,9 +168,8 @@ public abstract class Element extends Entity implements Indexable {
     @Transient
     public abstract Nature getNature();
 
-    //@OneToMany(targetEntity = nl.strohalm.cyclos.entities.members.remarks.Remark.class)
-    //@JoinColumn(name = "subject_id")
-    @Transient
+    @OneToMany(targetEntity = nl.strohalm.cyclos.entities.members.remarks.Remark.class)
+    @JoinColumn(name = "subject_id")
     public Collection<Remark> getRemarks() {
         return remarks;
     }

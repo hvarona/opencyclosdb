@@ -63,13 +63,28 @@ public class DatabaseClassList {
         nl.strohalm.cyclos.entities.accounts.external.ExternalTransferImport.class,
         nl.strohalm.cyclos.entities.accounts.external.ExternalTransferType.class,
         //nl.strohalm.cyclos.entities.accounts.external.filemapping
+        nl.strohalm.cyclos.entities.accounts.external.filemapping.CSVFileMapping.class,
+        nl.strohalm.cyclos.entities.accounts.external.filemapping.CustomFileMapping.class,
         nl.strohalm.cyclos.entities.accounts.external.filemapping.FieldMapping.class,
         nl.strohalm.cyclos.entities.accounts.external.filemapping.FileMapping.class,
+        nl.strohalm.cyclos.entities.accounts.external.filemapping.FileMappingWithFields.class,
         //nl.strohalm.cyclos.entities.accounts.fees.account
         nl.strohalm.cyclos.entities.accounts.fees.account.AccountFee.class,
         nl.strohalm.cyclos.entities.accounts.fees.account.AccountFeeAmount.class,
         nl.strohalm.cyclos.entities.accounts.fees.account.AccountFeeLog.class,
         nl.strohalm.cyclos.entities.accounts.fees.account.MemberAccountFeeLog.class,
+        //nl.strohalm.cyclos.entities.accounts.fees.transaction
+        nl.strohalm.cyclos.entities.accounts.fees.transaction.BrokerCommission.class,
+        nl.strohalm.cyclos.entities.accounts.fees.transaction.SimpleTransactionFee.class,
+        nl.strohalm.cyclos.entities.accounts.fees.transaction.TransactionFee.class,
+        //nl.strohalm.cyclos.entities.accounts.guarantees
+        nl.strohalm.cyclos.entities.accounts.guarantees.Certification.class,
+        nl.strohalm.cyclos.entities.accounts.guarantees.CertificationLog.class,
+        nl.strohalm.cyclos.entities.accounts.guarantees.Guarantee.class,
+        nl.strohalm.cyclos.entities.accounts.guarantees.GuaranteeLog.class,
+        nl.strohalm.cyclos.entities.accounts.guarantees.GuaranteeType.class,
+        nl.strohalm.cyclos.entities.accounts.guarantees.PaymentObligation.class,
+        nl.strohalm.cyclos.entities.accounts.guarantees.PaymentObligationLog.class,
         //nl.strohalm.cyclos.entities.accounts.pos
         nl.strohalm.cyclos.entities.accounts.pos.MemberPos.class,
         nl.strohalm.cyclos.entities.accounts.pos.Pos.class,
@@ -96,12 +111,18 @@ public class DatabaseClassList {
         nl.strohalm.cyclos.entities.customization.fields.MemberCustomField.class,
         nl.strohalm.cyclos.entities.customization.fields.MemberRecordCustomField.class,
         nl.strohalm.cyclos.entities.customization.fields.MemberRecordCustomFieldValue.class,
+        nl.strohalm.cyclos.entities.customization.fields.OperatorCustomFieldValue.class,
         nl.strohalm.cyclos.entities.customization.fields.PaymentCustomField.class,
         nl.strohalm.cyclos.entities.customization.fields.PaymentCustomFieldValue.class,
+        //nl.strohalm.cyclos.entities.customization.files
+        nl.strohalm.cyclos.entities.customization.files.CustomizedFile.class,
+        nl.strohalm.cyclos.entities.customization.files.File.class,
         //nl.strohalm.cyclos.entities.groups
         nl.strohalm.cyclos.entities.groups.AdminGroup.class,
         nl.strohalm.cyclos.entities.groups.BrokerGroup.class,
         nl.strohalm.cyclos.entities.groups.Group.class,
+        nl.strohalm.cyclos.entities.groups.GroupFilter.class,
+        nl.strohalm.cyclos.entities.groups.GroupHistoryLog.class,
         nl.strohalm.cyclos.entities.groups.SystemGroup.class,
         nl.strohalm.cyclos.entities.groups.MemberGroup.class,
         //nl.strohalm.cyclos.entities.infotexts.InfoText
@@ -112,6 +133,8 @@ public class DatabaseClassList {
         nl.strohalm.cyclos.entities.members.Element.class,
         nl.strohalm.cyclos.entities.members.Member.class,
         nl.strohalm.cyclos.entities.members.Operator.class,
+        //nl.strohalm.cyclos.entities.members.messages
+        nl.strohalm.cyclos.entities.members.messages.MessageCategory.class,
         //nl.strohalm.cyclos.entities.members.records
         nl.strohalm.cyclos.entities.members.records.MemberRecord.class,
         nl.strohalm.cyclos.entities.members.records.MemberRecordType.class,

@@ -1,20 +1,20 @@
 /*
-    This file is part of Cyclos (www.cyclos.org).
-    A project of the Social Trade Organisation (www.socialtrade.org).
+ This file is part of Cyclos (www.cyclos.org).
+ A project of the Social Trade Organisation (www.socialtrade.org).
 
-    Cyclos is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+ Cyclos is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-    Cyclos is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+ Cyclos is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Cyclos; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ You should have received a copy of the GNU General Public License
+ along with Cyclos; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  */
 package nl.strohalm.cyclos.entities.accounts.guarantees;
@@ -24,6 +24,16 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -33,9 +43,12 @@ import nl.strohalm.cyclos.entities.members.Member;
 import nl.strohalm.cyclos.entities.settings.LocalSettings;
 import nl.strohalm.cyclos.utils.StringValuedEnum;
 
+@javax.persistence.Entity
+@Table(name = "certifications")
 public class PaymentObligation extends Entity {
 
     public static enum Relationships implements Relationship {
+
         GUARANTEE("guarantee"), CURRENCY("currency"), LOGS("logs"), BUYER("buyer"), SELLER("seller");
         private final String name;
 
@@ -51,6 +64,7 @@ public class PaymentObligation extends Entity {
     }
 
     public static enum Status implements StringValuedEnum {
+
         REGISTERED("RG"), PUBLISHED("P"), ACCEPTED("A"), REJECTED("RJ"), EXPIRED("E");
         private final String value;
 
@@ -64,23 +78,25 @@ public class PaymentObligation extends Entity {
         }
     }
 
-    private static final long                serialVersionUID = -3493507277972263881L;
+    private static final long serialVersionUID = -3493507277972263881L;
 
-    private Status                           status;
-    private String                           description;
-    private BigDecimal                       amount;
-    private Calendar                         expirationDate;
-    private Calendar                         maxPublishDate;
-    private Calendar                         registrationDate;
+    private Status status;
+    private String description;
+    private BigDecimal amount;
+    private Calendar expirationDate;
+    private Calendar maxPublishDate;
+    private Calendar registrationDate;
 
-    private Guarantee                        guarantee;
-    private Currency                         currency;
+    private Guarantee guarantee;
+    private Currency currency;
     private Collection<PaymentObligationLog> logs;
-    private Member                           buyer;
-    private Member                           seller;
+    private Member buyer;
+    private Member seller;
 
     /**
-     * Change the payment obligation's status and adds a new payment obligation log to it
+     * Change the payment obligation's status and adds a new payment obligation
+     * log to it
+     *
      * @param status the new payment obligation's status
      * @param by the author of the change
      * @return the new PaymentObligationLog added to this payment obligation
@@ -97,34 +113,53 @@ public class PaymentObligation extends Entity {
         return log;
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(name = "amount", precision = 15, scale = 6)
     public BigDecimal getAmount() {
         return amount;
     }
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "buyer_id")
     public Member getBuyer() {
         return buyer;
     }
 
+    @ManyToOne(targetEntity = Currency.class)
+    @JoinColumn(name = "currency_id", nullable = false)
     public Currency getCurrency() {
         return currency;
     }
 
+    @Column(name = "description")
     public String getDescription() {
         return description;
     }
 
+    @Column(name = "expiration_date", nullable = false)
     public Calendar getExpirationDate() {
         return expirationDate;
     }
 
+    @ManyToOne(targetEntity = Guarantee.class)
+    @JoinColumn(name = "guarantee_id", nullable = false)
     public Guarantee getGuarantee() {
         return guarantee;
     }
 
+    @OneToMany(targetEntity = PaymentObligationLog.class)
+    @JoinColumn(name = "payment_obligation_id", nullable = false)
     public Collection<PaymentObligationLog> getLogs() {
         return logs;
     }
 
+    @Column(name = "max_publish_date", nullable = false)
     public Calendar getMaxPublishDate() {
         return maxPublishDate;
     }
@@ -140,14 +175,19 @@ public class PaymentObligation extends Entity {
         return log;
     }
 
+    @Column(name = "registration_date", nullable = false)
     public Calendar getRegistrationDate() {
         return registrationDate;
     }
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "seller_id")
     public Member getSeller() {
         return seller;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     public Status getStatus() {
         return status;
     }

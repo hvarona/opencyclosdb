@@ -1,26 +1,28 @@
 /*
-    This file is part of Cyclos (www.cyclos.org).
-    A project of the Social Trade Organisation (www.socialtrade.org).
+ This file is part of Cyclos (www.cyclos.org).
+ A project of the Social Trade Organisation (www.socialtrade.org).
 
-    Cyclos is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+ Cyclos is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-    Cyclos is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+ Cyclos is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Cyclos; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ You should have received a copy of the GNU General Public License
+ along with Cyclos; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  */
 package nl.strohalm.cyclos.entities.members;
 
 import java.util.Collection;
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Relationship;
@@ -33,13 +35,15 @@ import nl.strohalm.cyclos.utils.CustomFieldsContainer;
 
 /**
  * A member's operator
+ *
  * @author luis
  */
 @javax.persistence.Entity
-@DiscriminatorValue (value = "O")
+@DiscriminatorValue(value = "O")
 public class Operator extends Element implements CustomFieldsContainer<OperatorCustomField, OperatorCustomFieldValue> {
 
     public static enum Relationships implements Relationship {
+
         MEMBER("member"), CUSTOM_VALUES("customValues");
         private final String name;
 
@@ -52,8 +56,8 @@ public class Operator extends Element implements CustomFieldsContainer<OperatorC
         }
     }
 
-    private static final long                    serialVersionUID = 4105825541748672232L;
-    private Member                               member;
+    private static final long serialVersionUID = 4105825541748672232L;
+    private Member member;
     private Collection<OperatorCustomFieldValue> customValues;
 
     @Override
@@ -72,12 +76,15 @@ public class Operator extends Element implements CustomFieldsContainer<OperatorC
         return OperatorCustomFieldValue.class;
     }
 
-    @Transient
+    @ManyToOne(targetEntity = OperatorCustomFieldValue.class)
+    @JoinColumn(name = "operator_id")
+    @Override
     public Collection<OperatorCustomFieldValue> getCustomValues() {
         return customValues;
     }
 
-    @Transient
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "member_id")
     public Member getMember() {
         return member;
     }

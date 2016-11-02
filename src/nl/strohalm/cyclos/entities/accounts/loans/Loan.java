@@ -1,20 +1,20 @@
 /*
-    This file is part of Cyclos (www.cyclos.org).
-    A project of the Social Trade Organisation (www.socialtrade.org).
+ This file is part of Cyclos (www.cyclos.org).
+ A project of the Social Trade Organisation (www.socialtrade.org).
 
-    Cyclos is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+ Cyclos is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-    Cyclos is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+ Cyclos is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Cyclos; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ You should have received a copy of the GNU General Public License
+ along with Cyclos; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  */
 package nl.strohalm.cyclos.entities.accounts.loans;
@@ -24,6 +24,17 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -37,11 +48,15 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 /**
  * A loan generates a transfer and one or more loan payments
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "loans")
 public class Loan extends Entity {
 
     public static enum Relationships implements Relationship {
+
         PAYMENTS("payments"), LOAN_GROUP("loanGroup"), TO_MEMBERS("toMembers"), TRANSFER("transfer"), REPAYMENT_TYPE("parameters.repaymentType");
         private final String name;
 
@@ -56,6 +71,7 @@ public class Loan extends Entity {
     }
 
     public static enum Status implements StringValuedEnum {
+
         OPEN("O"), CLOSED("C"), PENDING_AUTHORIZATION("P"), AUTHORIZATION_DENIED("D");
         private final String value;
 
@@ -78,6 +94,7 @@ public class Loan extends Entity {
     }
 
     public static enum Type implements StringValuedEnum {
+
         SINGLE_PAYMENT("S"), MULTI_PAYMENT("M"), WITH_INTEREST("I");
         private final String value;
 
@@ -95,15 +112,23 @@ public class Loan extends Entity {
         }
     }
 
-    private static final long  serialVersionUID = 7890624598546777599L;
+    private static final long serialVersionUID = 7890624598546777599L;
 
-    private List<LoanPayment>  payments;
-    private LoanGroup          loanGroup;
-    private LoanParameters     parameters;
+    private List<LoanPayment> payments;
+    private LoanGroup loanGroup;
+    private LoanParameters parameters;
     private Collection<Member> toMembers;
-    private BigDecimal         totalAmount;
-    private Transfer           transfer;
+    private BigDecimal totalAmount;
+    private Transfer transfer;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Transient
     public BigDecimal getAmount() {
         return transfer == null ? null : transfer.getAmount();
     }
@@ -152,6 +177,8 @@ public class Loan extends Entity {
         return transfer == null ? null : transfer.getProcessDate();
     }
 
+    @ManyToOne(targetEntity = LoanGroup.class)
+    @JoinColumn(name = "loan_group_id", nullable = false)
     public LoanGroup getLoanGroup() {
         return loanGroup;
     }
@@ -164,6 +191,10 @@ public class Loan extends Entity {
         }
     }
 
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "fee", column = @Column(name = "credit_fee")),
+        @AttributeOverride(name = "type", column = @Column(name = "credit_fee_type"))})
     public LoanParameters getParameters() {
         return parameters;
     }
@@ -222,10 +253,13 @@ public class Loan extends Entity {
         return toMembers;
     }
 
+    @Column(name = "total_amount", precision = 15, scale = 6, nullable = false)
     public BigDecimal getTotalAmount() {
         return totalAmount;
     }
 
+    @ManyToOne(targetEntity = Transfer.class)
+    @JoinColumn(name = "transfer_id", nullable = false)
     public Transfer getTransfer() {
         return transfer;
     }

@@ -1,20 +1,20 @@
 /*
-    This file is part of Cyclos (www.cyclos.org).
-    A project of the Social Trade Organisation (www.socialtrade.org).
+ This file is part of Cyclos (www.cyclos.org).
+ A project of the Social Trade Organisation (www.socialtrade.org).
 
-    Cyclos is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+ Cyclos is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-    Cyclos is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+ Cyclos is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Cyclos; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ You should have received a copy of the GNU General Public License
+ along with Cyclos; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  */
 package nl.strohalm.cyclos.entities.accounts.external.filemapping;
@@ -24,6 +24,13 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Calendar;
 import java.util.Collection;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.utils.StringValuedEnum;
@@ -37,15 +44,19 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * A file mapping that has mapped fields
+ *
  * @author luis
  */
+@MappedSuperclass
 public abstract class FileMappingWithFields extends FileMapping {
 
     /**
      * A format for parsing numbers
+     *
      * @author luis
      */
     public enum NumberFormat implements StringValuedEnum {
+
         FIXED_POSITION("F"), WITH_SEPARATOR("S");
 
         private final String value;
@@ -60,6 +71,7 @@ public abstract class FileMappingWithFields extends FileMapping {
     }
 
     public static enum Relationships implements Relationship {
+
         FIELDS("fields");
         private final String name;
 
@@ -72,40 +84,46 @@ public abstract class FileMappingWithFields extends FileMapping {
         }
     }
 
-    public static final NumberFormat DEFAULT_NUMBER_FORMAT         = NumberFormat.FIXED_POSITION;
-    public static final Character    DEFAULT_NEGATIVE_AMOUNT_VALUE = new Character('-');
-    public static final Integer      DEFAULT_DECIMAL_PLACES        = new Integer(2);
-    public static final Character    DEFAULT_DECIMAL_SEPARATOR     = new Character('.');
-    public static final String       DEFAULT_DATE_FORMAT           = "yyyy-MM-dd";
+    public static final NumberFormat DEFAULT_NUMBER_FORMAT = NumberFormat.FIXED_POSITION;
+    public static final Character DEFAULT_NEGATIVE_AMOUNT_VALUE = new Character('-');
+    public static final Integer DEFAULT_DECIMAL_PLACES = new Integer(2);
+    public static final Character DEFAULT_DECIMAL_SEPARATOR = new Character('.');
+    public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
 
-    private static final long        serialVersionUID              = -6761459914402653154L;
-    private NumberFormat             numberFormat;
-    private String                   negativeAmountValue;
-    private Integer                  decimalPlaces;
-    private Character                decimalSeparator;
-    private String                   dateFormat;
+    private static final long serialVersionUID = -6761459914402653154L;
+    private NumberFormat numberFormat;
+    private String negativeAmountValue;
+    private Integer decimalPlaces;
+    private Character decimalSeparator;
+    private String dateFormat;
     private Collection<FieldMapping> fields;
 
     /**
      * Returns a converter for date
      */
+    @Transient
     public Converter<Calendar> getDateConverter() {
         final String format = dateFormat.toLowerCase().replace('m', 'M');
         return new CalendarConverter(format);
     }
 
+    @Column(name = "date_format", length = 20)
     public String getDateFormat() {
         return dateFormat;
     }
 
+    @Column(name = "decimal_places")
     public Integer getDecimalPlaces() {
         return decimalPlaces;
     }
 
+    @Column(name = "decimal_separator", length = 1)
     public Character getDecimalSeparator() {
         return decimalSeparator;
     }
 
+    @OneToMany(targetEntity = FieldMapping.class)
+    @JoinColumn(name = "file_mapping_id")
     public Collection<FieldMapping> getFields() {
         return fields;
     }
@@ -113,10 +131,12 @@ public abstract class FileMappingWithFields extends FileMapping {
     /**
      * Returns a converter for negateAmount
      */
+    @Transient
     public Converter<Boolean> getNegateAmountConverter() {
         return new BooleanConverter(String.valueOf(negativeAmountValue));
     }
 
+    @Column(name = "negative_amount_value", length = 50)
     public String getNegativeAmountValue() {
         return negativeAmountValue;
     }
@@ -124,6 +144,7 @@ public abstract class FileMappingWithFields extends FileMapping {
     /**
      * Returns a converter for amount
      */
+    @Transient
     public Converter<BigDecimal> getNumberConverter() {
         if (numberFormat == NumberFormat.FIXED_POSITION) {
             return new FixedLengthNumberConverter<BigDecimal>(BigDecimal.class, decimalPlaces);
@@ -138,6 +159,8 @@ public abstract class FileMappingWithFields extends FileMapping {
         }
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "number_format")
     public NumberFormat getNumberFormat() {
         return numberFormat;
     }

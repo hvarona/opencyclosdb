@@ -1,20 +1,20 @@
 /*
-    This file is part of Cyclos (www.cyclos.org).
-    A project of the Social Trade Organisation (www.socialtrade.org).
+ This file is part of Cyclos (www.cyclos.org).
+ A project of the Social Trade Organisation (www.socialtrade.org).
 
-    Cyclos is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+ Cyclos is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-    Cyclos is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+ Cyclos is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Cyclos; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ You should have received a copy of the GNU General Public License
+ along with Cyclos; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  */
 package nl.strohalm.cyclos.entities.groups;
@@ -23,9 +23,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
+import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -52,6 +54,7 @@ import nl.strohalm.cyclos.entities.members.Element;
 import nl.strohalm.cyclos.entities.members.records.MemberRecordType;
 import nl.strohalm.cyclos.entities.members.remarks.GroupRemark;
 import nl.strohalm.cyclos.utils.StringValuedEnum;
+import nl.strohalm.cyclos.utils.access.PermissionHelper;
 
 /**
  * A group of permissions
@@ -60,11 +63,12 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
  */
 @javax.persistence.Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@Table(name = "users")
+@Table(name = "groups")
 @DiscriminatorColumn(name = "subclass", discriminatorType = DiscriminatorType.STRING)
 public abstract class Group extends Entity implements Comparable<Group> {
 
     public static enum Nature {
+
         ADMIN("A"), MEMBER("M"), BROKER("B"), OPERATOR("O");
 
         private final String discriminator;
@@ -108,6 +112,7 @@ public abstract class Group extends Entity implements Comparable<Group> {
     }
 
     public static enum Relationships implements Relationship {
+
         ELEMENTS("elements"), PAYMENT_FILTERS("paymentFilters"), GROUP_FILTERS("groupFilters"), PERMISSIONS("permissions"), TRANSFER_TYPES("transferTypes"), CONVERSION_SIMULATION_TTS("conversionSimulationTTs"), CUSTOMIZED_FILES("customizedFiles"), GUARANTEE_TYPES("guaranteeTypes");
 
         private final String name;
@@ -123,6 +128,7 @@ public abstract class Group extends Entity implements Comparable<Group> {
     }
 
     public static enum Status implements StringValuedEnum {
+
         NORMAL("N"), REMOVED("R");
         private final String value;
 
@@ -209,7 +215,7 @@ public abstract class Group extends Entity implements Comparable<Group> {
             return Collections.emptyList();
         }
 
-        final ArrayList<GuaranteeType> enabled = new ArrayList<GuaranteeType>();
+        final ArrayList<GuaranteeType> enabled = new ArrayList();
         for (final GuaranteeType gt : all) {
             if (gt.isEnabled()) {
                 enabled.add(gt);
@@ -278,10 +284,20 @@ public abstract class Group extends Entity implements Comparable<Group> {
         return paymentFilters;
     }
 
-    @OneToMany(targetEntity = Permission.class)
-    @JoinColumn(name="group_id")
+    @Transient
     public Collection<Permission> getPermissions() {
         return permissions;
+    }
+
+    @ElementCollection(targetClass = String.class)
+    @CollectionTable(name = "permissions", joinColumns = @JoinColumn(name = "group_id"))
+    @Column(name = "permission")
+    public Collection<String> getPermissionsString() {
+        Collection<String> permString = new ArrayList<>();
+        for (Permission perm : permissions) {
+            permString.add(perm.getQualifiedName());
+        }
+        return permString;
     }
 
     @Enumerated(EnumType.STRING)
@@ -300,7 +316,7 @@ public abstract class Group extends Entity implements Comparable<Group> {
 
     @Transient
     public boolean isRemoved() {
-        return status == Status.REMOVED ? true : false;
+        return status == Status.REMOVED;
     }
 
     public void setBasicSettings(BasicGroupSettings basicSettings) {
@@ -360,6 +376,15 @@ public abstract class Group extends Entity implements Comparable<Group> {
 
     public void setPermissions(final Collection<Permission> permissions) {
         this.permissions = permissions;
+    }
+
+    public void setPermissionsString(Collection<String> permString) {
+        if (this.permissions == null) {
+            this.permissions = new ArrayList();
+        }
+        for (String qualName : permString) {
+            this.permissions.add(PermissionHelper.getPermission(qualName));
+        }
     }
 
     public void setStatus(final Status status) {

@@ -1,20 +1,20 @@
 /*
-    This file is part of Cyclos (www.cyclos.org).
-    A project of the Social Trade Organisation (www.socialtrade.org).
+ This file is part of Cyclos (www.cyclos.org).
+ A project of the Social Trade Organisation (www.socialtrade.org).
 
-    Cyclos is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+ Cyclos is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-    Cyclos is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+ Cyclos is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Cyclos; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ You should have received a copy of the GNU General Public License
+ along with Cyclos; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  */
 package nl.strohalm.cyclos.entities.accounts.guarantees;
@@ -24,6 +24,17 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -33,9 +44,12 @@ import nl.strohalm.cyclos.entities.settings.LocalSettings;
 import nl.strohalm.cyclos.utils.Period;
 import nl.strohalm.cyclos.utils.StringValuedEnum;
 
+@javax.persistence.Entity
+@Table(name = "certifications")
 public class Certification extends Entity {
 
     public static enum Relationships implements Relationship {
+
         GUARANTEE_TYPE("guaranteeType"), LOGS("logs"), BUYER("buyer"), ISSUER("issuer");
         private final String name;
 
@@ -51,6 +65,7 @@ public class Certification extends Entity {
     }
 
     public static enum Status implements StringValuedEnum {
+
         ACTIVE("A"), CANCELLED("C"), SUSPENDED("S"), EXPIRED("E"), SCHEDULED("SC");
         private final String value;
 
@@ -64,18 +79,19 @@ public class Certification extends Entity {
         }
     }
 
-    private static final long            serialVersionUID = -4782899135453104654L;
+    private static final long serialVersionUID = -4782899135453104654L;
 
-    private BigDecimal                   amount;
-    private Period                       validity;
-    private Status                       status;
-    private GuaranteeType                guaranteeType;
+    private BigDecimal amount;
+    private Period validity;
+    private Status status;
+    private GuaranteeType guaranteeType;
     private Collection<CertificationLog> logs;
-    private Member                       buyer;
-    private Member                       issuer;
+    private Member buyer;
+    private Member issuer;
 
     /**
      * Change the certification's status and adds a new certification log to it
+     *
      * @param status the new certification's status
      * @param by the author of the change
      * @return the new CertificationLog added to this Certification
@@ -92,22 +108,38 @@ public class Certification extends Entity {
         return log;
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(name = "amount", precision = 15, scale = 6)
     public BigDecimal getAmount() {
         return amount;
     }
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "buyer_id", nullable = false)
     public Member getBuyer() {
         return buyer;
     }
 
+    @ManyToOne(targetEntity = GuaranteeType.class)
+    @JoinColumn(name = "guarantee_type_id", nullable = false)
     public GuaranteeType getGuaranteeType() {
         return guaranteeType;
     }
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "issuer_id", nullable = false)
     public Member getIssuer() {
         return issuer;
     }
 
+    @OneToMany(targetEntity = CertificationLog.class)
+    @JoinColumn(name = "certification_id")
     public Collection<CertificationLog> getLogs() {
         return logs;
     }
@@ -123,12 +155,25 @@ public class Certification extends Entity {
         return log;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     public Status getStatus() {
         return status;
     }
 
+    @Transient
     public Period getValidity() {
         return validity;
+    }
+
+    @Column(name = "begin_date")
+    public Calendar getBeginDate() {
+        return validity.getBegin();
+    }
+
+    @Column(name = "end_date")
+    public Calendar getEndDate() {
+        return validity.getEnd();
     }
 
     public void setAmount(final BigDecimal amount) {
@@ -157,6 +202,14 @@ public class Certification extends Entity {
 
     public void setValidity(final Period validity) {
         this.validity = validity;
+    }
+
+    public void setBeginDate(Calendar begin) {
+        validity.setBegin(begin);
+    }
+
+    public void setEndDate(Calendar end) {
+        validity.setEnd(end);
     }
 
     @Override

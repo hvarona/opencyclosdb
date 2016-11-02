@@ -227,7 +227,7 @@ public class BasicGroupSettings extends DataObject {
         passwordLength.setMin(min);
     }
 
-    public void getPasswordLengthMax(Integer max) {
+    public void setPasswordLengthMax(Integer max) {
         passwordLength.setMax(max);
     }
 
