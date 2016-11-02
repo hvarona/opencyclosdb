@@ -73,22 +73,22 @@ public class ClosedAccountBalance extends Entity {
     }
 
     @ManyToOne(targetEntity = Account.class)
-    @JoinColumn(name = "account_id", nullable = false)
+    @JoinColumn(name = "account_id", nullable = false, updatable = false)
     public Account getAccount() {
         return account;
     }
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false, precision = 15, scale = 6)
     public BigDecimal getBalance() {
         return balance;
     }
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     public Calendar getDate() {
         return date;
     }
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false, precision = 15, scale = 6)
     public BigDecimal getReserved() {
         return reserved;
     }

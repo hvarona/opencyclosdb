@@ -20,6 +20,7 @@
 package nl.strohalm.cyclos.entities.accounts.external;
 
 import java.util.Collection;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -87,14 +88,14 @@ public class ExternalAccount extends Entity {
         return fileMapping;
     }
 
-    @OneToMany(targetEntity = ExternalTransferImport.class)
+    @OneToMany(targetEntity = ExternalTransferImport.class, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "account_id")
     public Collection<ExternalTransferImport> getImports() {
         return imports;
     }
 
     @ManyToOne(targetEntity = MemberAccountType.class)
-    @JoinColumn(name = "member_account_id")
+    @JoinColumn(name = "member_account_id", nullable = false)
     public MemberAccountType getMemberAccountType() {
         return memberAccountType;
     }
@@ -106,18 +107,18 @@ public class ExternalAccount extends Entity {
     }
 
     @ManyToOne(targetEntity = SystemAccountType.class)
-    @JoinColumn(name = "system_account_id")
+    @JoinColumn(name = "system_account_id", nullable = false)
     public SystemAccountType getSystemAccountType() {
         return systemAccountType;
     }
 
-    @OneToMany(targetEntity = ExternalTransfer.class)
+    @OneToMany(targetEntity = ExternalTransfer.class, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "account_id")
     public Collection<ExternalTransfer> getTransfers() {
         return transfers;
     }
 
-    @OneToMany(targetEntity = ExternalTransferType.class)
+    @OneToMany(targetEntity = ExternalTransferType.class, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "account_id")
     public Collection<ExternalTransferType> getTypes() {
         return types;

@@ -281,7 +281,7 @@ public abstract class CustomField extends Entity {
         return description;
     }
 
-    @Column(length = 100, nullable = false)
+    @Column(name = "internal_name", length = 100, nullable = false)
     public String getInternalName() {
         return internalName;
     }

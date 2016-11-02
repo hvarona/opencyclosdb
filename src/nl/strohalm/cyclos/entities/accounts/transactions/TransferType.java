@@ -351,9 +351,8 @@ public class TransferType extends Entity {
         return from;
     }
 
-    //@OneToMany(targetEntity = TransactionFee.class)
-    //@JoinColumn(name = "transfer_type_id")
-    @Transient
+    @OneToMany(targetEntity = AccountFee.class)
+    @JoinColumn(name = "transfer_type_id")
     public Collection< AccountFee> getGeneratedByAccountFees() {
         return generatedByAccountFees;
     }
@@ -410,11 +409,10 @@ public class TransferType extends Entity {
         return name;
     }
 
-    //@ManyToMany(targetEntity = PaymentFilter.class)
-    //@JoinTable(name = "transfer_types_payment_filters",
-//            joinColumns = @JoinColumn(name = "transfer_type_id"),
-//            inverseJoinColumns = @JoinColumn(name = "payment_filter_id"))
-    @Transient
+    @ManyToMany(targetEntity = PaymentFilter.class)
+    @JoinTable(name = "transfer_types_payment_filters",
+            joinColumns = @JoinColumn(name = "transfer_type_id"),
+            inverseJoinColumns = @JoinColumn(name = "payment_filter_id"))
     public Collection<PaymentFilter> getPaymentFilters() {
         return paymentFilters;
     }

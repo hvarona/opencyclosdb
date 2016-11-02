@@ -43,7 +43,7 @@ public class DRateParameters extends InitializableRateParameters {
     private BigDecimal baseMalus;
     private BigDecimal minimalD;
 
-    @Column
+    @Column(name = "base_malus", precision = 15, scale = 6, updatable = false)
     public BigDecimal getBaseMalus() {
         return baseMalus;
     }
@@ -57,12 +57,12 @@ public class DRateParameters extends InitializableRateParameters {
         return BigDecimal.ONE.subtract(BigDecimalHelper.asPercentFraction(baseMalus));
     }
 
-    @Column
+    @Column(name = "interest", precision = 15, scale = 6, updatable = false)
     public BigDecimal getInterest() {
         return interest;
     }
 
-    @Column
+    @Column(name = "minimal_d", precision = 15, scale = 6, updatable = false)
     public BigDecimal getMinimalD() {
         return minimalD;
     }

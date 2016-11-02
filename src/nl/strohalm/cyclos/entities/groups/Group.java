@@ -22,9 +22,11 @@ package nl.strohalm.cyclos.entities.groups;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
+import javax.persistence.Embedded;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
@@ -32,10 +34,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-//import nl.strohalm.cyclos.access.Permission;
+import nl.strohalm.cyclos.access.Permission;
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.accounts.guarantees.GuaranteeType;
@@ -140,7 +146,7 @@ public abstract class Group extends Entity implements Comparable<Group> {
     private Collection<Element> elements;
     private String name;
     private Collection<PaymentFilter> paymentFilters;
-//    private Collection<Permission>       permissions;
+    private Collection<Permission> permissions;
     private Status status = Status.NORMAL;
     private BasicGroupSettings basicSettings = new BasicGroupSettings();
     private Collection<TransferType> transferTypes;
@@ -162,30 +168,35 @@ public abstract class Group extends Entity implements Comparable<Group> {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Override
     public Long getId() {
-        return super.getId(); //To change body of generated methods, choose Tools | Templates.
+        return super.getId();
     }
 
-    @Transient
+    @Embedded
     public BasicGroupSettings getBasicSettings() {
         return basicSettings;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = TransferType.class)
+    @JoinTable(name = "groups_conversion_simulation_transfer_types",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "transfer_type_id"))
     public Collection<TransferType> getConversionSimulationTTs() {
         return conversionSimulationTTs;
     }
 
-    @Transient
+    @OneToMany(targetEntity = CustomizedFile.class, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "group_id")
     public Collection<CustomizedFile> getCustomizedFiles() {
         return customizedFiles;
     }
 
-    @Transient
+    @Column
     public String getDescription() {
         return description;
     }
 
-    @Transient
+    @OneToMany(targetEntity = Element.class)
+    @JoinColumn(name = "group_id")
     public Collection<Element> getElements() {
         return elements;
     }
@@ -208,22 +219,32 @@ public abstract class Group extends Entity implements Comparable<Group> {
         return enabled;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = GroupFilter.class)
+    @JoinTable(name = "group_filters_groups",
+            joinColumns = @JoinColumn(name = "groups_payment_filters"),
+            inverseJoinColumns = @JoinColumn(name = "group_filter_id"))
     public Collection<GroupFilter> getGroupFilters() {
         return groupFilters;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = GuaranteeType.class)
+    @JoinTable(name = "groups_member_record_types",
+            joinColumns = @JoinColumn(name = "groups_payment_filters"),
+            inverseJoinColumns = @JoinColumn(name = "member_record_type_id"))
     public Collection<GuaranteeType> getGuaranteeTypes() {
         return guaranteeTypes;
     }
 
-    @Transient
+    @OneToMany(targetEntity = GroupHistoryLog.class)
+    @JoinColumn(name = "group_id")
     public Collection<GroupHistoryLog> getHistoryLogs() {
         return historyLogs;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = MemberRecordType.class)
+    @JoinTable(name = "group_guarantee_types",
+            joinColumns = @JoinColumn(name = "groups_payment_filters"),
+            inverseJoinColumns = @JoinColumn(name = "guarantee_type_id"))
     public Collection<MemberRecordType> getMemberRecordTypes() {
         return memberRecordTypes;
     }
@@ -237,30 +258,42 @@ public abstract class Group extends Entity implements Comparable<Group> {
     @Transient
     public abstract Nature getNature();
 
-    @Transient
+    @OneToMany(targetEntity = GroupRemark.class)
+    @JoinColumn(name = "new_group_id")
     public Collection<GroupRemark> getNewRemarks() {
         return newRemarks;
     }
 
-    @Transient
+    @OneToMany(targetEntity = GroupRemark.class)
+    @JoinColumn(name = "old_group_id")
     public Collection<GroupRemark> getOldRemarks() {
         return oldRemarks;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = PaymentFilter.class)
+    @JoinTable(name = "groups_conversion_simulation_transfer_types",
+            joinColumns = @JoinColumn(name = "groups_payment_filters"),
+            inverseJoinColumns = @JoinColumn(name = "payment_filter_id"))
     public Collection<PaymentFilter> getPaymentFilters() {
         return paymentFilters;
     }
 
-    /*    public Collection<Permission> getPermissions() {
+    @OneToMany(targetEntity = Permission.class)
+    @JoinColumn(name="group_id")
+    public Collection<Permission> getPermissions() {
         return permissions;
-    }*/
+    }
+
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, updatable = false)
     public Status getStatus() {
         return status;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = TransferType.class)
+    @JoinTable(name = "groups_transfer_types",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "transfer_type_id"))
     public Collection<TransferType> getTransferTypes() {
         return transferTypes;
     }
@@ -325,9 +358,10 @@ public abstract class Group extends Entity implements Comparable<Group> {
         this.paymentFilters = paymentFilters;
     }
 
-    /*public void setPermissions(final Collection<Permission> permissions) {
+    public void setPermissions(final Collection<Permission> permissions) {
         this.permissions = permissions;
-    }*/
+    }
+
     public void setStatus(final Status status) {
         this.status = status;
     }

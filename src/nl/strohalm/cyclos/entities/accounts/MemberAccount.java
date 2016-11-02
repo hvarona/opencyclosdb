@@ -146,6 +146,7 @@ public class MemberAccount extends Account {
     }
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "member_status")
     public Status getStatus() {
         return status;
     }

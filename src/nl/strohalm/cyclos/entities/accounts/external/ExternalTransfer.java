@@ -114,7 +114,7 @@ public class ExternalTransfer extends Entity {
     }
 
     @ManyToOne(targetEntity = ExternalAccount.class)
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "account_id", nullable = false)
     public ExternalAccount getAccount() {
         return account;
     }

@@ -20,6 +20,7 @@
 package nl.strohalm.cyclos.entities.accounts;
 
 import java.math.BigDecimal;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -75,7 +76,7 @@ public class Currency extends Entity {
         return super.getId();
     }
 
-    @ManyToOne(targetEntity = ARateParameters.class)
+    @ManyToOne(targetEntity = ARateParameters.class, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "a_rate_params_id")
     public ARateParameters getaRateParameters() {
         return aRateParameters;
@@ -86,13 +87,13 @@ public class Currency extends Entity {
         return description;
     }
 
-    @ManyToOne(targetEntity = DRateParameters.class)
+    @ManyToOne(targetEntity = DRateParameters.class, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "d_rate_params_id")
     public DRateParameters getdRateParameters() {
         return dRateParameters;
     }
 
-    @ManyToOne(targetEntity = IRateParameters.class)
+    @ManyToOne(targetEntity = IRateParameters.class, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "i_rate_params_id")
     public IRateParameters getiRateParameters() {
         return iRateParameters;

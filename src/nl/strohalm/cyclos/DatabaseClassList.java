@@ -85,6 +85,25 @@ public class DatabaseClassList {
         nl.strohalm.cyclos.entities.accounts.transactions.TransferType.class,
         //nl.strohalm.cyclos.entities.customization.binaryfiles
         nl.strohalm.cyclos.entities.customization.binaryfiles.BinaryFile.class,
+        //nl.strohalm.cyclos.entities.customization.documents
+        nl.strohalm.cyclos.entities.customization.documents.Document.class,
+        //nl.strohalm.cyclos.entities.customization.fields
+        nl.strohalm.cyclos.entities.customization.fields.AdminCustomField.class,
+        nl.strohalm.cyclos.entities.customization.fields.AdminCustomFieldValue.class,
+        nl.strohalm.cyclos.entities.customization.fields.CustomField.class,
+        nl.strohalm.cyclos.entities.customization.fields.CustomFieldValue.class,
+        nl.strohalm.cyclos.entities.customization.fields.CustomFieldPossibleValue.class,
+        nl.strohalm.cyclos.entities.customization.fields.MemberCustomField.class,
+        nl.strohalm.cyclos.entities.customization.fields.MemberRecordCustomField.class,
+        nl.strohalm.cyclos.entities.customization.fields.MemberRecordCustomFieldValue.class,
+        nl.strohalm.cyclos.entities.customization.fields.PaymentCustomField.class,
+        nl.strohalm.cyclos.entities.customization.fields.PaymentCustomFieldValue.class,
+        //nl.strohalm.cyclos.entities.groups
+        nl.strohalm.cyclos.entities.groups.AdminGroup.class,
+        nl.strohalm.cyclos.entities.groups.BrokerGroup.class,
+        nl.strohalm.cyclos.entities.groups.Group.class,
+        nl.strohalm.cyclos.entities.groups.SystemGroup.class,
+        nl.strohalm.cyclos.entities.groups.MemberGroup.class,
         //nl.strohalm.cyclos.entities.infotexts.InfoText
         nl.strohalm.cyclos.entities.infotexts.InfoText.class,
         //nl.strohalm.cyclos.entities.members
@@ -100,25 +119,6 @@ public class DatabaseClassList {
         nl.strohalm.cyclos.entities.members.remarks.BrokerRemark.class,
         nl.strohalm.cyclos.entities.members.remarks.GroupRemark.class,
         nl.strohalm.cyclos.entities.members.remarks.Remark.class,
-        //nl.strohalm.cyclos.entities.groups
-        nl.strohalm.cyclos.entities.groups.AdminGroup.class,
-        nl.strohalm.cyclos.entities.groups.BrokerGroup.class,
-        nl.strohalm.cyclos.entities.groups.Group.class,
-        nl.strohalm.cyclos.entities.groups.SystemGroup.class,
-        nl.strohalm.cyclos.entities.groups.MemberGroup.class,
-        //nl.strohalm.cyclos.entities.customization.documents
-        nl.strohalm.cyclos.entities.customization.documents.Document.class,
-        //nl.strohalm.cyclos.entities.customization.fields
-        nl.strohalm.cyclos.entities.customization.fields.AdminCustomField.class,
-        nl.strohalm.cyclos.entities.customization.fields.AdminCustomFieldValue.class,
-        nl.strohalm.cyclos.entities.customization.fields.CustomField.class,
-        nl.strohalm.cyclos.entities.customization.fields.CustomFieldValue.class,
-        nl.strohalm.cyclos.entities.customization.fields.CustomFieldPossibleValue.class,
-        nl.strohalm.cyclos.entities.customization.fields.MemberCustomField.class,
-        nl.strohalm.cyclos.entities.customization.fields.MemberRecordCustomField.class,
-        nl.strohalm.cyclos.entities.customization.fields.MemberRecordCustomFieldValue.class,
-        nl.strohalm.cyclos.entities.customization.fields.PaymentCustomField.class,
-        nl.strohalm.cyclos.entities.customization.fields.PaymentCustomFieldValue.class,
         //nl.strohalm.cyclos.entities.services
         nl.strohalm.cyclos.entities.services.ServiceClient.class,
         //nl.strohalm.cyclos.entities.settings
