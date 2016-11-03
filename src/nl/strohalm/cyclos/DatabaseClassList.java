@@ -123,6 +123,10 @@ public class DatabaseClassList {
         nl.strohalm.cyclos.entities.customization.binaryfiles.BinaryFile.class,
         //nl.strohalm.cyclos.entities.customization.documents
         nl.strohalm.cyclos.entities.customization.documents.Document.class,
+        nl.strohalm.cyclos.entities.customization.documents.DocumentPage.class,
+        nl.strohalm.cyclos.entities.customization.documents.DynamicDocument.class,
+        nl.strohalm.cyclos.entities.customization.documents.MemberDocument.class,
+        nl.strohalm.cyclos.entities.customization.documents.StaticDocument.class,
         //nl.strohalm.cyclos.entities.customization.fields
         nl.strohalm.cyclos.entities.customization.fields.AdCustomFieldValue.class,
         nl.strohalm.cyclos.entities.customization.fields.AdminCustomField.class,

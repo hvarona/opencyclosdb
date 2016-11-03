@@ -19,13 +19,21 @@
  */
 package nl.strohalm.cyclos.entities.customization.documents;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.customization.files.File;
 
 /**
- * A document page, may be a form for entering parameters, or the document display page itself
+ * A document page, may be a form for entering parameters, or the document
+ * display page itself
+ *
  * @author luis
  */
+@Entity
+@DiscriminatorValue(value = "d")
 public class DocumentPage extends File {
 
     public static enum Relationships implements Relationship {
@@ -43,8 +51,10 @@ public class DocumentPage extends File {
 
     private static final long serialVersionUID = -8540979747354200297L;
 
-    private Document          document;
+    private Document document;
 
+    @ManyToOne(targetEntity = Document.class)
+    @JoinColumn(name = "document_id")
     public Document getDocument() {
         return document;
     }

@@ -19,10 +19,20 @@
  */
 package nl.strohalm.cyclos.entities.customization.documents;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.members.Member;
 import nl.strohalm.cyclos.utils.StringValuedEnum;
 
+@Entity
+@DiscriminatorValue(value = "M")
 public class MemberDocument extends StaticDocument {
 
     public static enum Relationships implements Relationship {
@@ -56,18 +66,23 @@ public class MemberDocument extends StaticDocument {
 
     private static final long serialVersionUID = -788736495660804107L;
 
-    private Member            member;
-    private Visibility        visibility;
+    private Member member;
+    private Visibility visibility;
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "member_id")
     public Member getMember() {
         return member;
     }
 
+    @Transient
     @Override
     public Nature getNature() {
         return Nature.MEMBER;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "visibility")
     public Visibility getVisibility() {
         return visibility;
     }

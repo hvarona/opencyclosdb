@@ -19,14 +19,23 @@
  */
 package nl.strohalm.cyclos.entities.customization.documents;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import nl.strohalm.cyclos.entities.Relationship;
 
 import org.apache.commons.lang.StringUtils;
 
 /**
- * Is a customized document, that will have custom pages for (optionally) displaying a form with parameters and show a document
+ * Is a customized document, that will have custom pages for (optionally)
+ * displaying a form with parameters and show a document
+ *
  * @author luis
  */
+@Entity
+@DiscriminatorValue(value = "D")
 public class DynamicDocument extends Document {
 
     public static enum Relationships implements Relationship {
@@ -43,22 +52,28 @@ public class DynamicDocument extends Document {
     }
 
     private static final long serialVersionUID = -3105332690172908757L;
-    private DocumentPage      formPage;
-    private DocumentPage      documentPage;
+    private DocumentPage formPage;
+    private DocumentPage documentPage;
 
+    @ManyToOne(targetEntity = DocumentPage.class)
+    @JoinColumn(name = "document_page_id")
     public DocumentPage getDocumentPage() {
         return documentPage;
     }
 
+    @ManyToOne(targetEntity = DocumentPage.class)
+    @JoinColumn(name = "form_page_id")
     public DocumentPage getFormPage() {
         return formPage;
     }
 
+    @Transient
     @Override
     public Nature getNature() {
         return Nature.DYNAMIC;
     }
 
+    @Transient
     public boolean isHasFormPage() {
         return formPage != null && StringUtils.isNotEmpty(formPage.getContents());
     }

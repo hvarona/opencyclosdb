@@ -19,9 +19,16 @@
  */
 package nl.strohalm.cyclos.entities.customization.documents;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.customization.binaryfiles.BinaryFile;
 
+@Entity
+@DiscriminatorValue(value = "S")
 public class StaticDocument extends Document {
 
     public static enum Relationships implements Relationship {
@@ -39,12 +46,15 @@ public class StaticDocument extends Document {
     }
 
     private static final long serialVersionUID = 5259915088454867316L;
-    private BinaryFile        binaryFile;
+    private BinaryFile binaryFile;
 
+    @ManyToOne(targetEntity = BinaryFile.class)
+    @JoinColumn(name = "binary_file_id")
     public BinaryFile getBinaryFile() {
         return binaryFile;
     }
 
+    @Transient
     @Override
     public Nature getNature() {
         return Nature.STATIC;
