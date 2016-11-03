@@ -21,6 +21,14 @@ package nl.strohalm.cyclos.entities.customization.images;
 
 import java.sql.Blob;
 import java.util.Calendar;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.ads.Ad;
@@ -29,8 +37,13 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 /**
  * Stores an image
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "images")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "tickets")
 public abstract class Image extends Entity {
 
     public static enum Nature implements StringValuedEnum {
@@ -92,42 +105,57 @@ public abstract class Image extends Entity {
     }
 
     private static final long serialVersionUID = 3550019581431328393L;
-    private String            contentType;
-    private Blob              image;
-    private Integer           imageSize;
-    private Calendar          lastModified;
-    private String            name;
-    private Blob              thumbnail;
-    private Integer           thumbnailSize;
+    private String contentType;
+    private Blob image;
+    private Integer imageSize;
+    private Calendar lastModified;
+    private String name;
+    private Blob thumbnail;
+    private Integer thumbnailSize;
 
     protected Image() {
     }
 
+    @Id
+    @GeneratedValue
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(name = "content_type", nullable = false, length = 100)
     public String getContentType() {
         return contentType;
     }
 
+    @Column(name = "image", nullable = false, length = 16000000)
     public Blob getImage() {
         return image;
     }
 
+    @Column(name = "image_size", nullable = false)
     public Integer getImageSize() {
         return imageSize;
     }
 
+    @Column(name = "last_modified", nullable = false)
     public Calendar getLastModified() {
         return lastModified;
     }
 
+    @Column(name = "name", nullable = false, length = 100)
+    @Override
     public String getName() {
         return name;
     }
 
+    @Transient
     public abstract Nature getNature();
 
     /**
      * Returns the name without extension
      */
+    @Transient
     public String getSimpleName() {
         final int pos = name == null ? -1 : name.lastIndexOf('.');
         if (pos < 0) {
@@ -136,10 +164,12 @@ public abstract class Image extends Entity {
         return name.substring(0, pos);
     }
 
+    @Column(name = "thumbnail", length = 16000000)
     public Blob getThumbnail() {
         return thumbnail;
     }
 
+    @Column(name = "rhumbnail_size", nullable = false)
     public Integer getThumbnailSize() {
         return thumbnailSize;
     }

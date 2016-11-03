@@ -44,7 +44,7 @@ import nl.strohalm.cyclos.entities.settings.LocalSettings;
 import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 @javax.persistence.Entity
-@Table(name = "certifications")
+@Table(name = "payment_obligations")
 public class PaymentObligation extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -154,7 +154,7 @@ public class PaymentObligation extends Entity {
     }
 
     @OneToMany(targetEntity = PaymentObligationLog.class)
-    @JoinColumn(name = "payment_obligation_id", nullable = false)
+    @JoinColumn(name = "payment_obligation_id")
     public Collection<PaymentObligationLog> getLogs() {
         return logs;
     }

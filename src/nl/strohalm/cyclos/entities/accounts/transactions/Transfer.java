@@ -253,9 +253,8 @@ public class Transfer extends Payment implements Rated {
         return authorizations;
     }
 
-    //@ManyToOne(targetEntity = BrokerCommissionContract.class)
-    //@JoinColumn(name = "broker_commission_contract_id")
-    @Transient
+    @ManyToOne(targetEntity = BrokerCommissionContract.class)
+    @JoinColumn(name = "broker_commission_contract_id")
     public BrokerCommissionContract getBrokerCommissionContract() {
         return brokerCommissionContract;
     }
@@ -310,9 +309,8 @@ public class Transfer extends Payment implements Rated {
         return iRate;
     }
 
-    //@ManyToOne(targetEntity = LoanPayment.class)
-    //@JoinColumn(name = "loan_payment_id")
-    @Transient
+    @ManyToOne(targetEntity = LoanPayment.class)
+    @JoinColumn(name = "loan_payment_id")
     public LoanPayment getLoanPayment() {
         return loanPayment;
     }
@@ -384,9 +382,8 @@ public class Transfer extends Payment implements Rated {
         return traceNumber;
     }
 
-    //@ManyToOne(targetEntity = TransactionFee.class)
-    //@JoinColumn(name = "transaction_fee_id")
-    @Transient
+    @ManyToOne(targetEntity = TransactionFee.class)
+    @JoinColumn(name = "transaction_fee_id")
     public TransactionFee getTransactionFee() {
         return transactionFee;
     }

@@ -21,6 +21,13 @@ package nl.strohalm.cyclos.entities.ads.imports;
 
 import java.util.Calendar;
 import java.util.Collection;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -30,9 +37,11 @@ import nl.strohalm.cyclos.utils.FormatObject;
 
 /**
  * Contains data about a whole advertisement import
- * 
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "ad_imports")
 public class AdImport extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -49,29 +58,45 @@ public class AdImport extends Entity {
         }
     }
 
-    private static final long              serialVersionUID = 1257547309418826441L;
-    private Calendar                       date;
-    private Administrator                  by;
-    private Currency                       currency;
-    private Collection<ImportedAd>         ads;
+    private static final long serialVersionUID = 1257547309418826441L;
+    private Calendar date;
+    private Administrator by;
+    private Currency currency;
+    private Collection<ImportedAd> ads;
     private Collection<ImportedAdCategory> categories;
 
+    @Id
+    @GeneratedValue
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @OneToMany(targetEntity = ImportedAd.class)
+    @JoinColumn(name = "import_id")
     public Collection<ImportedAd> getAds() {
         return ads;
     }
 
+    @ManyToOne(targetEntity = Administrator.class)
+    @JoinColumn(name = "by_id", nullable = false)
     public Administrator getBy() {
         return by;
     }
 
+    @OneToMany(targetEntity = ImportedAdCategory.class)
+    @JoinColumn(name = "ad_import_id")
     public Collection<ImportedAdCategory> getCategories() {
         return categories;
     }
 
+    @ManyToOne(targetEntity = Currency.class)
+    @JoinColumn(name = "currency", nullable = false)
     public Currency getCurrency() {
         return currency;
     }
 
+    @Column(name = "date")
     public Calendar getDate() {
         return date;
     }

@@ -22,6 +22,17 @@ package nl.strohalm.cyclos.entities.accounts.loans;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Collection;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -31,8 +42,11 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 /**
  * A loan payment (parcel)
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "loan_payments")
 public class LoanPayment extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -70,21 +84,30 @@ public class LoanPayment extends Entity {
         }
     }
 
-    private static final long    serialVersionUID = 3972322253540292312L;
-    private Calendar             expirationDate;
-    private int                  index;
-    private Loan                 loan;
-    private BigDecimal           repaidAmount     = BigDecimal.ZERO;
-    private Calendar             repaymentDate;
-    private Status               status           = Status.OPEN;
+    private static final long serialVersionUID = 3972322253540292312L;
+    private Calendar expirationDate;
+    private int index;
+    private Loan loan;
+    private BigDecimal repaidAmount = BigDecimal.ZERO;
+    private Calendar repaymentDate;
+    private Status status = Status.OPEN;
     private Collection<Transfer> transfers;
-    private BigDecimal           amount;
-    private ExternalTransfer     externalTransfer;
+    private BigDecimal amount;
+    private ExternalTransfer externalTransfer;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(name = "amount", precision = 15, scale = 6, nullable = false)
     public BigDecimal getAmount() {
         return amount;
     }
 
+    @Transient
     public BigDecimal getDiscardedAmount() {
         if (status != Status.DISCARDED) {
             return BigDecimal.ZERO;
@@ -96,26 +119,34 @@ public class LoanPayment extends Entity {
         }
     }
 
+    @Column(name = "expiration_date", nullable = false)
     public Calendar getExpirationDate() {
         return expirationDate;
     }
 
+    @ManyToOne(targetEntity = ExternalTransfer.class)
+    @JoinColumn(name = "external_transfer_id")
     public ExternalTransfer getExternalTransfer() {
         return externalTransfer;
     }
 
+    @Column(name = "payment_index", nullable = false)
     public int getIndex() {
         return index;
     }
 
+    @ManyToOne(targetEntity = Loan.class)
+    @JoinColumn(name = "loan_id")
     public Loan getLoan() {
         return loan;
     }
 
+    @Transient
     public int getNumber() {
         return index + 1;
     }
 
+    @Transient
     public BigDecimal getRemainingAmount() {
         if (status == null || status.isClosed()) {
             return BigDecimal.ZERO;
@@ -123,18 +154,24 @@ public class LoanPayment extends Entity {
         return amount.subtract(repaidAmount);
     }
 
+    @Column(name = "repaid_amount", precision = 15, scale = 6, nullable = false)
     public BigDecimal getRepaidAmount() {
         return repaidAmount;
     }
 
+    @Column(name = "repayment_date")
     public Calendar getRepaymentDate() {
         return repaymentDate;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     public Status getStatus() {
         return status;
     }
 
+    @OneToMany(targetEntity = Transfer.class)
+    @JoinColumn(name = "loan_payment_id")
     public Collection<Transfer> getTransfers() {
         return transfers;
     }

@@ -24,15 +24,16 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -133,6 +134,7 @@ public class Loan extends Entity {
         return transfer == null ? null : transfer.getAmount();
     }
 
+    @Transient
     public int getClosedPaymentsCount() {
         int count = 0;
         for (final LoanPayment payment : payments) {
@@ -143,6 +145,7 @@ public class Loan extends Entity {
         return count;
     }
 
+    @Transient
     public Calendar getExpirationDate() {
         LoanPayment payment = getFirstOpenPayment();
         if (payment == null) {
@@ -151,6 +154,7 @@ public class Loan extends Entity {
         return payment == null ? null : payment.getExpirationDate();
     }
 
+    @Transient
     public LoanPayment getFirstOpenPayment() {
         if (payments != null) {
             for (final LoanPayment payment : payments) {
@@ -162,6 +166,7 @@ public class Loan extends Entity {
         return null;
     }
 
+    @Transient
     public LoanPayment getFirstPaymentWithStatus(final LoanPayment.Status status) {
         if (payments != null) {
             for (final LoanPayment payment : payments) {
@@ -173,6 +178,7 @@ public class Loan extends Entity {
         return null;
     }
 
+    @Transient
     public Calendar getGrantDate() {
         return transfer == null ? null : transfer.getProcessDate();
     }
@@ -183,6 +189,7 @@ public class Loan extends Entity {
         return loanGroup;
     }
 
+    @Transient
     public Member getMember() {
         try {
             return (Member) transfer.getTo().getOwner();
@@ -192,25 +199,27 @@ public class Loan extends Entity {
     }
 
     @Embedded
-    @AttributeOverrides({
-        @AttributeOverride(name = "fee", column = @Column(name = "credit_fee")),
-        @AttributeOverride(name = "type", column = @Column(name = "credit_fee_type"))})
     public LoanParameters getParameters() {
         return parameters;
     }
 
+    @Transient
     public int getPaymentCount() {
         return payments == null ? 0 : payments.size();
     }
 
+    @OneToMany(targetEntity = LoanPayment.class)
+    @JoinColumn(name = "loan_id")
     public List<LoanPayment> getPayments() {
         return payments;
     }
 
+    @Transient
     public BigDecimal getRemainingAmount() {
         return totalAmount.subtract(getRepaidAmount());
     }
 
+    @Transient
     public BigDecimal getRepaidAmount() {
         BigDecimal total = BigDecimal.ZERO;
         if (payments != null) {
@@ -226,6 +235,7 @@ public class Loan extends Entity {
         return total;
     }
 
+    @Transient
     public Calendar getRepaymentDate() {
         if (payments == null || payments.isEmpty()) {
             return null;
@@ -234,6 +244,7 @@ public class Loan extends Entity {
         return payment.getStatus().isClosed() ? payment.getRepaymentDate() : null;
     }
 
+    @Transient
     public Status getStatus() {
         if (transfer.getStatus() == Payment.Status.PENDING) {
             return Status.PENDING_AUTHORIZATION;
@@ -249,6 +260,10 @@ public class Loan extends Entity {
         return Status.CLOSED;
     }
 
+    @ManyToMany(targetEntity = Member.class)
+    @JoinTable(name = "members_loans",
+            joinColumns = @JoinColumn(name = "loan_id"),
+            inverseJoinColumns = @JoinColumn(name = "member_id"))
     public Collection<Member> getToMembers() {
         return toMembers;
     }
@@ -264,10 +279,12 @@ public class Loan extends Entity {
         return transfer;
     }
 
+    @Transient
     public TransferType getTransferType() {
         return transfer == null ? null : transfer.getType();
     }
 
+    @Transient
     public boolean isToGroup() {
         return loanGroup != null;
     }

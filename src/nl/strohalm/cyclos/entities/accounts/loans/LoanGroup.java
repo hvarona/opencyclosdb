@@ -20,6 +20,16 @@
 package nl.strohalm.cyclos.entities.accounts.loans;
 
 import java.util.Collection;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -29,10 +39,14 @@ import nl.strohalm.cyclos.entities.members.Member;
 import nl.strohalm.cyclos.utils.CustomFieldsContainer;
 
 /**
- * A loan group represents a group of members that receive a loan. This is common in microcredit operations. The transfer itself is credited in the
+ * A loan group represents a group of members that receive a loan. This is
+ * common in microcredit operations. The transfer itself is credited in the
  * responsible member account.
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name="loan_groups")
 public class LoanGroup extends Entity implements CustomFieldsContainer<LoanGroupCustomField, LoanGroupCustomFieldValue>, Comparable<LoanGroup> {
 
     public static enum Relationships implements Relationship {
@@ -48,41 +62,60 @@ public class LoanGroup extends Entity implements CustomFieldsContainer<LoanGroup
         }
     }
 
-    private static final long                     serialVersionUID = -5589958336162094616L;
-    private String                                description;
-    private Collection<Loan>                      loans;
-    private Collection<Member>                    members;
-    private String                                name;
+    private static final long serialVersionUID = -5589958336162094616L;
+    private String description;
+    private Collection<Loan> loans;
+    private Collection<Member> members;
+    private String name;
     private Collection<LoanGroupCustomFieldValue> customValues;
 
     public int compareTo(final LoanGroup o) {
         return getName().compareTo(o.getName());
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Transient
     public Class<LoanGroupCustomField> getCustomFieldClass() {
         return LoanGroupCustomField.class;
     }
 
+    @Transient
     public Class<LoanGroupCustomFieldValue> getCustomFieldValueClass() {
         return LoanGroupCustomFieldValue.class;
     }
 
+    @OneToMany(targetEntity = LoanGroupCustomFieldValue.class)
+    @JoinColumn(name = "loan_group_id")
     public Collection<LoanGroupCustomFieldValue> getCustomValues() {
         return customValues;
     }
 
+    @Column(name = "description")
     public String getDescription() {
         return description;
     }
 
+    @OneToMany(targetEntity = Loan.class)
+    @JoinColumn(name = "loan_group_id")
     public Collection<Loan> getLoans() {
         return loans;
     }
 
+    @ManyToMany(targetEntity = Member.class)
+    @JoinTable(name = "members_loan_groups",
+            joinColumns = @JoinColumn(name = "loan_group_id"),
+            inverseJoinColumns = @JoinColumn(name = "member_id"))
     public Collection<Member> getMembers() {
         return members;
     }
 
+    @Column(name = "name", nullable = false, length = 100)
     public String getName() {
         return name;
     }

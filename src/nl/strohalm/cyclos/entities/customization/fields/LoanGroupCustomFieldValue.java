@@ -19,13 +19,21 @@
  */
 package nl.strohalm.cyclos.entities.customization.fields;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.accounts.loans.LoanGroup;
 
 /**
  * Custom field value for loan groups
+ *
  * @author luis
  */
+@Entity
+@DiscriminatorValue(value = "loan_group")
 public class LoanGroupCustomFieldValue extends CustomFieldValue {
 
     public static enum Relationships implements Relationship {
@@ -44,12 +52,15 @@ public class LoanGroupCustomFieldValue extends CustomFieldValue {
 
     private static final long serialVersionUID = -5360132689596383745L;
 
-    private LoanGroup         loanGroup;
+    private LoanGroup loanGroup;
 
+    @ManyToOne(targetEntity = LoanGroup.class)
+    @JoinColumn(name = "loan_group_id")
     public LoanGroup getLoanGroup() {
         return loanGroup;
     }
 
+    @Transient
     @Override
     public Object getOwner() {
         return getLoanGroup();

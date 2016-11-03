@@ -24,6 +24,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -32,8 +41,11 @@ import org.apache.commons.collections.CollectionUtils;
 
 /**
  * A hierarchical ad category
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "ad_categories")
 public class AdCategory extends Entity implements Comparable<AdCategory> {
 
     public static enum Relationships implements Relationship {
@@ -52,27 +64,38 @@ public class AdCategory extends Entity implements Comparable<AdCategory> {
 
     /**
      * The maximum level for nesting categories<br>
-     * Note: take into account the calculations in getGlobalOrder when increasing MAX_LEVEL. MAX_LEVEL cannot be increased infinitely.
+     * Note: take into account the calculations in getGlobalOrder when
+     * increasing MAX_LEVEL. MAX_LEVEL cannot be increased infinitely.
      */
-    public static final int        MAX_LEVEL        = 3;
+    public static final int MAX_LEVEL = 3;
 
-    private static final long      serialVersionUID = -4371587757348684782L;
-    private String                 name;
-    private AdCategory             parent;
+    private static final long serialVersionUID = -4371587757348684782L;
+    private String name;
+    private AdCategory parent;
     private Collection<AdCategory> children;
-    private boolean                active;
-    private Integer                order            = 0;
-    private BigInteger             globalOrder;
+    private boolean active;
+    private Integer order = 0;
+    private BigInteger globalOrder;
 
     @Override
     public int compareTo(final AdCategory other) {
         return getFullName().compareTo(other.getFullName());
     }
 
+    @Id
+    @GeneratedValue
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @OneToMany(targetEntity = AdCategory.class, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "parent_id")
     public Collection<AdCategory> getChildren() {
         return children;
     }
 
+    @Transient
     public String getFullName() {
         if (parent == null) {
             return name;
@@ -81,6 +104,7 @@ public class AdCategory extends Entity implements Comparable<AdCategory> {
         }
     }
 
+    @Transient
     public String getFullNameButRoot() {
         if (getLevel() <= 2) {
             return name;
@@ -90,11 +114,16 @@ public class AdCategory extends Entity implements Comparable<AdCategory> {
     }
 
     /**
-     * returns a BigInteger indicating the global order index of the category. In the global order, whenever an item with children is encountered, all
-     * child nodes are first handled before going on with the next item/node on the same level.<br>
-     * Note that this method only works correctly with a maximum of 999 subcategories for a certain category.
+     * returns a BigInteger indicating the global order index of the category.
+     * In the global order, whenever an item with children is encountered, all
+     * child nodes are first handled before going on with the next item/node on
+     * the same level.<br>
+     * Note that this method only works correctly with a maximum of 999
+     * subcategories for a certain category.
+     *
      * @author rinke
      */
+    @Transient
     public BigInteger getGlobalOrder() {
         if (globalOrder == null) {
             final int correctedLevel = AdCategory.MAX_LEVEL - getLevel();
@@ -107,6 +136,7 @@ public class AdCategory extends Entity implements Comparable<AdCategory> {
         return globalOrder;
     }
 
+    @Transient
     public int getLevel() {
         if (parent == null) {
             return 1;
@@ -114,15 +144,19 @@ public class AdCategory extends Entity implements Comparable<AdCategory> {
         return 1 + parent.getLevel();
     }
 
+    @Column(name = "name", nullable = false, length = 100)
     @Override
     public String getName() {
         return name;
     }
 
+    @Column(name = "order_index", nullable = false)
     public Integer getOrder() {
         return order;
     }
 
+    @ManyToOne(targetEntity = AdCategory.class)
+    @JoinColumn(name = "parent_id")
     public AdCategory getParent() {
         return parent;
     }
@@ -130,6 +164,7 @@ public class AdCategory extends Entity implements Comparable<AdCategory> {
     /**
      * Returns a list, beggining of the level 1 category to this one
      */
+    @Transient
     public List<AdCategory> getPathFromRoot() {
         final List<AdCategory> path = new ArrayList<AdCategory>();
         AdCategory current = this;
@@ -141,6 +176,7 @@ public class AdCategory extends Entity implements Comparable<AdCategory> {
         return path;
     }
 
+    @Transient
     public AdCategory getRootCategory() {
         if (parent == null) {
             return this;
@@ -149,20 +185,29 @@ public class AdCategory extends Entity implements Comparable<AdCategory> {
     }
 
     /**
-     * tests if the category is disabled or not. Note that it does not test this for parent categories. If any parent category is disabled, then
-     * logically the child categories are also disabled, even if this is not always updated to these child categories. For this reason, in particular
-     * cases it's better to use {@link #isEnabled()}.
+     * tests if the category is disabled or not. Note that it does not test this
+     * for parent categories. If any parent category is disabled, then logically
+     * the child categories are also disabled, even if this is not always
+     * updated to these child categories. For this reason, in particular cases
+     * it's better to use {@link #isEnabled()}.
+     *
      * @return true if the category is not disabled.
      */
+    @Column(name = "active", nullable = false)
     public boolean isActive() {
         return active;
     }
 
     /**
-     * tests if this category or any of its parents is active. If a parent category is disabled, then logically the child categories are also
-     * disabled, even though these might not be updated. For this reason, this method might be more appropriate than {@link #isActive()}.
-     * @return true if and only if this category and all of it's parents in line are active.
+     * tests if this category or any of its parents is active. If a parent
+     * category is disabled, then logically the child categories are also
+     * disabled, even though these might not be updated. For this reason, this
+     * method might be more appropriate than {@link #isActive()}.
+     *
+     * @return true if and only if this category and all of it's parents in line
+     * are active.
      */
+    @Transient
     public boolean isEnabled() {
         AdCategory current = this;
         while (current != null) {
@@ -174,10 +219,12 @@ public class AdCategory extends Entity implements Comparable<AdCategory> {
         return true;
     }
 
+    @Transient
     public boolean isLeaf() {
         return CollectionUtils.isEmpty(children);
     }
 
+    @Transient
     public boolean isRoot() {
         return parent == null;
     }

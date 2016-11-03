@@ -19,24 +19,33 @@
  */
 package nl.strohalm.cyclos.entities.accounts.transactions;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
 /**
  * A ticket processed for webshops
  * @author luis
  */
+@Entity
+@DiscriminatorValue(value="W")
 public class WebShopTicket extends Ticket {
     private static final long serialVersionUID = 3429390634490637887L;
     private String            clientAddress;
     private String            memberAddress;
     private String            returnUrl;
 
+    @Column(name="client_address",length = 40)
     public String getClientAddress() {
         return clientAddress;
     }
 
+    @Column(name="member_address",length = 40)
     public String getMemberAddress() {
         return memberAddress;
     }
 
+    @Column(name="return_url",length = 150)
     public String getReturnUrl() {
         return returnUrl;
     }

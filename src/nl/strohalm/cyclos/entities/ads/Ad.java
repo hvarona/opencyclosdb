@@ -23,6 +23,17 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Indexable;
@@ -41,8 +52,11 @@ import org.apache.commons.collections.CollectionUtils;
 
 /**
  * A product / service advertisement by a member
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "ads")
 public class Ad extends Entity implements CustomFieldsContainer<AdCustomField, AdCustomFieldValue>, Indexable {
 
     public static enum Relationships implements Relationship {
@@ -86,75 +100,110 @@ public class Ad extends Entity implements CustomFieldsContainer<AdCustomField, A
         }
     }
 
-    private static final long              serialVersionUID = 1552286239776108655L;
-    private AdCategory                     category;
+    private static final long serialVersionUID = 1552286239776108655L;
+    private AdCategory category;
     private Collection<AdCustomFieldValue> customValues;
-    private String                         description;
-    private boolean                        externalPublication;
-    private Collection<AdImage>            images;
-    private Member                         owner;
-    private boolean                        permanent;
-    private Currency                       currency;
-    private BigDecimal                     price;
-    private Period                         publicationPeriod;
-    private String                         title;
-    private TradeType                      tradeType;
-    private Calendar                       creationDate;
-    private Calendar                       deleteDate;
-    private boolean                        html;
-    private boolean                        membersNotified;
+    private String description;
+    private boolean externalPublication;
+    private Collection<AdImage> images;
+    private Member owner;
+    private boolean permanent;
+    private Currency currency;
+    private BigDecimal price;
+    private Period publicationPeriod;
+    private String title;
+    private TradeType tradeType;
+    private Calendar creationDate;
+    private Calendar deleteDate;
+    private boolean html;
+    private boolean membersNotified;
 
+    @Id
+    @GeneratedValue
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @ManyToOne(targetEntity = AdCategory.class)
+    @JoinColumn(name = "category_id")
     public AdCategory getCategory() {
         return category;
     }
 
+    @Column(name = "creation_date", updatable = false)
     public Calendar getCreationDate() {
         return creationDate;
     }
 
+    @ManyToOne(targetEntity = Currency.class)
+    @JoinColumn(name = "currency_id")
     public Currency getCurrency() {
         return currency;
     }
 
+    @Transient
     @Override
     public Class<AdCustomField> getCustomFieldClass() {
         return AdCustomField.class;
     }
 
+    @Transient
     @Override
     public Class<AdCustomFieldValue> getCustomFieldValueClass() {
         return AdCustomFieldValue.class;
     }
 
+    @OneToMany(targetEntity = AdCustomFieldValue.class, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "ad_id")
     @Override
     public Collection<AdCustomFieldValue> getCustomValues() {
         return customValues;
     }
 
+    @Column(name = "delete_date")
     public Calendar getDeleteDate() {
         return deleteDate;
     }
 
+    @Column(name = "description")
     public String getDescription() {
         return description;
     }
 
+    @OneToMany(targetEntity = AdImage.class, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "ad_id")
     public Collection<AdImage> getImages() {
         return images;
     }
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "owner_id", nullable = false)
     public Member getOwner() {
         return owner;
     }
 
+    @Column(name = "price", precision = 15, scale = 6)
     public BigDecimal getPrice() {
         return price;
     }
 
+    @Transient
     public Period getPublicationPeriod() {
         return publicationPeriod;
     }
 
+    @Column(name = "publication_start")
+    public Calendar getPublicationStart() {
+        return publicationPeriod.getBegin();
+    }
+
+    @Column(name = "publication_end")
+    public Calendar getPublicationEnd() {
+        return publicationPeriod.getEnd();
+    }
+
+    @Transient
     public Status getStatus() {
         if (permanent) {
             return Status.PERMANENT;
@@ -171,34 +220,43 @@ public class Ad extends Entity implements CustomFieldsContainer<AdCustomField, A
         return Status.ACTIVE;
     }
 
+    @Column(name = "title", nullable = false, length = 100)
     public String getTitle() {
         return title;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "trade_type", nullable = false)
     public TradeType getTradeType() {
         return tradeType;
     }
 
+    @Transient
     public boolean isDeleted() {
         return getDeleteDate() != null;
     }
 
+    @Column(name = "external_publication", nullable = false)
     public boolean isExternalPublication() {
         return externalPublication;
     }
 
+    @Transient
     public boolean isHasImages() {
         return CollectionUtils.isNotEmpty(getImages());
     }
 
+    @Column(name = "is_html", nullable = false)
     public boolean isHtml() {
         return html;
     }
 
+    @Column(name = "members_notified", nullable = false)
     public boolean isMembersNotified() {
         return membersNotified;
     }
 
+    @Column(name = "permanent", nullable = false)
     public boolean isPermanent() {
         return permanent;
     }
@@ -258,6 +316,14 @@ public class Ad extends Entity implements CustomFieldsContainer<AdCustomField, A
 
     public void setPublicationPeriod(final Period publicationPeriod) {
         this.publicationPeriod = publicationPeriod;
+    }
+
+    public void setPublicationStart(Calendar begin) {
+        publicationPeriod.setBegin(begin);
+    }
+
+    public void setPublicationEnd(Calendar end) {
+        publicationPeriod.setEnd(end);
     }
 
     public void setTitle(final String title) {

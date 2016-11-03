@@ -20,16 +20,30 @@
 package nl.strohalm.cyclos.entities.alerts;
 
 import java.util.Calendar;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Entity;
 
 /**
  * An alert
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "alerts")
+@DiscriminatorColumn(name = "subclass")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class Alert extends Entity {
+
     public static enum Type {
         SYSTEM, MEMBER;
+
         public Class<? extends Alert> getEntityType() {
             return this == SYSTEM ? SystemAlert.class : MemberAlert.class;
         }
@@ -37,43 +51,58 @@ public abstract class Alert extends Entity {
 
     private static final long serialVersionUID = -9026118891761458811L;
 
-    protected String          arg0;
-    protected String          arg1;
-    protected String          arg2;
-    protected String          arg3;
-    protected String          arg4;
-    protected Calendar        date;
-    protected String          key;
-    protected boolean         removed;
+    protected String arg0;
+    protected String arg1;
+    protected String arg2;
+    protected String arg3;
+    protected String arg4;
+    protected Calendar date;
+    protected String key;
+    protected boolean removed;
 
+    @Id
+    @GeneratedValue
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(name = "arg0")
     public String getArg0() {
         return arg0;
     }
 
+    @Column(name = "arg1")
     public String getArg1() {
         return arg1;
     }
 
+    @Column(name = "arg2")
     public String getArg2() {
         return arg2;
     }
 
+    @Column(name = "arg3")
     public String getArg3() {
         return arg3;
     }
 
+    @Column(name = "arg4")
     public String getArg4() {
         return arg4;
     }
 
+    @Column(name = "date", nullable = false)
     public Calendar getDate() {
         return date;
     }
 
+    @Column(name = "msg_key", nullable = false)
     public String getKey() {
         return key;
     }
 
+    @Column(name = "removed", nullable = false)
     public boolean isRemoved() {
         return removed;
     }

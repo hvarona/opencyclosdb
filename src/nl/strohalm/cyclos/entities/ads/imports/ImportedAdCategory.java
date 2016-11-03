@@ -19,15 +19,24 @@
  */
 package nl.strohalm.cyclos.entities.ads.imports;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.ads.AdCategory;
 
 /**
  * An imported ad category, which was still not processed
- * 
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "imported_ad_categories")
 public class ImportedAdCategory extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -44,21 +53,33 @@ public class ImportedAdCategory extends Entity {
         }
     }
 
-    private static final long  serialVersionUID = 3881658859416912467L;
+    private static final long serialVersionUID = 3881658859416912467L;
 
-    private AdImport           adImport;
-    private String             name;
+    private AdImport adImport;
+    private String name;
     private ImportedAdCategory importedParent;
-    private AdCategory         existingParent;
+    private AdCategory existingParent;
 
+    @Id
+    @GeneratedValue
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @ManyToOne(targetEntity = AdImport.class)
+    @JoinColumn(name = "ad_import_id", nullable = false)
     public AdImport getAdImport() {
         return adImport;
     }
 
+    @ManyToOne(targetEntity = AdImport.class)
+    @JoinColumn(name = "existing_parent_id")
     public AdCategory getExistingParent() {
         return existingParent;
     }
 
+    @Transient
     public String getFullName() {
         if (existingParent == null && importedParent == null) {
             return name;
@@ -69,10 +90,14 @@ public class ImportedAdCategory extends Entity {
         }
     }
 
+    @ManyToOne(targetEntity = AdImport.class)
+    @JoinColumn(name = "imported_parent_id")
     public ImportedAdCategory getImportedParent() {
         return importedParent;
     }
 
+    @Column(name = "name", length = 100)
+    @Override
     public String getName() {
         return name;
     }

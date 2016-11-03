@@ -55,7 +55,7 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
 import nl.strohalm.cyclos.utils.guarantees.GuaranteesHelper;
 
 @javax.persistence.Entity
-@Table(name = "certifications")
+@Table(name = "guarantees")
 public class Guarantee extends Entity implements CustomFieldsContainer<PaymentCustomField, PaymentCustomFieldValue> {
 
     public static enum Relationships implements Relationship {

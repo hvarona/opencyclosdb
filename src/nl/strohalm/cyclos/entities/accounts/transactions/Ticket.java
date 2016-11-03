@@ -22,6 +22,17 @@ package nl.strohalm.cyclos.entities.accounts.transactions;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Map;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -31,11 +42,18 @@ import nl.strohalm.cyclos.entities.settings.LocalSettings;
 import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 /**
- * A ticket is used to validate external payments from clients not on whitelist. The web shop server (on the whitelist) must request a ticket to
- * Cyclos, and pass this ticket to the client. When the client confirms all data, that ticket is passed back to Cyclos. If the ticket is not
- * confirmed, it is marked as cancelled by the TicketExpirationListener
+ * A ticket is used to validate external payments from clients not on whitelist.
+ * The web shop server (on the whitelist) must request a ticket to Cyclos, and
+ * pass this ticket to the client. When the client confirms all data, that
+ * ticket is passed back to Cyclos. If the ticket is not confirmed, it is marked
+ * as cancelled by the TicketExpirationListener
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "tickets")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "tickets")
 public abstract class Ticket extends Entity {
 
     public enum Nature implements StringValuedEnum {
@@ -84,53 +102,76 @@ public abstract class Ticket extends Entity {
 
     private static final long serialVersionUID = -4036600783513490404L;
 
-    private BigDecimal        amount;
-    private Currency          currency;
-    private Calendar          creationDate;
-    private String            description;
-    private Member            from;
-    private Status            status;
-    private String            ticket;
-    private Member            to;
-    private Transfer          transfer;
-    private TransferType      transferType;
+    private BigDecimal amount;
+    private Currency currency;
+    private Calendar creationDate;
+    private String description;
+    private Member from;
+    private Status status;
+    private String ticket;
+    private Member to;
+    private Transfer transfer;
+    private TransferType transferType;
 
+    @Id
+    @GeneratedValue
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(name = "amount", precision = 15, scale = 6)
     public BigDecimal getAmount() {
         return amount;
     }
 
+    @Column(name = "creation_date")
     public Calendar getCreationDate() {
         return creationDate;
     }
 
+    @ManyToOne(targetEntity = Currency.class)
+    @JoinColumn(name = "cureency_id")
     public Currency getCurrency() {
         return currency;
     }
 
+    @Column(name = "description")
     public String getDescription() {
         return description;
     }
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "from_member_id")
     public Member getFrom() {
         return from;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     public Status getStatus() {
         return status;
     }
 
+    @Column(name = "ticket", length = 32, nullable = false)
     public String getTicket() {
         return ticket;
     }
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "to_member_id")
     public Member getTo() {
         return to;
     }
 
+    @ManyToOne(targetEntity = Transfer.class)
+    @JoinColumn(name = "transfer_id")
     public Transfer getTransfer() {
         return transfer;
     }
 
+    @ManyToOne(targetEntity = TransferType.class)
+    @JoinColumn(name = "transfer_type_id")
     public TransferType getTransferType() {
         return transferType;
     }

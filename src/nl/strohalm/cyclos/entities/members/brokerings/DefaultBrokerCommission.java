@@ -19,6 +19,16 @@
  */
 package nl.strohalm.cyclos.entities.members.brokerings;
 
+import java.math.BigDecimal;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.accounts.fees.transaction.BrokerCommission;
@@ -28,8 +38,11 @@ import nl.strohalm.cyclos.utils.Amount;
 
 /**
  * Default commission settings for a broker
+ *
  * @author Jefferson Magno
  */
+@javax.persistence.Entity
+@Table(name = "default_broker_commissions")
 public class DefaultBrokerCommission extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -51,30 +64,55 @@ public class DefaultBrokerCommission extends Entity {
     }
 
     private static final long serialVersionUID = -4791497274620475610L;
-    private Member            broker;
-    private BrokerCommission  brokerCommission;
-    private Amount            amount;
-    private Integer           count;
-    private When              when;
-    private boolean           setByBroker;
-    private boolean           suspended;
+    private Member broker;
+    private BrokerCommission brokerCommission;
+    private Amount amount;
+    private Integer count;
+    private When when;
+    private boolean setByBroker;
+    private boolean suspended;
 
+    @Id
+    @GeneratedValue
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Transient
     public Amount getAmount() {
         return amount;
     }
 
+    @Column(name = "amount", precision = 15, scale = 6, nullable = false)
+    public BigDecimal getAmountValue() {
+        return amount.getValue();
+    }
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "amount_typee", nullable = false)
+    public Amount.Type getAmountType() {
+        return amount.getType();
+    }
+
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "broker_id", nullable = false, updatable = false)
     public Member getBroker() {
         return broker;
     }
 
+    @ManyToOne(targetEntity = BrokerCommission.class)
+    @JoinColumn(name = "broker_commission_id", nullable = false)
     public BrokerCommission getBrokerCommission() {
         return brokerCommission;
     }
 
+    @Column(name = "when_count")
     public Integer getCount() {
         return count;
     }
 
+    @Transient
     public Status getStatus() {
         if (suspended) {
             return Status.SUSPENDED;
@@ -85,20 +123,32 @@ public class DefaultBrokerCommission extends Entity {
         }
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "when_apply", nullable = false)
     public When getWhen() {
         return when;
     }
 
+    @Column(name = "set_by_broker")
     public boolean isSetByBroker() {
         return setByBroker;
     }
 
+    @Column(name = "suspended")
     public boolean isSuspended() {
         return suspended;
     }
 
     public void setAmount(final Amount amount) {
         this.amount = amount;
+    }
+
+    public void setAmountValue(BigDecimal value) {
+        amount.setValue(value);
+    }
+
+    public void setAmountType(Amount.Type type) {
+        amount.setType(type);
     }
 
     public void setBroker(final Member broker) {

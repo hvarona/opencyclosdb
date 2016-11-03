@@ -19,7 +19,18 @@
  */
 package nl.strohalm.cyclos.entities.members.brokerings;
 
+import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Map;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -32,8 +43,11 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 /**
  * Broker commission contract
+ *
  * @author Jefferson Magno
  */
+@javax.persistence.Entity
+@Table(name = "broker_commission_contracts")
 public class BrokerCommissionContract extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -68,44 +82,92 @@ public class BrokerCommissionContract extends Entity {
 
     private static final long serialVersionUID = -4791497274620475610L;
 
-    private Brokering         brokering;
-    private BrokerCommission  brokerCommission;
-    private Period            period;
-    private Amount            amount;
-    private Status            status;
-    private Status            statusBeforeSuspension;
-    private Element           cancelledBy;
+    private Brokering brokering;
+    private BrokerCommission brokerCommission;
+    private Period period;
+    private Amount amount;
+    private Status status;
+    private Status statusBeforeSuspension;
+    private Element cancelledBy;
 
+    @Id
+    @GeneratedValue
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Transient
     public Amount getAmount() {
         return amount;
     }
 
+    @Column(name = "amount_value", precision = 15, scale = 6, nullable = false)
+    public BigDecimal getAmountValue() {
+        return amount.getValue();
+    }
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "amount_typee", nullable = false)
+    public Amount.Type getAmountType() {
+        return amount.getType();
+    }
+
+    @ManyToOne(targetEntity = BrokerCommission.class)
+    @JoinColumn(name = "broker_commission_id", updatable = false)
     public BrokerCommission getBrokerCommission() {
         return brokerCommission;
     }
 
+    @ManyToOne(targetEntity = Brokering.class)
+    @JoinColumn(name = "brokering_id", updatable = false)
     public Brokering getBrokering() {
         return brokering;
     }
 
+    @ManyToOne(targetEntity = Element.class)
+    @JoinColumn(name = "cancelled_by_id")
     public Element getCancelledBy() {
         return cancelledBy;
     }
 
+    @Transient
     public Period getPeriod() {
         return period;
     }
 
+    @Column(name = "start_date", nullable = false)
+    public Calendar getStartDate() {
+        return period.getBegin();
+    }
+
+    @Column(name = "end_date")
+    public Calendar getEndDate() {
+        return period.getEnd();
+    }
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     public Status getStatus() {
         return status;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status_before_suspension")
     public Status getStatusBeforeSuspension() {
         return statusBeforeSuspension;
     }
 
     public void setAmount(final Amount amount) {
         this.amount = amount;
+    }
+
+    public void setAmountValue(BigDecimal value) {
+        amount.setValue(value);
+    }
+
+    public void setAmountType(Amount.Type type) {
+        amount.setType(type);
     }
 
     public void setBrokerCommission(final BrokerCommission brokerCommission) {
@@ -122,6 +184,14 @@ public class BrokerCommissionContract extends Entity {
 
     public void setPeriod(final Period period) {
         this.period = period;
+    }
+
+    public void setStartDate(Calendar start) {
+        this.period.setBegin(start);
+    }
+
+    public void setEndDate(Calendar end) {
+        this.period.setEnd(end);
     }
 
     public void setStatus(final Status status) {

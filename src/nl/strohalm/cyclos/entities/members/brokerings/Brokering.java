@@ -21,6 +21,14 @@ package nl.strohalm.cyclos.entities.members.brokerings;
 
 import java.util.Calendar;
 import java.util.Collection;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -31,6 +39,8 @@ import nl.strohalm.cyclos.entities.members.Member;
  *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "brokerings")
 public class Brokering extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -57,26 +67,43 @@ public class Brokering extends Entity {
     private Collection<BrokerCommissionContract> contracts;
     private Collection<BrokeringCommissionStatus> statuses;
 
+    @Id
+    @GeneratedValue
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "broker_id", updatable = false, nullable = false)
     public Member getBroker() {
         return broker;
     }
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "brokered_id", updatable = false, nullable = false)
     public Member getBrokered() {
         return brokered;
     }
 
+    @OneToMany(targetEntity = BrokerCommissionContract.class, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "brokering_id")
     public Collection<BrokerCommissionContract> getContracts() {
         return contracts;
     }
 
+    @Column(name = "end_date")
     public Calendar getEndDate() {
         return endDate;
     }
 
+    @Column(name = "start_date", updatable = false, nullable = false)
     public Calendar getStartDate() {
         return startDate;
     }
 
+    @OneToMany(targetEntity = BrokeringCommissionStatus.class, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "brokering_id")
     public Collection<BrokeringCommissionStatus> getStatuses() {
         return statuses;
     }

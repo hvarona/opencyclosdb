@@ -19,14 +19,20 @@
  */
 package nl.strohalm.cyclos.entities.ads.imports;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.customization.fields.CustomFieldValue;
 
 /**
  * Holds a custom field value for temporary imported members
- * 
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@DiscriminatorValue(value = "imp_ad")
 public class ImportedAdCustomFieldValue extends CustomFieldValue {
 
     public static enum Relationships implements Relationship {
@@ -45,12 +51,15 @@ public class ImportedAdCustomFieldValue extends CustomFieldValue {
 
     private static final long serialVersionUID = -1298123213176775308L;
 
-    private ImportedAd        ad;
+    private ImportedAd ad;
 
+    @ManyToOne(targetEntity = ImportedAd.class)
+    @JoinColumn(name = "imported_ad_id")
     public ImportedAd getAd() {
         return ad;
     }
 
+    @Transient
     @Override
     public Object getOwner() {
         return getAd();

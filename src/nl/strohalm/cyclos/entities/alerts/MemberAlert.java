@@ -19,6 +19,9 @@
  */
 package nl.strohalm.cyclos.entities.alerts;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.members.Member;
 import nl.strohalm.cyclos.utils.EnumHelper;
@@ -26,95 +29,99 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 /**
  * An alert sent to a member
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@DiscriminatorValue(value = "M")
 public class MemberAlert extends Alert {
+
     /**
      * Contains the possible member alerts
+     *
      * @author luis
      */
     public static enum Alerts implements StringValuedEnum, AlertType {
         /**
-         * Alert when a member exceeded the login attempts and had it's login temporarily blocked. Arguments: 0: The number of tries 1: The IP address
-         * that sent the request
+         * Alert when a member exceeded the login attempts and had it's login
+         * temporarily blocked. Arguments: 0: The number of tries 1: The IP
+         * address that sent the request
          */
         LOGIN_BLOCKED_BY_TRIES,
-
         /**
-         * Alert when a member had it's login temporarily blocked by too many permission denied exceptions. Arguments: 0: The number of permission
+         * Alert when a member had it's login temporarily blocked by too many
+         * permission denied exceptions. Arguments: 0: The number of permission
          * denied exceptions 1: The IP address that sent the request
          */
         LOGIN_BLOCKED_BY_PERMISSION_DENIEDS,
-
         /**
-         * Alert when a member exceeded the pin attempts and had it's pin temporarily blocked. Arguments: 0: The number of tries, 1: the channel, 2:
-         * username of the related member
+         * Alert when a member exceeded the pin attempts and had it's pin
+         * temporarily blocked. Arguments: 0: The number of tries, 1: the
+         * channel, 2: username of the related member
          */
         PIN_BLOCKED_BY_TRIES,
-
         /**
-         * Alert when a member exceeded the transaction password attempts and got his transaction password blocked. Arguments: 0: The number of tries
-         * 1: The IP address that sent the request
+         * Alert when a member exceeded the transaction password attempts and
+         * got his transaction password blocked. Arguments: 0: The number of
+         * tries 1: The IP address that sent the request
          */
         TRANSACTION_PASSWORD_BLOCKED_BY_TRIES,
-
         /**
-         * Alert when a member hasn't accepted an invoice and it has expired. Arguments: 0: The invoice amount 1: The invoice date/time
+         * Alert when a member hasn't accepted an invoice and it has expired.
+         * Arguments: 0: The invoice amount 1: The invoice date/time
          */
         INVOICE_IDLE_TIME_EXCEEDED,
-
         /**
-         * Alert when a member has denied a number of invoices. Arguments: 0: The invoice count
+         * Alert when a member has denied a number of invoices. Arguments: 0:
+         * The invoice count
          */
         DENIED_INVOICES,
-
         /**
-         * Alert when a member has exceeded the max. given very bad references. Arguments: 0: The reference count
+         * Alert when a member has exceeded the max. given very bad references.
+         * Arguments: 0: The reference count
          */
         GIVEN_VERY_BAD_REFS,
-
         /**
-         * Alert when a member has exceeded the max. received very bad references. Arguments: 0: The reference count
+         * Alert when a member has exceeded the max. received very bad
+         * references. Arguments: 0: The reference count
          */
         RECEIVED_VERY_BAD_REFS,
-
         /**
          * Alert when a loan is still open and has expired. No arguments
          */
         EXPIRED_LOAN,
-
         /**
-         * Alert when an scheduled payment has failed. Arguments: 0: The payment amount 1: The transfer type name
+         * Alert when an scheduled payment has failed. Arguments: 0: The payment
+         * amount 1: The transfer type name
          */
         SCHEDULED_PAYMENT_FAILED,
-
         /**
-         * Alert to indicate when a blocked POS has been used.Arguments: 0: The posId, 1: the remote IP address
+         * Alert to indicate when a blocked POS has been used.Arguments: 0: The
+         * posId, 1: the remote IP address
          */
         BLOCKED_POS_USED,
-
         /**
-         * Alert when a member exceeded the card security code attempts and it was blocked. Arguments: 0: The number of tries. 1: The card number
+         * Alert when a member exceeded the card security code attempts and it
+         * was blocked. Arguments: 0: The number of tries. 1: The card number
          */
         CARD_SECURITY_CODE_BLOCKED_BY_TRIES,
-
         /**
-         * A negative virtual rated balance has occurred on a member account. Arguments: 0: the account type name.
+         * A negative virtual rated balance has occurred on a member account.
+         * Arguments: 0: the account type name.
          */
         NEGATIVE_VIRTUAL_RATED_BALANCE,
-
         /**
-         * Alert when a null rate on a member account was encountered. Arguments: 0: account type name.
+         * Alert when a null rate on a member account was encountered.
+         * Arguments: 0: account type name.
          */
         NULL_IRATE,
-
         /**
          * Alert when the account activation failed.
          */
         ACCOUNT_ACTIVATION_FAILED,
-
         /**
-         * Alert when the initial credit grant has failed. Arguments: 0: account type name.
+         * Alert when the initial credit grant has failed. Arguments: 0: account
+         * type name.
          */
         INITIAL_CREDIT_FAILED;
 
@@ -151,8 +158,10 @@ public class MemberAlert extends Alert {
 
     private static final long serialVersionUID = -3470454153060498193L;
 
-    private Member            member;
+    private Member member;
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "member_id")
     public Member getMember() {
         return member;
     }

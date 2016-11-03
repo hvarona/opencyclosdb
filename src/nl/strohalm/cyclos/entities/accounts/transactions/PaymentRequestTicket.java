@@ -19,13 +19,21 @@
  */
 package nl.strohalm.cyclos.entities.accounts.transactions;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.access.Channel;
 
 /**
  * A ticket used to request payments from other channels
+ *
  * @author luis
  */
+@Entity
+@DiscriminatorValue(value = "R")
 public class PaymentRequestTicket extends Ticket {
 
     public static enum Relationships implements Relationship {
@@ -43,22 +51,29 @@ public class PaymentRequestTicket extends Ticket {
     }
 
     private static final long serialVersionUID = -7788824718013935541L;
-    private Channel           fromChannel;
-    private Channel           toChannel;
-    private String            traceData;
+    private Channel fromChannel;
+    private Channel toChannel;
+    private String traceData;
 
+    @ManyToOne(targetEntity = Channel.class)
+    @JoinColumn(name = "from_channel_id")
     public Channel getFromChannel() {
         return fromChannel;
     }
 
+    @ManyToOne(targetEntity = Channel.class)
+    @JoinColumn(name = "to_channel_id")
     public Channel getToChannel() {
         return toChannel;
     }
 
     /**
-     * Returns the data set by the client at the moment of requesting a payment.<br>
-     * It depends on the client side then there is no guarantee of uniqueness between different clients.<br>
+     * Returns the data set by the client at the moment of requesting a
+     * payment.<br>
+     * It depends on the client side then there is no guarantee of uniqueness
+     * between different clients.<br>
      */
+    @Column(name = "trace_data", nullable = false, length = 50)
     public String getTraceData() {
         return traceData;
     }

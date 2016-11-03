@@ -36,7 +36,7 @@ import nl.strohalm.cyclos.entities.accounts.guarantees.Guarantee.Status;
 import nl.strohalm.cyclos.entities.members.Element;
 
 @javax.persistence.Entity
-@Table(name = "certifications")
+@Table(name = "guarantee_logs")
 public class GuaranteeLog extends Entity {
 
     public static enum Relationships implements Relationship {

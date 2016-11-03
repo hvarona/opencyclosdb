@@ -357,9 +357,8 @@ public class TransferType extends Entity {
         return generatedByAccountFees;
     }
 
-    //@OneToMany(targetEntity = TransactionFee.class)
-    //@JoinColumn(name = "generated_type_id")
-    @Transient
+    @OneToMany(targetEntity = TransactionFee.class)
+    @JoinColumn(name = "generated_type_id")
     public Collection< TransactionFee> getGeneratedByTransactionFees() {
         return generatedByTransactionFees;
     }
@@ -440,9 +439,8 @@ public class TransferType extends Entity {
         return to;
     }
 
-    //@OneToMany(targetEntity = TransactionFee.class)
-    //@JoinColumn(name = "original_type_id")
-    @Transient
+    @OneToMany(targetEntity = TransactionFee.class)
+    @JoinColumn(name = "original_type_id")
     public Collection< TransactionFee> getTransactionFees() {
         return transactionFees;
     }
