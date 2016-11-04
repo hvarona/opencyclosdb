@@ -1,24 +1,30 @@
 /*
-    This file is part of Cyclos (www.cyclos.org).
-    A project of the Social Trade Organisation (www.socialtrade.org).
+ This file is part of Cyclos (www.cyclos.org).
+ A project of the Social Trade Organisation (www.socialtrade.org).
 
-    Cyclos is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+ Cyclos is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-    Cyclos is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+ Cyclos is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Cyclos; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ You should have received a copy of the GNU General Public License
+ along with Cyclos; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  */
 package nl.strohalm.cyclos.entities.customization.fields;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.members.Member;
 import nl.strohalm.cyclos.entities.members.PendingMember;
@@ -26,11 +32,15 @@ import nl.strohalm.cyclos.entities.members.imports.ImportedMember;
 
 /**
  * Custom field value of a given member
+ *
  * @author luis
  */
+@Entity
+@DiscriminatorValue(value = "member")
 public class MemberCustomFieldValue extends CustomFieldValue {
 
     public static enum Relationships implements Relationship {
+
         MEMBER("member"), PENDING_MEMBER("pendingMember"), IMPORTED_MEMBER("importedMember");
         private final String name;
 
@@ -45,19 +55,24 @@ public class MemberCustomFieldValue extends CustomFieldValue {
     }
 
     private static final long serialVersionUID = -2784135085280294105L;
-    private Member            member;
-    private PendingMember     pendingMember;
-    private ImportedMember    importedMember;
-    private boolean           hidden;
+    private Member member;
+    private PendingMember pendingMember;
+    private ImportedMember importedMember;
+    private boolean hidden;
 
+    @ManyToOne(targetEntity = ImportedMember.class)
+    @JoinColumn(name = "imported_member_id")
     public ImportedMember getImportedMember() {
         return importedMember;
     }
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "member_id")
     public Member getMember() {
         return member;
     }
 
+    @Transient
     @Override
     public Object getOwner() {
         if (importedMember != null) {
@@ -69,10 +84,13 @@ public class MemberCustomFieldValue extends CustomFieldValue {
         }
     }
 
+    @ManyToOne(targetEntity = PendingMember.class)
+    @JoinColumn(name = "pending_member_id")
     public PendingMember getPendingMember() {
         return pendingMember;
     }
 
+    @Column(name = "member_hidden", nullable = false)
     public boolean isHidden() {
         return hidden;
     }

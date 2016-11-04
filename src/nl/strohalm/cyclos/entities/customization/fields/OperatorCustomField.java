@@ -1,35 +1,46 @@
 /*
-    This file is part of Cyclos (www.cyclos.org).
-    A project of the Social Trade Organisation (www.socialtrade.org).
+ This file is part of Cyclos (www.cyclos.org).
+ A project of the Social Trade Organisation (www.socialtrade.org).
 
-    Cyclos is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+ Cyclos is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-    Cyclos is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+ Cyclos is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Cyclos; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ You should have received a copy of the GNU General Public License
+ along with Cyclos; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  */
 package nl.strohalm.cyclos.entities.customization.fields;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.members.Member;
 import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 /**
  * A custom field for member's operators
+ *
  * @author luis
  */
+@Entity
+@DiscriminatorValue(value = "op")
 public class OperatorCustomField extends CustomField {
 
     public static enum Relationships implements Relationship {
+
         MEMBER("member");
         private final String name;
 
@@ -44,9 +55,11 @@ public class OperatorCustomField extends CustomField {
 
     /**
      * Restrict the field visibility for operators
+     *
      * @author jefferson
      */
     public static enum Visibility implements StringValuedEnum {
+
         NOT_VISIBLE("N"), VISIBLE_NOT_EDITABLE("V"), EDITABLE("E");
 
         private final String value;
@@ -63,13 +76,17 @@ public class OperatorCustomField extends CustomField {
 
     private static final long serialVersionUID = 9206120840324581764L;
 
-    private Member            member;
-    private Visibility        visibility       = Visibility.EDITABLE;
+    private Member member;
+    private Visibility visibility = Visibility.EDITABLE;
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "member_id", updatable = false)
     public Member getMember() {
         return member;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "visibility")
     public Visibility getVisibility() {
         return visibility;
     }

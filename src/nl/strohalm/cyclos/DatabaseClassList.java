@@ -128,16 +128,20 @@ public class DatabaseClassList {
         nl.strohalm.cyclos.entities.customization.documents.MemberDocument.class,
         nl.strohalm.cyclos.entities.customization.documents.StaticDocument.class,
         //nl.strohalm.cyclos.entities.customization.fields
+        nl.strohalm.cyclos.entities.customization.fields.AdCustomField.class,
         nl.strohalm.cyclos.entities.customization.fields.AdCustomFieldValue.class,
         nl.strohalm.cyclos.entities.customization.fields.AdminCustomField.class,
         nl.strohalm.cyclos.entities.customization.fields.AdminCustomFieldValue.class,
         nl.strohalm.cyclos.entities.customization.fields.CustomField.class,
         nl.strohalm.cyclos.entities.customization.fields.CustomFieldValue.class,
         nl.strohalm.cyclos.entities.customization.fields.CustomFieldPossibleValue.class,
+        nl.strohalm.cyclos.entities.customization.fields.LoanGroupCustomField.class,
         nl.strohalm.cyclos.entities.customization.fields.LoanGroupCustomFieldValue.class,
         nl.strohalm.cyclos.entities.customization.fields.MemberCustomField.class,
+        nl.strohalm.cyclos.entities.customization.fields.MemberCustomFieldValue.class,
         nl.strohalm.cyclos.entities.customization.fields.MemberRecordCustomField.class,
         nl.strohalm.cyclos.entities.customization.fields.MemberRecordCustomFieldValue.class,
+        nl.strohalm.cyclos.entities.customization.fields.OperatorCustomField.class,
         nl.strohalm.cyclos.entities.customization.fields.OperatorCustomFieldValue.class,
         nl.strohalm.cyclos.entities.customization.fields.PaymentCustomField.class,
         nl.strohalm.cyclos.entities.customization.fields.PaymentCustomFieldValue.class,
@@ -146,6 +150,10 @@ public class DatabaseClassList {
         nl.strohalm.cyclos.entities.customization.files.File.class,
         //nl.strohalm.cyclos.entities.customization.images
         nl.strohalm.cyclos.entities.customization.images.AdImage.class,
+        nl.strohalm.cyclos.entities.customization.images.CustomImage.class,
+        nl.strohalm.cyclos.entities.customization.images.MemberImage.class,
+        nl.strohalm.cyclos.entities.customization.images.StyleImage.class,
+        nl.strohalm.cyclos.entities.customization.images.SystemImage.class,
         nl.strohalm.cyclos.entities.customization.images.Image.class,
         //nl.strohalm.cyclos.entities.groups
         nl.strohalm.cyclos.entities.groups.AdminGroup.class,
@@ -163,11 +171,18 @@ public class DatabaseClassList {
         nl.strohalm.cyclos.entities.members.Element.class,
         nl.strohalm.cyclos.entities.members.Member.class,
         nl.strohalm.cyclos.entities.members.Operator.class,
+        nl.strohalm.cyclos.entities.members.PendingMember.class,
+        nl.strohalm.cyclos.entities.members.RegistrationAgreement.class,
         //nl.strohalm.cyclos.entities.members.brokerings
         nl.strohalm.cyclos.entities.members.brokerings.BrokerCommissionContract.class,
         nl.strohalm.cyclos.entities.members.brokerings.Brokering.class,
         nl.strohalm.cyclos.entities.members.brokerings.BrokeringCommissionStatus.class,
         nl.strohalm.cyclos.entities.members.brokerings.DefaultBrokerCommission.class,
+        //nl.strohalm.cyclos.entities.members.imports
+        nl.strohalm.cyclos.entities.members.imports.ImportedMember.class,
+        nl.strohalm.cyclos.entities.members.imports.ImportedMemberRecord.class,
+        nl.strohalm.cyclos.entities.members.imports.ImportedMemberRecordCustomFieldValue.class,
+        nl.strohalm.cyclos.entities.members.imports.MemberImport.class,
         //nl.strohalm.cyclos.entities.members.messages
         nl.strohalm.cyclos.entities.members.messages.MessageCategory.class,
         //nl.strohalm.cyclos.entities.members.records

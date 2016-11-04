@@ -17,27 +17,39 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  */
-package nl.strohalm.cyclos.entities.customization.images;
-
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Transient;
+package nl.strohalm.cyclos.services.transactions;
 
 /**
- * An image to be used in style
+ * Possible contexts for a transaction to happen
  *
  * @author luis
  */
-@Entity
-@DiscriminatorValue(value = "sty")
-public class StyleImage extends Image {
+public enum TransactionContext {
 
-    private static final long serialVersionUID = 5037155642703648675L;
-
-    @Transient
-    @Override
-    public Nature getNature() {
-        return Nature.STYLE;
-    }
-
+    /**
+     * A normal payment bewteen different owners
+     */
+    PAYMENT,
+    /**
+     * A payment from and to the same owner
+     */
+    SELF_PAYMENT,
+    /**
+     * A loan given from system to a member
+     */
+    LOAN,
+    /**
+     * An automatically generated payment (i.e: a fee payment). The transfer
+     * type does not need to be enabled
+     */
+    AUTOMATIC,
+    /**
+     * Any type of payment, used to filter any transaction types
+     */
+    ANY,
+    /**
+     * An automatically generated loan (i.e: a loan from guarantee). The
+     * transfer type needs to be a "loan type" and does not need to be enabled
+     */
+    AUTOMATIC_LOAN;
 }

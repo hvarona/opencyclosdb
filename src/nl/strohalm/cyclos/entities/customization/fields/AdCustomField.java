@@ -1,34 +1,43 @@
 /*
-    This file is part of Cyclos (www.cyclos.org).
-    A project of the Social Trade Organisation (www.socialtrade.org).
+ This file is part of Cyclos (www.cyclos.org).
+ A project of the Social Trade Organisation (www.socialtrade.org).
 
-    Cyclos is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+ Cyclos is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-    Cyclos is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+ Cyclos is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Cyclos; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ You should have received a copy of the GNU General Public License
+ along with Cyclos; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  */
 package nl.strohalm.cyclos.entities.customization.fields;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import nl.strohalm.cyclos.entities.groups.Group;
 import nl.strohalm.cyclos.utils.StringValuedEnum;
 
 /**
  * A custom field for advertisements
+ *
  * @author luis
  */
+@Entity
+@DiscriminatorValue(value = "ad")
 public class AdCustomField extends CustomField {
 
     public static enum Visibility implements StringValuedEnum {
+
         ADMIN("A"), BROKER("B"), WEB_SERVICE("W"), MEMBER("M");
 
         private final String value;
@@ -55,18 +64,22 @@ public class AdCustomField extends CustomField {
     }
 
     private static final long serialVersionUID = 444181817416712379L;
-    private boolean           showInSearch;
-    private boolean           indexed;
-    private Visibility        visibility       = Visibility.MEMBER;
+    private boolean showInSearch;
+    private boolean indexed;
+    private Visibility visibility = Visibility.MEMBER;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "visibility")
     public Visibility getVisibility() {
         return visibility;
     }
 
+    @Column(name = "indexed", nullable = false)
     public boolean isIndexed() {
         return indexed;
     }
 
+    @Column(name = "show_in_search", nullable = false)
     public boolean isShowInSearch() {
         return showInSearch;
     }

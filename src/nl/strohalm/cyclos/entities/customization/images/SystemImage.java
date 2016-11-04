@@ -19,10 +19,16 @@
  */
 package nl.strohalm.cyclos.entities.customization.images;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Transient;
+
 /**
  * A system image, such as the logo
  * @author luis
  */
+@Entity
+@DiscriminatorValue(value="sys")
 public class SystemImage extends Image {
     private static final long serialVersionUID = 7010462832935683759L;
 
@@ -30,6 +36,7 @@ public class SystemImage extends Image {
         super();
     }
 
+    @Transient
     @Override
     public Nature getNature() {
         return Nature.SYSTEM;

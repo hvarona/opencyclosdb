@@ -1,20 +1,20 @@
 /*
-    This file is part of Cyclos (www.cyclos.org).
-    A project of the Social Trade Organisation (www.socialtrade.org).
+ This file is part of Cyclos (www.cyclos.org).
+ A project of the Social Trade Organisation (www.socialtrade.org).
 
-    Cyclos is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+ Cyclos is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-    Cyclos is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+ Cyclos is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Cyclos; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ You should have received a copy of the GNU General Public License
+ along with Cyclos; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  */
 package nl.strohalm.cyclos.entities.members;
@@ -22,6 +22,15 @@ package nl.strohalm.cyclos.entities.members;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -31,13 +40,18 @@ import nl.strohalm.cyclos.entities.groups.MemberGroup;
 import nl.strohalm.cyclos.entities.settings.LocalSettings;
 
 /**
- * A pending member is a member which still have not validated it's registration by mail, and is removed if not confirmed within an amount of time (in
+ * A pending member is a member which still have not validated it's registration
+ * by mail, and is removed if not confirmed within an amount of time (in
  * {@link LocalSettings#getDeletePendingRegistrationsAfter()})
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "pending_members")
 public class PendingMember extends Entity implements RegisteredMember {
 
     public static enum Relationships implements Relationship {
+
         MEMBER("member"), MEMBER_GROUP("memberGroup"), BROKER("broker"), REGISTRATION_AGREEMENT("registrationAgreement"), CUSTOM_VALUES("customValues");
         private final String name;
 
@@ -50,102 +64,143 @@ public class PendingMember extends Entity implements RegisteredMember {
         }
     }
 
-    private static final long                  serialVersionUID = 6961857645089403722L;
-    private Calendar                           creationDate;
-    private Calendar                           lastEmailDate;
-    private MemberGroup                        memberGroup;
-    private String                             name;
-    private String                             salt;
-    private String                             username;
-    private String                             password;
-    private String                             pin;
-    private boolean                            forceChangePassword;
-    private String                             email;
-    private String                             validationKey;
-    private boolean                            hideEmail;
-    private Member                             broker;
-    private RegistrationAgreement              registrationAgreement;
-    private Calendar                           registrationAgreementDate;
-    private Member                             member;
-    private String                             remoteAddress;
+    private static final long serialVersionUID = 6961857645089403722L;
+    private Calendar creationDate;
+    private Calendar lastEmailDate;
+    private MemberGroup memberGroup;
+    private String name;
+    private String salt;
+    private String username;
+    private String password;
+    private String pin;
+    private boolean forceChangePassword;
+    private String email;
+    private String validationKey;
+    private boolean hideEmail;
+    private Member broker;
+    private RegistrationAgreement registrationAgreement;
+    private Calendar registrationAgreementDate;
+    private Member member;
+    private String remoteAddress;
     private Collection<MemberCustomFieldValue> customValues;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "broker_id")
+    @Override
     public Member getBroker() {
         return broker;
     }
 
+    @Column(name = "creation_date", nullable = false)
+    @Override
     public Calendar getCreationDate() {
         return creationDate;
     }
 
+    @Transient
+    @Override
     public Class<MemberCustomField> getCustomFieldClass() {
         return MemberCustomField.class;
     }
 
+    @Transient
+    @Override
     public Class<MemberCustomFieldValue> getCustomFieldValueClass() {
         return MemberCustomFieldValue.class;
     }
 
+    @OneToMany(targetEntity = MemberCustomFieldValue.class)
+    @JoinColumn(name = "pending_member_id")
+    @Override
     public Collection<MemberCustomFieldValue> getCustomValues() {
         return customValues;
     }
 
+    @Column(name = "email", nullable = false)
+    @Override
     public String getEmail() {
         return email;
     }
 
+    @Column(name = "last_email_date")
     public Calendar getLastEmailDate() {
         return lastEmailDate;
     }
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "member_id")
     public Member getMember() {
         return member;
     }
 
+    @ManyToOne(targetEntity = MemberGroup.class)
+    @JoinColumn(name = "group_id", nullable = false)
     public MemberGroup getMemberGroup() {
         return memberGroup;
     }
 
+    @Column(name = "name", length = 100, nullable = false)
+    @Override
     public String getName() {
         return name;
     }
 
+    @Column(name = "password", length = 64)
     public String getPassword() {
         return password;
     }
 
+    @Column(name = "pin", length = 64)
     public String getPin() {
         return pin;
     }
 
+    @ManyToOne(targetEntity = RegistrationAgreement.class)
+    @JoinColumn(name = "registration_agreement_id")
     public RegistrationAgreement getRegistrationAgreement() {
         return registrationAgreement;
     }
 
+    @Column(name = "registration_agreement_date")
     public Calendar getRegistrationAgreementDate() {
         return registrationAgreementDate;
     }
 
+    @Column(name = "remote_address", length = 100)
     public String getRemoteAddress() {
         return remoteAddress;
     }
 
+    @Column(name = "salt", length = 32)
     public String getSalt() {
         return salt;
     }
 
+    @Column(name = "username", length = 64)
+    @Override
     public String getUsername() {
         return username;
     }
 
+    @Column(name = "validation_key", nullable = false, length = 64)
     public String getValidationKey() {
         return validationKey;
     }
 
+    @Column(name = "force_change_password", nullable = false)
     public boolean isForceChangePassword() {
         return forceChangePassword;
     }
 
+    @Column(name = "hide_email", nullable = false)
+    @Override
     public boolean isHideEmail() {
         return hideEmail;
     }

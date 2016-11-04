@@ -44,7 +44,7 @@ import nl.strohalm.cyclos.entities.members.Member;
  */
 @javax.persistence.Entity
 @Table(name = "custom_field_values")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "subclass")
 public abstract class CustomFieldValue extends Entity {
 
@@ -99,7 +99,7 @@ public abstract class CustomFieldValue extends Entity {
         return possibleValue;
     }
 
-    @Column(length = 4000)
+    @Column(name = "string_value", length = 4000)
     public String getStringValue() {
         return stringValue;
     }

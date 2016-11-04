@@ -29,7 +29,7 @@ import nl.strohalm.cyclos.entities.accounts.guarantees.Guarantee;
 import nl.strohalm.cyclos.entities.accounts.transactions.Invoice;
 import nl.strohalm.cyclos.entities.accounts.transactions.ScheduledPayment;
 import nl.strohalm.cyclos.entities.accounts.transactions.Transfer;
-//import nl.strohalm.cyclos.services.transactions.DoPaymentDTO;
+import nl.strohalm.cyclos.services.transactions.DoPaymentDTO;
 
 /**
  * Custom field value for payments
@@ -62,17 +62,16 @@ public class PaymentCustomFieldValue extends CustomFieldValue {
     private Invoice invoice;
     private Guarantee guarantee;
     // This one is not actually stored, but needed in order to validate
-    //  private DoPaymentDTO      doPaymentDTO;
+    private DoPaymentDTO doPaymentDTO;
 
-    //@ManyToOne(targetEntity = Guarantee.class)
-    //@JoinColumn(name = "guarantee_id")
-    @Transient
+    @ManyToOne(targetEntity = Guarantee.class)
+    @JoinColumn(name = "guarantee_id")
     public Guarantee getGuarantee() {
         return guarantee;
     }
 
     @ManyToOne(targetEntity = Invoice.class)
-    @JoinColumn(name = "guarantee_id")
+    @JoinColumn(name = "invoice_id")
     public Invoice getInvoice() {
         return invoice;
     }
@@ -92,9 +91,9 @@ public class PaymentCustomFieldValue extends CustomFieldValue {
         if (guarantee != null) {
             return guarantee;
         }
-//        if (doPaymentDTO != null) {
-//            return doPaymentDTO;
-//        }
+        if (doPaymentDTO != null) {
+            return doPaymentDTO;
+        }
 
         return null;
     }
@@ -125,7 +124,7 @@ public class PaymentCustomFieldValue extends CustomFieldValue {
         transfer = null;
         invoice = null;
         guarantee = null;
-        //    doPaymentDTO = null;
+        doPaymentDTO = null;
 
         if (owner instanceof Transfer) {
             transfer = (Transfer) owner;
@@ -135,8 +134,8 @@ public class PaymentCustomFieldValue extends CustomFieldValue {
             invoice = (Invoice) owner;
         } else if (owner instanceof Guarantee) {
             guarantee = (Guarantee) owner;
-//        } else if (owner instanceof DoPaymentDTO) {
-//            doPaymentDTO = (DoPaymentDTO) owner;
+        } else if (owner instanceof DoPaymentDTO) {
+            doPaymentDTO = (DoPaymentDTO) owner;
         }
     }
 
