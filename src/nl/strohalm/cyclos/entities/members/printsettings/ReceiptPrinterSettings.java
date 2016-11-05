@@ -19,9 +19,12 @@
  */
 package nl.strohalm.cyclos.entities.members.printsettings;
 
+import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -29,7 +32,7 @@ import nl.strohalm.cyclos.entities.members.Member;
 
 /**
  * Stores settings for a local receipt printer
- * 
+ *
  * @author luis
  */
 @javax.persistence.Entity
@@ -51,12 +54,12 @@ public class ReceiptPrinterSettings extends Entity {
     }
 
     private static final long serialVersionUID = 5677759942410107438L;
-    private Member            member;
-    private String            name;
-    private String            printerName;
-    private String            beginOfDocCommand;
-    private String            endOfDocCommand;
-    private String            paymentAdditionalMessage;
+    private Member member;
+    private String name;
+    private String printerName;
+    private String beginOfDocCommand;
+    private String endOfDocCommand;
+    private String paymentAdditionalMessage;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -64,28 +67,35 @@ public class ReceiptPrinterSettings extends Entity {
     public Long getId() {
         return super.getId();
     }
-    
+
+    @Column(name = "begin_doc_cmd", length = 100)
     public String getBeginOfDocCommand() {
         return beginOfDocCommand;
     }
 
+    @Column(name = "end_doc_cmd", length = 100)
     public String getEndOfDocCommand() {
         return endOfDocCommand;
     }
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "member_id", updatable = false)
     public Member getMember() {
         return member;
     }
 
+    @Column(name = "name", length = 100, nullable = false)
     @Override
     public String getName() {
         return name;
     }
 
+    @Column(name = "payment_message", length = 500)
     public String getPaymentAdditionalMessage() {
         return paymentAdditionalMessage;
     }
 
+    @Column(name = "printer_name", length = 100, nullable = false)
     public String getPrinterName() {
         return printerName;
     }

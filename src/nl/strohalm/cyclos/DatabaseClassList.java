@@ -178,8 +178,12 @@ public class DatabaseClassList {
         nl.strohalm.cyclos.entities.members.PendingEmailChange.class,
         nl.strohalm.cyclos.entities.members.PendingMember.class,
         nl.strohalm.cyclos.entities.members.Reference.class,
+        nl.strohalm.cyclos.entities.members.ReferenceHistoryLog.class,
         nl.strohalm.cyclos.entities.members.RegistrationAgreement.class,
         nl.strohalm.cyclos.entities.members.RegistrationAgreementLog.class,
+        nl.strohalm.cyclos.entities.members.TransactionFeedback.class,
+        //nl.strohalm.cyclos.entities.members.adInterests
+        nl.strohalm.cyclos.entities.members.adInterests.AdInterest.class,
         //nl.strohalm.cyclos.entities.members.brokerings
         nl.strohalm.cyclos.entities.members.brokerings.BrokerCommissionContract.class,
         nl.strohalm.cyclos.entities.members.brokerings.Brokering.class,
@@ -191,9 +195,13 @@ public class DatabaseClassList {
         nl.strohalm.cyclos.entities.members.imports.ImportedMemberRecordCustomFieldValue.class,
         nl.strohalm.cyclos.entities.members.imports.MemberImport.class,
         //nl.strohalm.cyclos.entities.members.messages
+        nl.strohalm.cyclos.entities.members.messages.Message.class,
         nl.strohalm.cyclos.entities.members.messages.MessageCategory.class,
         //nl.strohalm.cyclos.entities.members.preferences
+        nl.strohalm.cyclos.entities.members.preferences.AdminNotificationPreference.class,
         nl.strohalm.cyclos.entities.members.preferences.NotificationPreference.class,
+        //nl.strohalm.cyclos.entities.members.printsettings
+        nl.strohalm.cyclos.entities.members.printsettings.ReceiptPrinterSettings.class,
         //nl.strohalm.cyclos.entities.members.records
         nl.strohalm.cyclos.entities.members.records.MemberRecord.class,
         nl.strohalm.cyclos.entities.members.records.MemberRecordType.class,
@@ -204,6 +212,13 @@ public class DatabaseClassList {
         //nl.strohalm.cyclos.entities.services
         nl.strohalm.cyclos.entities.services.ServiceClient.class,
         //nl.strohalm.cyclos.entities.settings
-        nl.strohalm.cyclos.entities.settings.Setting.class
+        nl.strohalm.cyclos.entities.settings.Setting.class,
+        //nl.strohalm.cyclos.entities.sms
+        nl.strohalm.cyclos.entities.sms.MemberSmsStatus.class,
+        nl.strohalm.cyclos.entities.sms.MemberSmsStatusLock.class,
+        nl.strohalm.cyclos.entities.sms.SmsLog.class,
+        nl.strohalm.cyclos.entities.sms.SmsMailing.class,
+        nl.strohalm.cyclos.entities.sms.SmsType.class
+
     };
 }

@@ -19,16 +19,29 @@
  */
 package nl.strohalm.cyclos.entities.sms;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import nl.strohalm.cyclos.entities.Entity;
 
 /**
  * Handler for locks in SMS status for a given member
- * 
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "member_sms_status_locks")
 public class MemberSmsStatusLock extends Entity {
 
     private static final long serialVersionUID = -7116369978414829539L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
 
     @Override
     public String toString() {

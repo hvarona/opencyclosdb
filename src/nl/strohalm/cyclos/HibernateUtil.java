@@ -13,9 +13,8 @@ import org.hibernate.cfg.Configuration;
  */
 public class HibernateUtil {
 
-    //private static final ThreadLocal threadLocal = new ThreadLocal();
     private static Session session_;
-    private static Configuration configuration = new Configuration();
+    private static final Configuration configuration = new Configuration();
     private static String serverUrl = "jdbc:mysql://localhost:3307/CyclosDB?autoReconnect=true";
     private static String user = "root";
     private static String pwd = "1234";
@@ -74,7 +73,6 @@ public class HibernateUtil {
         configuration.setProperty("hibernate.c3p0.minPoolSize", "3");
         configuration.setProperty("hibernate.c3p0.breakAfterAcquireFailure", "false");
         configuration.setProperty("hibernate.connection.provider_class", "org.hibernate.connection.C3P0ConnectionProvider");*/
-
         configuration.setProperty("hibernate.show_sql", "false");
         configuration.setProperty("hibernate.hbm2ddl.auto", "update");
 

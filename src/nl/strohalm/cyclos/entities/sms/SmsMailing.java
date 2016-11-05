@@ -21,6 +21,16 @@ package nl.strohalm.cyclos.entities.sms;
 
 import java.util.Calendar;
 import java.util.Collection;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -31,9 +41,11 @@ import nl.strohalm.cyclos.utils.FormatObject;
 
 /**
  * An SMS mailing is a brodcast SMS sent to a group of members
- * 
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "sms_mailings")
 public class SmsMailing extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -50,47 +62,70 @@ public class SmsMailing extends Entity {
         }
     }
 
-    private static final long       serialVersionUID = 2525066930563530937L;
-    private Calendar                date;
-    private Element                 by;
-    private String                  text;
-    private int                     sentSms;
-    private boolean                 free;
+    private static final long serialVersionUID = 2525066930563530937L;
+    private Calendar date;
+    private Element by;
+    private String text;
+    private int sentSms;
+    private boolean free;
     private Collection<MemberGroup> groups;
     // if it's not null this mailing will be send only to this member
-    private Member                  member;
-    private Collection<Member>      pendingToSend;
+    private Member member;
+    private Collection<Member> pendingToSend;
 
-    private transient boolean       finished;
+    private transient boolean finished;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "by_id", nullable = false, updatable = false)
     public Element getBy() {
         return by;
     }
 
+    @Column(name = "date", nullable = false, updatable = false)
     public Calendar getDate() {
         return date;
     }
 
+    @ManyToMany(targetEntity = MemberGroup.class)
+    @JoinTable(name = "sms_mailings_groups",
+            joinColumns = @JoinColumn(name = "sms_mailing_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id"))
     public Collection<MemberGroup> getGroups() {
         return groups;
     }
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "member_id", updatable = false, nullable = false)
     public Member getMember() {
         return member;
     }
 
+    @ManyToMany(targetEntity = MemberGroup.class)
+    @JoinTable(name = "sms_mailings_pending_to_send",
+            joinColumns = @JoinColumn(name = "sms_mailing_id"),
+            inverseJoinColumns = @JoinColumn(name = "member_id"))
     public Collection<Member> getPendingToSend() {
         return pendingToSend;
     }
 
+    @Column(name = "sent_sms", nullable = false)
     public int getSentSms() {
         return sentSms;
     }
 
+    @Column(name = "text", nullable = false)
     public String getText() {
         return text;
     }
 
+    @Transient
     public SmsMailingType getType() {
         if (isSingleMember()) {
             return SmsMailingType.INDIVIDUAL;
@@ -101,14 +136,17 @@ public class SmsMailing extends Entity {
         }
     }
 
+    @Column(name = "finished", nullable = false)
     public boolean isFinished() {
         return finished;
     }
 
+    @Column(name = "free", nullable = false)
     public boolean isFree() {
         return free;
     }
 
+    @Transient
     public boolean isSingleMember() {
         return member != null;
     }

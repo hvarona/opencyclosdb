@@ -20,7 +20,11 @@
 package nl.strohalm.cyclos.entities.members.preferences;
 
 import java.util.Set;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -90,49 +94,59 @@ public class AdminNotificationPreference extends Entity {
     }
 
     @ManyToMany(targetEntity = GuaranteeType.class)
-    @JoinTable(name = "",
-            joinColumns = @JoinColumn(name = ""),
-            inverseJoinColumns = @JoinColumn(name = ""))
+    @JoinTable(name = "admin_preferences_guarantee_types",
+            joinColumns = @JoinColumn(name = "preference_id"),
+            inverseJoinColumns = @JoinColumn(name = "guarantee_type_id"))
     public Set<GuaranteeType> getGuaranteeTypes() {
         return guaranteeTypes;
     }
 
+    @ElementCollection(targetClass = Enum.class)
+    @CollectionTable(name = "admin_preferences_member_alerts",
+            joinColumns = @JoinColumn(name = "preference_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false)
     public Set<MemberAlert.Alerts> getMemberAlerts() {
         return memberAlerts;
     }
 
     @ManyToMany(targetEntity = MessageCategory.class)
-    @JoinTable(name = "",
-            joinColumns = @JoinColumn(name = ""),
-            inverseJoinColumns = @JoinColumn(name = ""))
+    @JoinTable(name = "admin_preferences_message_categories",
+            joinColumns = @JoinColumn(name = "preference_id"),
+            inverseJoinColumns = @JoinColumn(name = "message_category_id"))
     public Set<MessageCategory> getMessageCategories() {
         return messageCategories;
     }
 
     @ManyToMany(targetEntity = MemberGroup.class)
-    @JoinTable(name = "",
-            joinColumns = @JoinColumn(name = ""),
-            inverseJoinColumns = @JoinColumn(name = ""))
+    @JoinTable(name = "admin_preferences_new_members",
+            joinColumns = @JoinColumn(name = "preference_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id"))
     public Set<MemberGroup> getNewMembers() {
         return newMembers;
     }
 
     @ManyToMany(targetEntity = TransferType.class)
-    @JoinTable(name = "",
-            joinColumns = @JoinColumn(name = ""),
-            inverseJoinColumns = @JoinColumn(name = ""))
+    @JoinTable(name = "admin_preferences_new_pending_payments",
+            joinColumns = @JoinColumn(name = "preference_id"),
+            inverseJoinColumns = @JoinColumn(name = "transfer_type_id"))
     public Set<TransferType> getNewPendingPayments() {
         return newPendingPayments;
     }
 
+    @ElementCollection(targetClass = Enum.class)
+    @CollectionTable(name = "admin_preferences_system_alerts",
+            joinColumns = @JoinColumn(name = "preference_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false)
     public Set<SystemAlert.Alerts> getSystemAlerts() {
         return systemAlerts;
     }
 
     @ManyToMany(targetEntity = TransferType.class)
-    @JoinTable(name = "",
-            joinColumns = @JoinColumn(name = ""),
-            inverseJoinColumns = @JoinColumn(name = ""))
+    @JoinTable(name = "admin_preferences_transfer_types",
+            joinColumns = @JoinColumn(name = "preference_id"),
+            inverseJoinColumns = @JoinColumn(name = "transfer_type_id"))
     public Set<TransferType> getTransferTypes() {
         return transferTypes;
     }

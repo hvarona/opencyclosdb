@@ -20,6 +20,13 @@
 package nl.strohalm.cyclos.entities.sms;
 
 import java.util.Calendar;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -27,9 +34,11 @@ import nl.strohalm.cyclos.entities.members.Member;
 
 /**
  * Stores the SMS status for an specific member
- * 
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "member_sms_status")
 public class MemberSmsStatus extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -46,43 +55,59 @@ public class MemberSmsStatus extends Entity {
     }
 
     private static final long serialVersionUID = 5082258765577170190L;
-    private Member            member;
-    private int               freeSmsSent;
-    private Calendar          freeSmsExpiration;
-    private int               paidSmsLeft;
-    private Calendar          paidSmsExpiration;
-    private boolean           allowChargingSms;
-    private boolean           acceptFreeMailing;
-    private boolean           acceptPaidMailing;
+    private Member member;
+    private int freeSmsSent;
+    private Calendar freeSmsExpiration;
+    private int paidSmsLeft;
+    private Calendar paidSmsExpiration;
+    private boolean allowChargingSms;
+    private boolean acceptFreeMailing;
+    private boolean acceptPaidMailing;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(name = "free_sms_expiration")
     public Calendar getFreeSmsExpiration() {
         return freeSmsExpiration;
     }
 
+    @Column(name = "free_sms_sent", nullable = false)
     public int getFreeSmsSent() {
         return freeSmsSent;
     }
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "member_id", nullable = false, unique = true)
     public Member getMember() {
         return member;
     }
 
+    @Column(name = "paid_sms_expiration")
     public Calendar getPaidSmsExpiration() {
         return paidSmsExpiration;
     }
 
+    @Column(name = "paid_sms_left", nullable = false)
     public int getPaidSmsLeft() {
         return paidSmsLeft;
     }
 
+    @Column(name = "accept_free_mailing", nullable = false)
     public boolean isAcceptFreeMailing() {
         return acceptFreeMailing;
     }
 
+    @Column(name = "accept_paid_mailing", nullable = false)
     public boolean isAcceptPaidMailing() {
         return acceptPaidMailing;
     }
 
+    @Column(name = "allow_charging_sms", nullable = false)
     public boolean isAllowChargingSms() {
         return allowChargingSms;
     }

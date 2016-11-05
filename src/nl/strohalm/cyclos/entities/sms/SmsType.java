@@ -19,14 +19,30 @@
  */
 package nl.strohalm.cyclos.entities.sms;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import nl.strohalm.cyclos.entities.Entity;
 
+@javax.persistence.Entity
+@Table(name = "sms_types")
 public class SmsType extends Entity {
+
     private static final long serialVersionUID = 1L;
 
-    private String            code;
-    private int               order;
+    private String code;
+    private int order;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(name = "code", unique = true, nullable = false, length = 100)
     public String getCode() {
         return code;
     }
@@ -34,6 +50,7 @@ public class SmsType extends Entity {
     /**
      * @return the order to be showed in a list of options
      */
+    @Column(name = "order_index", nullable = false)
     public int getOrder() {
         return order;
     }

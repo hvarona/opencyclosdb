@@ -20,6 +20,16 @@
 package nl.strohalm.cyclos.entities.sms;
 
 import java.util.Calendar;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -32,29 +42,42 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * A log of a sent SMS message
+ *
  * @author Jefferson Magno
  */
+@javax.persistence.Entity
+@Table(name = "sms_logs")
 public class SmsLog extends Entity {
+
     /**
      * Possible error on sending an sms
-     * 
+     *
      * @author luis
      */
     public static enum ErrorType implements StringValuedEnum {
 
-        /** The member who should pay for the sms doesn't have enough credits */
+        /**
+         * The member who should pay for the sms doesn't have enough credits
+         */
         NOT_ENOUGH_FUNDS("NEF"),
-
-        /** The member who should pay for the sms doesn't have sms or doesn't allow charge for it */
+        /**
+         * The member who should pay for the sms doesn't have sms or doesn't
+         * allow charge for it
+         */
         ALLOW_CHARGING_DISABLED("ACD"),
-
-        /** The additional messages is zero and the member has no free messages left */
+        /**
+         * The additional messages is zero and the member has no free messages
+         * left
+         */
         NO_SMS_LEFT("NL"),
-
-        /** The destination member had no mobile phone set (according to localSettings.smsCustomField */
+        /**
+         * The destination member had no mobile phone set (according to
+         * localSettings.smsCustomField
+         */
         NO_PHONE("NP"),
-
-        /** An unknown error has ocurred while sending the sms */
+        /**
+         * An unknown error has ocurred while sending the sms
+         */
         SEND_ERROR("SE");
 
         private final String value;
@@ -84,77 +107,102 @@ public class SmsLog extends Entity {
     }
 
     /**
-     * This is the maximum allowed length for an argument (arg0..arg4). If an argX is longer than this value then it will be truncated.
+     * This is the maximum allowed length for an argument (arg0..arg4). If an
+     * argX is longer than this value then it will be truncated.
      */
-    private static final short MAX_ARG_LEN      = 150;
+    private static final short MAX_ARG_LEN = 150;
 
-    private static final long  serialVersionUID = -4331781757069220677L;
+    private static final long serialVersionUID = -4331781757069220677L;
 
     private static String ensureArgLength(final String arg) {
         return StringUtils.substring(arg, 0, MAX_ARG_LEN);
     }
 
-    private Member       targetMember;
-    private Member       chargedMember;
-    private Calendar     date;
+    private Member targetMember;
+    private Member chargedMember;
+    private Calendar date;
     private Message.Type messageType;
-    private SmsMailing   smsMailing;
-    private boolean      freeBaseUsed;
-    private SmsType      smsType;
+    private SmsMailing smsMailing;
+    private boolean freeBaseUsed;
+    private SmsType smsType;
 
-    private ErrorType    errorType;
+    private ErrorType errorType;
     /* Arguments for I18N purposes */
-    protected String     arg0;
-    protected String     arg1;
-    protected String     arg2;
-    protected String     arg3;
+    protected String arg0;
+    protected String arg1;
+    protected String arg2;
+    protected String arg3;
 
-    protected String     arg4;
+    protected String arg4;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(name = "arg0", nullable = false)
     public String getArg0() {
         return arg0;
     }
 
+    @Column(name = "arg1", nullable = false)
     public String getArg1() {
         return arg1;
     }
 
+    @Column(name = "arg2", nullable = false)
     public String getArg2() {
         return arg2;
     }
 
+    @Column(name = "arg3", nullable = false)
     public String getArg3() {
         return arg3;
     }
 
+    @Column(name = "arg4", nullable = false)
     public String getArg4() {
         return arg4;
     }
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "charged_member_id", updatable = false)
     public Member getChargedMember() {
         return chargedMember;
     }
 
+    @Column(name = "date", updatable = false, nullable = false)
     public Calendar getDate() {
         return date;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "error_type", updatable = false)
     public ErrorType getErrorType() {
         return errorType;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "message_type", updatable = false)
     public Message.Type getMessageType() {
         return messageType;
     }
 
+    @ManyToOne(targetEntity = SmsMailing.class)
+    @JoinColumn(name = "sms_mailing_id", updatable = false)
     public SmsMailing getSmsMailing() {
         return smsMailing;
     }
 
+    @ManyToOne(targetEntity = SmsType.class)
+    @JoinColumn(name = "sms_type_id", updatable = false)
     public SmsType getSmsType() {
         return smsType;
     }
 
+    @Transient
     public SmsLogStatus getStatus() {
         if (errorType != null) {
             return SmsLogStatus.ERROR;
@@ -162,10 +210,13 @@ public class SmsLog extends Entity {
         return SmsLogStatus.DELIVERED;
     }
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "target_member_id", nullable = false, updatable = false)
     public Member getTargetMember() {
         return targetMember;
     }
 
+    @Transient
     public SmsLogType getType() {
         if (smsMailing != null) {
             return SmsLogType.MAILING;
@@ -177,6 +228,7 @@ public class SmsLog extends Entity {
         return null;
     }
 
+    @Transient
     public boolean isFree() {
         if (smsMailing != null && smsMailing.isFree()) {
             return true;
@@ -184,10 +236,12 @@ public class SmsLog extends Entity {
         return freeBaseUsed;
     }
 
+    @Column(name = "free_base_used")
     public boolean isFreeBaseUsed() {
         return freeBaseUsed;
     }
 
+    @Transient
     public boolean isSuccessful() {
         return errorType == null;
     }
