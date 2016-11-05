@@ -19,15 +19,23 @@
  */
 package nl.strohalm.cyclos.entities.members;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Transient;
+
 /**
- * A general reference may be freely given from/to any member. It's like a general relationship indicator between 2 member.
- * 
+ * A general reference may be freely given from/to any member. It's like a
+ * general relationship indicator between 2 member.
+ *
  * @author luis
  */
+@Entity
+@DiscriminatorValue(value = "G")
 public class GeneralReference extends Reference {
 
     private static final long serialVersionUID = 7926593072489066980L;
 
+    @Transient
     @Override
     public Nature getNature() {
         return Nature.GENERAL;

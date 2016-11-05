@@ -19,21 +19,39 @@
  */
 package nl.strohalm.cyclos.entities.customization.translationMessages;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import nl.strohalm.cyclos.entities.Entity;
 
 /**
  * A resource bundle key
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "translation_messages")
 public class TranslationMessage extends Entity {
-    private static final long serialVersionUID = -5301317219230694326L;
-    private String            key;
-    private String            value;
 
+    private static final long serialVersionUID = -5301317219230694326L;
+    private String key;
+    private String value;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(name = "msg_key", unique = true, length = 100, nullable = false)
     public String getKey() {
         return key;
     }
 
+    @Column(name = "value")
     public String getValue() {
         return value;
     }

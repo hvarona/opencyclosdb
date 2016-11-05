@@ -102,21 +102,18 @@ public class Member extends Element implements RegisteredMember, AccountOwner {
 
     @OneToMany(targetEntity = nl.strohalm.cyclos.entities.ads.Ad.class)
     @JoinColumn(name = "owner_id")
-    @Transient
     public Collection<Ad> getAds() {
         return ads;
     }
 
     @OneToMany(targetEntity = MemberAlert.class)
     @JoinColumn(name = "member_id")
-    @Transient
     public Collection<MemberAlert> getAlerts() {
         return alerts;
     }
 
     @ManyToOne(targetEntity = nl.strohalm.cyclos.entities.members.Member.class)
     @JoinColumn(name = "member_broker_id")
-    @Transient
     @Override
     public Member getBroker() {
         return broker;
@@ -124,28 +121,24 @@ public class Member extends Element implements RegisteredMember, AccountOwner {
 
     @OneToMany(targetEntity = nl.strohalm.cyclos.entities.members.Member.class)
     @JoinColumn(name = "member_broker_id")
-    @Transient
     public Collection<Member> getBrokeredMembers() {
         return brokeredMembers;
     }
 
     @OneToMany(targetEntity = nl.strohalm.cyclos.entities.members.brokerings.Brokering.class)
     @JoinColumn(name = "broker_id")
-    @Transient
     public Collection<Brokering> getBrokerings() {
         return brokerings;
     }
 
     @OneToMany(targetEntity = nl.strohalm.cyclos.entities.members.brokerings.Brokering.class)
     @JoinColumn(name = "brokered_id")
-    @Transient
     public Collection<Brokering> getBrokeringsAsBrokered() {
         return brokeringsAsBrokered;
     }
 
     @OneToMany(targetEntity = Card.class)
     @JoinColumn(name = "owner_id")
-    @Transient
     public Collection<Card> getCards() {
         return cards;
     }
@@ -159,14 +152,12 @@ public class Member extends Element implements RegisteredMember, AccountOwner {
      */
     @OneToMany(targetEntity = Channel.class)
     @JoinColumn(name = "member_id")
-    @Transient
     public Collection<Channel> getChannels() {
         return channels;
     }
 
     @OneToMany(targetEntity = Contact.class)
     @JoinColumn(name = "owner_id")
-    @Transient
     public Collection<Contact> getContacts() {
         return contacts;
     }
@@ -185,7 +176,6 @@ public class Member extends Element implements RegisteredMember, AccountOwner {
 
     @OneToMany(targetEntity = MemberCustomFieldValue.class)
     @JoinColumn(name = "member_id")
-    @Transient
     @Override
     public Collection<MemberCustomFieldValue> getCustomValues() {
         return customValues;
@@ -193,14 +183,12 @@ public class Member extends Element implements RegisteredMember, AccountOwner {
 
     @OneToMany(targetEntity = nl.strohalm.cyclos.entities.customization.images.MemberImage.class)
     @JoinColumn(name = "member_id")
-    @Transient
     public Collection<MemberImage> getImages() {
         return images;
     }
 
     @OneToMany(targetEntity = LoanGroup.class)
     @JoinColumn(name = "member_id")
-    @Transient
     public Collection<LoanGroup> getLoanGroups() {
         return loanGroups;
     }
@@ -223,22 +211,19 @@ public class Member extends Element implements RegisteredMember, AccountOwner {
     }
 
     @OneToMany(targetEntity = NotificationPreference.class)
-    @JoinColumn(name = "member")
-    @Transient
+    @JoinColumn(name = "member_id")
     public Collection<NotificationPreference> getNotificationPreferences() {
         return notificationPreferences;
     }
 
     @OneToMany(targetEntity = MemberPos.class)
     @JoinColumn(name = "owner_id")
-    @Transient
     public Collection<MemberPos> getPosDevices() {
         return posDevices;
     }
 
     @OneToMany(targetEntity = RegistrationAgreementLog.class)
     @JoinColumn(name = "member_id")
-    @Transient
     public Collection<RegistrationAgreementLog> getRegistrationAgreementLogs() {
         return registrationAgreementLogs;
     }
@@ -254,7 +239,7 @@ public class Member extends Element implements RegisteredMember, AccountOwner {
         return CollectionUtils.isNotEmpty(getImages());
     }
 
-    @Column(name = "hide_email")
+    @Column(name = "hide_email", nullable = false)
     @Override
     public boolean isHideEmail() {
         return hideEmail;

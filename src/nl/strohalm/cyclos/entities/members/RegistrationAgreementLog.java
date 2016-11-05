@@ -20,15 +20,24 @@
 package nl.strohalm.cyclos.entities.members;
 
 import java.util.Calendar;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
 
 /**
  * Logs when a member has accepted a given registration agreement
- * 
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "registration_agreement_logs")
 public class RegistrationAgreementLog extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -44,25 +53,38 @@ public class RegistrationAgreementLog extends Entity {
         }
     }
 
-    private static final long     serialVersionUID = 8795634135337909851L;
+    private static final long serialVersionUID = 8795634135337909851L;
 
-    private Member                member;
+    private Member member;
     private RegistrationAgreement registrationAgreement;
-    private Calendar              date;
-    private String                remoteAddress;
+    private Calendar date;
+    private String remoteAddress;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(name = "date", nullable = false)
     public Calendar getDate() {
         return date;
     }
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "member_id", nullable = false)
     public Member getMember() {
         return member;
     }
 
+    @ManyToOne(targetEntity = RegistrationAgreement.class)
+    @JoinColumn(name = "registration_agreement_id", nullable = false)
     public RegistrationAgreement getRegistrationAgreement() {
         return registrationAgreement;
     }
 
+    @Column(name = "remote_address", length = 100)
     public String getRemoteAddress() {
         return remoteAddress;
     }

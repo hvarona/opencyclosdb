@@ -155,6 +155,8 @@ public class DatabaseClassList {
         nl.strohalm.cyclos.entities.customization.images.StyleImage.class,
         nl.strohalm.cyclos.entities.customization.images.SystemImage.class,
         nl.strohalm.cyclos.entities.customization.images.Image.class,
+        //nl.strohalm.cyclos.entities.customization.translationMessages
+        nl.strohalm.cyclos.entities.customization.translationMessages.TranslationMessage.class,
         //nl.strohalm.cyclos.entities.groups
         nl.strohalm.cyclos.entities.groups.AdminGroup.class,
         nl.strohalm.cyclos.entities.groups.BrokerGroup.class,
@@ -163,16 +165,21 @@ public class DatabaseClassList {
         nl.strohalm.cyclos.entities.groups.GroupHistoryLog.class,
         nl.strohalm.cyclos.entities.groups.SystemGroup.class,
         nl.strohalm.cyclos.entities.groups.MemberGroup.class,
+        nl.strohalm.cyclos.entities.groups.OperatorGroup.class,
         //nl.strohalm.cyclos.entities.infotexts.InfoText
         nl.strohalm.cyclos.entities.infotexts.InfoText.class,
         //nl.strohalm.cyclos.entities.members
         nl.strohalm.cyclos.entities.members.Administrator.class,
         nl.strohalm.cyclos.entities.members.Contact.class,
         nl.strohalm.cyclos.entities.members.Element.class,
+        nl.strohalm.cyclos.entities.members.GeneralReference.class,
         nl.strohalm.cyclos.entities.members.Member.class,
         nl.strohalm.cyclos.entities.members.Operator.class,
+        nl.strohalm.cyclos.entities.members.PendingEmailChange.class,
         nl.strohalm.cyclos.entities.members.PendingMember.class,
+        nl.strohalm.cyclos.entities.members.Reference.class,
         nl.strohalm.cyclos.entities.members.RegistrationAgreement.class,
+        nl.strohalm.cyclos.entities.members.RegistrationAgreementLog.class,
         //nl.strohalm.cyclos.entities.members.brokerings
         nl.strohalm.cyclos.entities.members.brokerings.BrokerCommissionContract.class,
         nl.strohalm.cyclos.entities.members.brokerings.Brokering.class,
@@ -185,6 +192,8 @@ public class DatabaseClassList {
         nl.strohalm.cyclos.entities.members.imports.MemberImport.class,
         //nl.strohalm.cyclos.entities.members.messages
         nl.strohalm.cyclos.entities.members.messages.MessageCategory.class,
+        //nl.strohalm.cyclos.entities.members.preferences
+        nl.strohalm.cyclos.entities.members.preferences.NotificationPreference.class,
         //nl.strohalm.cyclos.entities.members.records
         nl.strohalm.cyclos.entities.members.records.MemberRecord.class,
         nl.strohalm.cyclos.entities.members.records.MemberRecordType.class,

@@ -21,6 +21,13 @@ package nl.strohalm.cyclos.entities.members;
 
 import java.util.Calendar;
 import java.util.Map;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -28,8 +35,11 @@ import nl.strohalm.cyclos.entities.settings.LocalSettings;
 
 /**
  * Tracks a pending e-mail change until it is confirmed
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "pending_email_changes")
 public class PendingEmailChange extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -48,38 +58,54 @@ public class PendingEmailChange extends Entity {
 
     private static final long serialVersionUID = -1968070598567991893L;
 
-    private Calendar          creationDate;
-    private Member            member;
-    private String            validationKey;
-    private String            newEmail;
-    private Calendar          lastEmailDate;
-    private Element           by;
-    private String            remoteAddress;
+    private Calendar creationDate;
+    private Member member;
+    private String validationKey;
+    private String newEmail;
+    private Calendar lastEmailDate;
+    private Element by;
+    private String remoteAddress;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @ManyToOne(targetEntity = Element.class)
+    @JoinColumn(name = "by_id")
     public Element getBy() {
         return by;
     }
 
+    @Column(name = "creation_date", nullable = false)
     public Calendar getCreationDate() {
         return creationDate;
     }
 
+    @Column(name = "last_email_date")
     public Calendar getLastEmailDate() {
         return lastEmailDate;
     }
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "member_id", nullable = false)
     public Member getMember() {
         return member;
     }
 
+    @Column(name = "new_email", nullable = false, length = 150)
     public String getNewEmail() {
         return newEmail;
     }
 
+    @Column(name = "remote_address", nullable = false, length = 100)
     public String getRemoteAddress() {
         return remoteAddress;
     }
 
+    @Column(name = "validation_key", length = 64)
     public String getValidationKey() {
         return validationKey;
     }

@@ -19,6 +19,15 @@
  */
 package nl.strohalm.cyclos.entities.members.preferences;
 
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.members.Member;
@@ -26,9 +35,12 @@ import nl.strohalm.cyclos.entities.members.messages.Message;
 
 /**
  * Notification Preference Entity
+ *
  * @author Jefferson Magno
  * @author jeancarlo
  */
+@javax.persistence.Entity
+@Table(name = "notification_preferences")
 public class NotificationPreference extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -45,28 +57,42 @@ public class NotificationPreference extends Entity {
     }
 
     private static final long serialVersionUID = 5666584487265542893L;
-    private Member            member;
-    private Message.Type      type;
-    private boolean           message;
-    private boolean           email;
-    private boolean           sms;
+    private Member member;
+    private Message.Type type;
+    private boolean message;
+    private boolean email;
+    private boolean sms;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "member_id", updatable = false)
     public Member getMember() {
         return member;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
     public Message.Type getType() {
         return type;
     }
 
+    @Column(name = "is_email", nullable = false)
     public boolean isEmail() {
         return email;
     }
 
+    @Column(name = "is_message", nullable = false)
     public boolean isMessage() {
         return message;
     }
 
+    @Column(name = "is_sms", nullable = false)
     public boolean isSms() {
         return sms;
     }

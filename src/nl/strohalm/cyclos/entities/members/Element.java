@@ -33,7 +33,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -57,9 +56,8 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
  *
  * @author luis
  */
-//@MappedSuperclass
 @javax.persistence.Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "members")
 @DiscriminatorColumn(name = "subclass", length = 1, discriminatorType = DiscriminatorType.STRING)
 public abstract class Element extends Entity implements Indexable {

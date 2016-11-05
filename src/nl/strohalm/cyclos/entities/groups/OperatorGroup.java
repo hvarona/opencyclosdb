@@ -22,6 +22,17 @@ package nl.strohalm.cyclos.entities.groups;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Map;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapKeyJoinColumn;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.accounts.AccountType;
@@ -30,8 +41,11 @@ import nl.strohalm.cyclos.entities.members.Member;
 
 /**
  * A group for member's operators
+ *
  * @author luis
  */
+@Entity
+@DiscriminatorValue(value = "O")
 public class OperatorGroup extends Group {
 
     public static enum Relationships implements Relationship {
@@ -47,28 +61,40 @@ public class OperatorGroup extends Group {
         }
     }
 
-    private static final long             serialVersionUID = 6092174598805612471L;
-    private Member                        member;
+    private static final long serialVersionUID = 6092174598805612471L;
+    private Member member;
     private Map<TransferType, BigDecimal> maxAmountPerDayByTransferType;
-    private Collection<AccountType>       canViewInformationOf;
+    private Collection<AccountType> canViewInformationOf;
 
     @Override
     public BasicGroupSettings getBasicSettings() {
         return member.getGroup().getBasicSettings();
     }
 
+    @ManyToMany(targetEntity = AccountType.class)
+    @JoinTable(name = "group_operator_account_information_permissions",
+            joinColumns = @JoinColumn(name = "owner_group_id"),
+            inverseJoinColumns = @JoinColumn(name = "account_type_id"))
     public Collection<AccountType> getCanViewInformationOf() {
         return canViewInformationOf;
     }
 
+    @ElementCollection
+    @CollectionTable(name = "operator_groups_max_amount",
+            joinColumns = @JoinColumn(name = "group_id"))
+    @Column(name = "amount", precision = 15, scale = 6, nullable = false)
+    @MapKeyJoinColumn(name = "transfer_type_id")
     public Map<TransferType, BigDecimal> getMaxAmountPerDayByTransferType() {
         return maxAmountPerDayByTransferType;
     }
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "member_id")
     public Member getMember() {
         return member;
     }
 
+    @Transient
     @Override
     public Nature getNature() {
         return Nature.OPERATOR;

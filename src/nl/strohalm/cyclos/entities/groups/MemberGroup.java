@@ -21,10 +21,19 @@ package nl.strohalm.cyclos.entities.groups;
 
 import java.util.Collection;
 import java.util.HashSet;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Relationship;
@@ -45,7 +54,6 @@ import nl.strohalm.cyclos.entities.members.messages.Message;
  * @author luis
  */
 @Entity
-@Table
 @DiscriminatorValue(value = "M")
 public class MemberGroup extends SystemGroup {
 
@@ -93,12 +101,16 @@ public class MemberGroup extends SystemGroup {
     private boolean defaultAcceptPaidMailing;
     private RegistrationAgreement registrationAgreement;
 
-    @Transient
+    @ManyToMany(targetEntity = AccountFee.class)
+    @JoinTable(name = "groups_account_fees",
+            joinColumns = @JoinColumn(name = "owner_group_id"),
+            inverseJoinColumns = @JoinColumn(name = "accounts_fee_id"))
     public Collection<AccountFee> getAccountFees() {
         return accountFees;
     }
 
-    @Transient
+    @OneToMany(targetEntity = MemberGroupAccountSettings.class)
+    @JoinColumn(name = "group_id")
     public Collection<MemberGroupAccountSettings> getAccountSettings() {
         return accountSettings;
     }
@@ -116,82 +128,122 @@ public class MemberGroup extends SystemGroup {
         return accountTypes;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = MemberGroup.class)
+    @JoinTable(name = "group_buy_with_payment_obligations_from",
+            joinColumns = @JoinColumn(name = "owner_group_id"),
+            inverseJoinColumns = @JoinColumn(name = "related_group_id"))
     public Collection<MemberGroup> getCanBuyWithPaymentObligationsFromGroups() {
         return canBuyWithPaymentObligationsFromGroups;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = MemberGroup.class)
+    @JoinTable(name = "group_issue_certification_to",
+            joinColumns = @JoinColumn(name = "owner_group_id"),
+            inverseJoinColumns = @JoinColumn(name = "related_group_id"))
     public Collection<MemberGroup> getCanIssueCertificationToGroups() {
         return canIssueCertificationToGroups;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = MemberGroup.class)
+    @JoinTable(name = "group_view_ads_permissions",
+            joinColumns = @JoinColumn(name = "owner_group_id"),
+            inverseJoinColumns = @JoinColumn(name = "related_group_id"))
     public Collection<MemberGroup> getCanViewAdsOfGroups() {
         return canViewAdsOfGroups;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = GroupFilter.class)
+    @JoinTable(name = "group_filters_viewable_by",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_filter_id"))
     public Collection<GroupFilter> getCanViewGroupFilters() {
         return canViewGroupFilters;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = AccountType.class)
+    @JoinTable(name = "group_view_account_information_permissions",
+            joinColumns = @JoinColumn(name = "owner_group_id"),
+            inverseJoinColumns = @JoinColumn(name = "account_type_id"))
     public Collection<AccountType> getCanViewInformationOf() {
         return canViewInformationOf;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = MemberGroup.class)
+    @JoinTable(name = "group_view_profile_permissions",
+            joinColumns = @JoinColumn(name = "owner_group_id"),
+            inverseJoinColumns = @JoinColumn(name = "related_group_id"))
     public Collection<MemberGroup> getCanViewProfileOfGroups() {
         return canViewProfileOfGroups;
     }
 
-    @Transient
+    @ManyToOne(targetEntity = CardType.class)
+    @JoinColumn(name = "card_type_id")
     public CardType getCardType() {
         return cardType;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = Channel.class)
+    @JoinTable(name = "groups_channels",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "channel_id"))
     public Collection<Channel> getChannels() {
         return channels;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = CustomField.class)
+    @JoinTable(name = "member_groups_custom_fields",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "custom_field_id"))
     public Collection<CustomField> getCustomFields() {
         return customFields;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = Channel.class)
+    @JoinTable(name = "groups_default_channels",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "channel_id"))
     public Collection<Channel> getDefaultChannels() {
         return defaultChannels;
     }
 
-    @Transient
+    @ElementCollection(targetClass = Enum.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "member_groups_message_types",
+            joinColumns = @JoinColumn(name = "group_id"))
     public Collection<Message.Type> getDefaultMailMessages() {
         return defaultMailMessages;
     }
 
-    @Transient
+    @ElementCollection(targetClass = Enum.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "member_groups_default_sms_message_types",
+            joinColumns = @JoinColumn(name = "group_id"))
     public Collection<Message.Type> getDefaultSmsMessages() {
         return defaultSmsMessages;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = TransactionFee.class)
+    @JoinTable(name = "groups_from_transaction_fees",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "transaction_fee_id"))
     public Collection<TransactionFee> getFromTransactionFees() {
         return fromTransactionFees;
     }
 
-    @Column(length = 100)
+    @Column(name = "initial_group_show", length = 100)
     public String getInitialGroupShow() {
         return initialGroupShow;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = AdminGroup.class)
+    @JoinTable(name = "admin_manages_member_groups",
+            joinColumns = @JoinColumn(name = "managed_group_id"),
+            inverseJoinColumns = @JoinColumn(name = "manager_group_id"))
     public Collection<AdminGroup> getManagedByGroups() {
         return managedByGroups;
     }
 
-    @Transient
+    @Embedded
     public MemberGroupSettings getMemberSettings() {
         if (memberSettings == null) {
             memberSettings = new MemberGroupSettings();
@@ -205,27 +257,40 @@ public class MemberGroup extends SystemGroup {
         return Nature.MEMBER;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = BrokerGroup.class)
+    @JoinTable(name = "group_filters_viewable_by",
+            joinColumns = @JoinColumn(name = "possible_initial_group_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id"))
     public Collection<BrokerGroup> getPossibleInitialGroupOf() {
         return possibleInitialGroupOf;
     }
 
-    @Transient
+    @ManyToOne(targetEntity = RegistrationAgreement.class)
+    @JoinColumn(name = "registration_agreement_id")
     public RegistrationAgreement getRegistrationAgreement() {
         return registrationAgreement;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = Channel.class)
+    @JoinTable(name = "groups_request_payment_channels",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "channel_id"))
     public Collection<Channel> getRequestPaymentByChannels() {
         return requestPaymentByChannels;
     }
 
-    @Transient
+    @ElementCollection(targetClass = Enum.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "member_groups_sms_message_types",
+            joinColumns = @JoinColumn(name = "group_id"))
     public Collection<Message.Type> getSmsMessages() {
         return smsMessages;
     }
 
-    @Transient
+    @ManyToMany(targetEntity = TransactionFee.class)
+    @JoinTable(name = "groups_to_transaction_fees",
+            joinColumns = @JoinColumn(name = "group_id"),
+            inverseJoinColumns = @JoinColumn(name = "transaction_fee_id"))
     public Collection<TransactionFee> getToTransactionFees() {
         return toTransactionFees;
     }
@@ -240,22 +305,22 @@ public class MemberGroup extends SystemGroup {
         return false;
     }
 
-    @Column(name = "member_default_accept_free_mailing")
+    @Column(name = "member_default_accept_free_mailing", nullable = false)
     public boolean isDefaultAcceptFreeMailing() {
         return defaultAcceptFreeMailing;
     }
 
-    @Column(name = "member_default_accept_paid_mailing")
+    @Column(name = "member_default_accept_paid_mailing", nullable = false)
     public boolean isDefaultAcceptPaidMailing() {
         return defaultAcceptPaidMailing;
     }
 
-    @Column(name = "member_default_allow_charging_sms")
+    @Column(name = "member_default_allow_charging_sms", nullable = false)
     public boolean isDefaultAllowChargingSms() {
         return defaultAllowChargingSms;
     }
 
-    @Column(name = "initial_group")
+    @Column(name = "initial_group", nullable = false)
     public boolean isInitialGroup() {
         return initialGroup;
     }
