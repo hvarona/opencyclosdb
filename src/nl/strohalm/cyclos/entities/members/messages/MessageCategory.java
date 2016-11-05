@@ -39,7 +39,7 @@ import nl.strohalm.cyclos.entities.groups.SystemGroup;
  * @author jeancarlo
  */
 @javax.persistence.Entity
-@Table(name = "")
+@Table(name = "message_categories")
 public class MessageCategory extends Entity implements Comparable<MessageCategory> {
 
     public static enum Relationships implements Relationship {

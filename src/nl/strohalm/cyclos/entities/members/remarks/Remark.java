@@ -46,7 +46,7 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
  */
 @javax.persistence.Entity
 @Table(name = "remarks")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "subclass", discriminatorType = DiscriminatorType.STRING)
 public abstract class Remark extends Entity {
 

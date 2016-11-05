@@ -42,7 +42,7 @@ import nl.strohalm.cyclos.utils.transactionimport.TransactionFileImport;
  */
 @javax.persistence.Entity
 @Table(name = "file_mappings")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "subclass", length = 3)
 public abstract class FileMapping extends Entity {
 

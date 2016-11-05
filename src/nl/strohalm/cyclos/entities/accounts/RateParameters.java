@@ -46,7 +46,7 @@ import nl.strohalm.cyclos.utils.Period;
  */
 @javax.persistence.Entity
 @Table(name = "rate_parameters")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "subclass")
 abstract public class RateParameters extends Entity {
 

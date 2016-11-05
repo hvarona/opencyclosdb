@@ -88,12 +88,12 @@ public class Application extends Entity {
         return super.getId();
     }
 
-    @Column
+    @Column(name = "account_status_enabled_since")
     public Calendar getAccountStatusEnabledSince() {
         return accountStatusEnabledSince;
     }
 
-    @Column
+    @Column(name = "last_index_rebuilding_time")
     public Calendar getLastIndexRebuidingTime() {
         return lastIndexRebuidingTime;
     }
@@ -104,7 +104,7 @@ public class Application extends Entity {
         return passwordHash;
     }
 
-    @Column
+    @Column(name = "version")
     public String getVersion() {
         return version;
     }

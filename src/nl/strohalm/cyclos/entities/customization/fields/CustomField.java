@@ -62,7 +62,7 @@ import org.apache.commons.collections.Predicate;
  */
 @javax.persistence.Entity
 @Table(name = "custom_fields")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "subclass", discriminatorType = DiscriminatorType.STRING)
 public abstract class CustomField extends Entity {
 

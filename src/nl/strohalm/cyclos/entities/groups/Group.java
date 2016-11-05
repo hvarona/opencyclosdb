@@ -62,7 +62,7 @@ import nl.strohalm.cyclos.utils.access.PermissionHelper;
  * @author luis
  */
 @javax.persistence.Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "groups")
 @DiscriminatorColumn(name = "subclass", discriminatorType = DiscriminatorType.STRING)
 public abstract class Group extends Entity implements Comparable<Group> {

@@ -48,7 +48,7 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
  */
 @javax.persistence.Entity
 @Table(name = "documents")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "subclass")
 public abstract class Document extends Entity {
 

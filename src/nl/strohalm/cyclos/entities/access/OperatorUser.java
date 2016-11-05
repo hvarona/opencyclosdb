@@ -20,7 +20,6 @@
 package nl.strohalm.cyclos.entities.access;
 
 import javax.persistence.DiscriminatorValue;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 import nl.strohalm.cyclos.entities.members.Operator;
 
@@ -31,7 +30,6 @@ import nl.strohalm.cyclos.entities.members.Operator;
  */
 @javax.persistence.Entity
 @DiscriminatorValue(value = "O")
-@Table
 public class OperatorUser extends User {
 
     private static final long serialVersionUID = -1985530143455538217L;

@@ -22,7 +22,6 @@ package nl.strohalm.cyclos.entities.access;
 import java.util.Calendar;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.members.Member;
@@ -34,7 +33,6 @@ import nl.strohalm.cyclos.entities.members.Member;
  */
 @javax.persistence.Entity
 @DiscriminatorValue(value = "M")
-@Table
 public class MemberUser extends User {
 
     private static final long serialVersionUID = -524317381029059040L;

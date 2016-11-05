@@ -39,7 +39,7 @@ import nl.strohalm.cyclos.utils.StringHelper;
  * @author luis
  */
 @javax.persistence.Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "files")
 @DiscriminatorColumn(name = "subclass", discriminatorType = DiscriminatorType.STRING)
 public abstract class File extends Entity {

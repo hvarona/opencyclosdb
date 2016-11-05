@@ -54,7 +54,7 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
  */
 @javax.persistence.Entity
 @Table(name = "transaction_fees")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "subclass")
 public abstract class TransactionFee extends Entity {
 

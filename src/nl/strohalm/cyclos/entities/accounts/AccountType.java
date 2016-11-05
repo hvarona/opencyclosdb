@@ -46,7 +46,7 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
  */
 @javax.persistence.Entity
 @Table(name = "account_types")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "subclass")
 public abstract class AccountType extends Entity implements Comparable<AccountType> {
 

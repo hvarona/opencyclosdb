@@ -43,7 +43,7 @@ import nl.strohalm.cyclos.utils.FormatObject;
  */
 @javax.persistence.Entity
 @Table(name = "amount_reservations")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "subclass")
 public abstract class AmountReservation extends Entity {
 

@@ -48,7 +48,7 @@ import nl.strohalm.cyclos.entities.members.Member;
  * @author luis
  */
 @javax.persistence.Entity
-@Table(name = "application")
+@Table(name = "service_clients")
 public class ServiceClient extends Entity {
 
     public static enum Relationships implements Relationship {

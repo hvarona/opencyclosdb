@@ -31,7 +31,6 @@ import nl.strohalm.cyclos.entities.members.Administrator;
  */
 @javax.persistence.Entity
 @DiscriminatorValue(value = "A")
-@Table
 public class AdminUser extends User {
 
     private static final long serialVersionUID = 8859775065273524059L;

@@ -38,7 +38,7 @@ import nl.strohalm.cyclos.utils.Period;
 import org.apache.commons.lang.StringUtils;
 
 @javax.persistence.Entity
-@Table(name = "application")
+@Table(name = "info_texts")
 public class InfoText extends Entity {
 
     private static final long serialVersionUID = 1L;

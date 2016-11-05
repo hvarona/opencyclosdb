@@ -48,7 +48,7 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
  * @author luis
  */
 @javax.persistence.Entity
-@Table
+@Table(name="imported_members")
 public class ImportedMember extends Entity implements CustomFieldsContainer<MemberCustomField, MemberCustomFieldValue> {
 
     public static enum Relationships implements Relationship {

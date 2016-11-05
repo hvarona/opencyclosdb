@@ -28,7 +28,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.groups.AdminGroup;
@@ -45,7 +44,6 @@ import nl.strohalm.cyclos.utils.StringValuedEnum;
  */
 @Entity
 @DiscriminatorValue(value = "member")
-@Table
 public class MemberCustomField extends CustomField {
 
     /**
