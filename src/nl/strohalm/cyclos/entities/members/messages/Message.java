@@ -22,6 +22,18 @@ package nl.strohalm.cyclos.entities.members.messages;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -33,12 +45,16 @@ import org.apache.commons.collections.CollectionUtils;
 
 /**
  * A message sent to a member or to system
+ *
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "messages")
 public class Message extends Entity {
 
     /**
      * A direction for a given message
+     *
      * @author luis
      */
     public static enum Direction implements StringValuedEnum {
@@ -79,6 +95,7 @@ public class Message extends Entity {
 
     /**
      * A first level message type
+     *
      * @author luis
      */
     public static enum RootType {
@@ -87,6 +104,7 @@ public class Message extends Entity {
 
     /**
      * A second level message type
+     *
      * @author luis
      */
     public static enum Type implements StringValuedEnum {
@@ -107,7 +125,7 @@ public class Message extends Entity {
             return types;
         }
 
-        private final String   value;
+        private final String value;
         private final RootType rootType;
 
         private Type(final RootType rootType, final String value) {
@@ -134,59 +152,75 @@ public class Message extends Entity {
 
     private static final long serialVersionUID = -2421844991813820706L;
 
-    private Calendar          date;
-    private Member            fromMember;
-    private Member            toMember;
-    private Direction         direction;
-    private String            subject;
-    private String            body;
-    private MessageCategory   category;
-    private Type              type;
-    private boolean           read;
-    private Calendar          removedAt;
-    private boolean           replied;
-    private boolean           html;
-    private boolean           emailSent;
+    private Calendar date;
+    private Member fromMember;
+    private Member toMember;
+    private Direction direction;
+    private String subject;
+    private String body;
+    private MessageCategory category;
+    private Type type;
+    private boolean read;
+    private Calendar removedAt;
+    private boolean replied;
+    private boolean html;
+    private boolean emailSent;
     private List<MemberGroup> toGroups;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @Column(name = "body", updatable = false)
     public String getBody() {
         return body;
     }
 
+    @ManyToOne(targetEntity = MessageCategory.class)
+    @JoinColumn(name = "category_id", updatable = false)
     public MessageCategory getCategory() {
         return category;
     }
 
+    @Column(name = "date", nullable = false, updatable = false)
     public Calendar getDate() {
         return date;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "direction", nullable = false, updatable = false)
     public Direction getDirection() {
         return direction;
     }
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "from_member_id", updatable = false)
     public Member getFromMember() {
         return fromMember;
     }
 
+    @Transient
     public MessageBox getMessageBox() {
         if (direction == null) {
             throw new IllegalStateException("Cannot determine message box - direction is null");
         }
         if (removedAt != null) {
             return MessageBox.TRASH;
+        } else if (direction == Message.Direction.INCOMING) {
+            return MessageBox.INBOX;
         } else {
-            if (direction == Message.Direction.INCOMING) {
-                return MessageBox.INBOX;
-            } else {
-                return MessageBox.SENT;
-            }
+            return MessageBox.SENT;
         }
     }
 
     /**
-     * Resolve the message's owner: toMember when incoming, fromMember when outgoing
+     * Resolve the message's owner: toMember when incoming, fromMember when
+     * outgoing
      */
+    @Transient
     public Member getOwner() {
         if (direction == null) {
             throw new IllegalStateException("Cannot determine message owner - direction is null");
@@ -202,8 +236,10 @@ public class Message extends Entity {
     }
 
     /**
-     * Resolve the message's related member: toMember when outgoing, fromMember when incoming
+     * Resolve the message's related member: toMember when outgoing, fromMember
+     * when incoming
      */
+    @Transient
     public Member getRelatedMember() {
         if (direction == null) {
             throw new IllegalStateException("Cannot determine message related member - direction is null");
@@ -218,74 +254,97 @@ public class Message extends Entity {
         }
     }
 
+    @Column(name = "removed_at")
     public Calendar getRemovedAt() {
         return removedAt;
     }
 
+    @Column(name = "subject", nullable = false, updatable = false)
     public String getSubject() {
         return subject;
     }
 
+    @ManyToMany(targetEntity = MemberGroup.class)
+    @JoinTable(name = "messages_to_groups",
+            joinColumns = @JoinColumn(name = "message_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id"))
     public List<MemberGroup> getToGroups() {
         return toGroups;
     }
 
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "to_member_id", updatable = false)
     public Member getToMember() {
         return toMember;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false, updatable = false)
     public Type getType() {
         return type;
     }
 
+    @Transient
     public boolean isBulk() {
         return type == Type.FROM_ADMIN_TO_GROUP;
     }
 
+    @Column(name = "email_sent", nullable = false)
     public boolean isEmailSent() {
         return emailSent;
     }
 
+    @Transient
     public boolean isFromAdministration() {
         return !isFromSystem() && !isFromAMember();
     }
 
+    @Transient
     public boolean isFromAMember() {
         return fromMember != null;
     }
 
+    @Transient
     public boolean isFromSystem() {
         return type != null && type.getRootType() == RootType.SYSTEM;
     }
 
+    @Column(name = "is_html", nullable = false)
     public boolean isHtml() {
         return html;
     }
 
+    @Column(name = "is_read", nullable = false)
     public boolean isRead() {
         return read;
     }
 
+    @Transient
     public boolean isRemoved() {
         return removedAt != null;
     }
 
+    @Column(name = "is_replied", nullable = false)
     public boolean isReplied() {
         return replied;
     }
 
+    @Transient
     public boolean isToAdministration() {
         return isFromAMember() && !isToAMember() && type == Type.FROM_MEMBER;
     }
 
+    @Transient
     public boolean isToAGroup() {
         return CollectionUtils.isNotEmpty(toGroups);
     }
 
+    @Transient
     public boolean isToAMember() {
         return toMember != null;
     }
 
+    @Transient
     public boolean isToBrokeredMembers() {
         return isBulk() && isFromAMember();
     }

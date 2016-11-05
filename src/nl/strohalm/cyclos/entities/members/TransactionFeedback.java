@@ -20,6 +20,12 @@
 package nl.strohalm.cyclos.entities.members;
 
 import java.util.Calendar;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.accounts.transactions.Payment;
@@ -27,10 +33,13 @@ import nl.strohalm.cyclos.entities.accounts.transactions.ScheduledPayment;
 import nl.strohalm.cyclos.entities.accounts.transactions.Transfer;
 
 /**
- * A transaction reference represents the option about a buyer to seller or a seller to buyer on a specific transaction
- * 
+ * A transaction reference represents the option about a buyer to seller or a
+ * seller to buyer on a specific transaction
+ *
  * @author luis
  */
+@Entity
+@DiscriminatorValue(value = "I")
 public class TransactionFeedback extends Reference {
 
     public static enum Relationships implements Relationship {
@@ -47,42 +56,52 @@ public class TransactionFeedback extends Reference {
     }
 
     private static final long serialVersionUID = -2759397836741489295L;
-    private Transfer          transfer;
-    private ScheduledPayment  scheduledPayment;
-    private String            replyComments;
-    private Calendar          replyCommentsDate;
-    private String            adminComments;
-    private Calendar          adminCommentsDate;
+    private Transfer transfer;
+    private ScheduledPayment scheduledPayment;
+    private String replyComments;
+    private Calendar replyCommentsDate;
+    private String adminComments;
+    private Calendar adminCommentsDate;
 
+    @Column(name = "admin_comments")
     public String getAdminComments() {
         return adminComments;
     }
 
+    @Column(name = "admin_comments_date")
     public Calendar getAdminCommentsDate() {
         return adminCommentsDate;
     }
 
+    @Transient
     @Override
     public Nature getNature() {
         return Nature.TRANSACTION;
     }
 
+    @Transient
     public Payment getPayment() {
         return transfer == null ? scheduledPayment : transfer;
     }
 
+    @Column(name = "reply_comments")
     public String getReplyComments() {
         return replyComments;
     }
 
+    @Column(name = "reply_comments_date")
     public Calendar getReplyCommentsDate() {
         return replyCommentsDate;
     }
 
+    @ManyToOne(targetEntity = ScheduledPayment.class)
+    @JoinColumn(name = "scheduled_payment_id")
     public ScheduledPayment getScheduledPayment() {
         return scheduledPayment;
     }
 
+    @ManyToOne(targetEntity = Transfer.class)
+    @JoinColumn(name = "transfer_id")
     public Transfer getTransfer() {
         return transfer;
     }

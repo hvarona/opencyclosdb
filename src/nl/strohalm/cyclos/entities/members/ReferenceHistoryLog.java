@@ -19,14 +19,28 @@
  */
 package nl.strohalm.cyclos.entities.members;
 
+import java.util.Calendar;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.utils.Period;
 
 /**
  * This is a log of given references from one member to another
+ *
  * @author jefferson
  */
+@javax.persistence.Entity
+@Table(name = "reference_history")
 public class ReferenceHistoryLog extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -44,23 +58,47 @@ public class ReferenceHistoryLog extends Entity {
 
     private static final long serialVersionUID = 2003079010258584099L;
 
-    private Member            from;
-    private Member            to;
-    private Reference.Level   level;
-    private Period            period;
+    private Member from;
+    private Member to;
+    private Reference.Level level;
+    private Period period;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "from_member_id")
     public Member getFrom() {
         return from;
     }
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "level", nullable = false)
     public Reference.Level getLevel() {
         return level;
     }
 
+    @Transient
     public Period getPeriod() {
         return period;
     }
 
+    @Column(name = "star_date")
+    public Calendar getPeriodStart() {
+        return period.getBegin();
+    }
+
+    @Column(name = "end_Date")
+    public Calendar getPeriodEnd() {
+        return period.getEnd();
+    }
+
+    @ManyToOne(targetEntity = Member.class)
+    @JoinColumn(name = "to_member_id")
     public Member getTo() {
         return to;
     }
@@ -75,6 +113,14 @@ public class ReferenceHistoryLog extends Entity {
 
     public void setPeriod(final Period period) {
         this.period = period;
+    }
+
+    public void setPeriodStart(final Calendar start) {
+        period.setBegin(start);
+    }
+
+    public void setPeriodEnd(final Calendar end) {
+        period.setEnd(end);
     }
 
     public void setTo(final Member to) {

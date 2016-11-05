@@ -20,6 +20,15 @@
 package nl.strohalm.cyclos.entities.members.preferences;
 
 import java.util.Set;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
@@ -33,9 +42,12 @@ import nl.strohalm.cyclos.entities.members.messages.MessageCategory;
 
 /**
  * Notification Preference for an administrator
+ *
  * @author luis
  * @author Lucas Geiss
  */
+@javax.persistence.Entity
+@Table(name = "admin_notification_preferences")
 public class AdminNotificationPreference extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -52,22 +64,35 @@ public class AdminNotificationPreference extends Entity {
         }
     }
 
-    private static final long       serialVersionUID = -4791497274620475610L;
-    private boolean                 applicationErrors;
-    private boolean                 systemInvoices;
-    private Administrator           admin;
-    private Set<TransferType>       transferTypes;
-    private Set<TransferType>       newPendingPayments;
-    private Set<GuaranteeType>      guaranteeTypes;
-    private Set<MessageCategory>    messageCategories;
+    private static final long serialVersionUID = -4791497274620475610L;
+    private boolean applicationErrors;
+    private boolean systemInvoices;
+    private Administrator admin;
+    private Set<TransferType> transferTypes;
+    private Set<TransferType> newPendingPayments;
+    private Set<GuaranteeType> guaranteeTypes;
+    private Set<MessageCategory> messageCategories;
     private Set<SystemAlert.Alerts> systemAlerts;
     private Set<MemberAlert.Alerts> memberAlerts;
-    private Set<MemberGroup>        newMembers;
+    private Set<MemberGroup> newMembers;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+
+    @ManyToOne(targetEntity = Administrator.class)
+    @JoinColumn(name = "admin_id")
     public Administrator getAdmin() {
         return admin;
     }
 
+    @ManyToMany(targetEntity = GuaranteeType.class)
+    @JoinTable(name = "",
+            joinColumns = @JoinColumn(name = ""),
+            inverseJoinColumns = @JoinColumn(name = ""))
     public Set<GuaranteeType> getGuaranteeTypes() {
         return guaranteeTypes;
     }
@@ -76,14 +101,26 @@ public class AdminNotificationPreference extends Entity {
         return memberAlerts;
     }
 
+    @ManyToMany(targetEntity = MessageCategory.class)
+    @JoinTable(name = "",
+            joinColumns = @JoinColumn(name = ""),
+            inverseJoinColumns = @JoinColumn(name = ""))
     public Set<MessageCategory> getMessageCategories() {
         return messageCategories;
     }
 
+    @ManyToMany(targetEntity = MemberGroup.class)
+    @JoinTable(name = "",
+            joinColumns = @JoinColumn(name = ""),
+            inverseJoinColumns = @JoinColumn(name = ""))
     public Set<MemberGroup> getNewMembers() {
         return newMembers;
     }
 
+    @ManyToMany(targetEntity = TransferType.class)
+    @JoinTable(name = "",
+            joinColumns = @JoinColumn(name = ""),
+            inverseJoinColumns = @JoinColumn(name = ""))
     public Set<TransferType> getNewPendingPayments() {
         return newPendingPayments;
     }
@@ -92,14 +129,20 @@ public class AdminNotificationPreference extends Entity {
         return systemAlerts;
     }
 
+    @ManyToMany(targetEntity = TransferType.class)
+    @JoinTable(name = "",
+            joinColumns = @JoinColumn(name = ""),
+            inverseJoinColumns = @JoinColumn(name = ""))
     public Set<TransferType> getTransferTypes() {
         return transferTypes;
     }
 
+    @Column(name = "application_errors", nullable = false)
     public boolean isApplicationErrors() {
         return applicationErrors;
     }
 
+    @Column(name = "system_invoices", nullable = false)
     public boolean isSystemInvoices() {
         return systemInvoices;
     }

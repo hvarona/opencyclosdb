@@ -19,6 +19,10 @@
  */
 package nl.strohalm.cyclos.entities.members.printsettings;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import nl.strohalm.cyclos.entities.Entity;
 import nl.strohalm.cyclos.entities.Relationship;
 import nl.strohalm.cyclos.entities.members.Member;
@@ -28,6 +32,8 @@ import nl.strohalm.cyclos.entities.members.Member;
  * 
  * @author luis
  */
+@javax.persistence.Entity
+@Table(name = "print_settings")
 public class ReceiptPrinterSettings extends Entity {
 
     public static enum Relationships implements Relationship {
@@ -52,6 +58,13 @@ public class ReceiptPrinterSettings extends Entity {
     private String            endOfDocCommand;
     private String            paymentAdditionalMessage;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
+    
     public String getBeginOfDocCommand() {
         return beginOfDocCommand;
     }
