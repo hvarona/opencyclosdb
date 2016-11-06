@@ -23,11 +23,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaQuery;
-import nl.strohalm.cyclos.HibernateUtil;
+import nl.strohalm.cyclos.utils.database.HibernateUtil;
 
 import nl.strohalm.cyclos.entities.Application;
 import nl.strohalm.cyclos.entities.exceptions.DaoException;
 import nl.strohalm.cyclos.utils.JDBCWrapper;
+import nl.strohalm.cyclos.utils.database.DatabaseUtil;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,7 +50,7 @@ public class ApplicationDAOImpl /*extends BaseDAOImpl<Application>*/ implements 
 
     @Override
     public Application read() {
-        EntityManager em = HibernateUtil.getCurrentSession();
+        EntityManager em = DatabaseUtil.getCurrentEntityManager();
         CriteriaQuery<Application> cq = em.getCriteriaBuilder().createQuery(Application.class);
         cq.from(Application.class);
         return em.createQuery(cq).getSingleResult();

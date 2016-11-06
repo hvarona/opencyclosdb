@@ -1,4 +1,4 @@
-package nl.strohalm.cyclos;
+package nl.strohalm.cyclos.utils.database;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -25,6 +25,7 @@ public class HibernateUtil {
     public static final int POSTGRESQL = 2;
     public static final int POSTGRESQLSSL = 3;
     public static final int POSTGRESQLSSLNOVEF = 4;
+    public static final int H2DATABASE = 5;
     private static SessionFactory sessionFactory = null;
 
     private static void rebuildSessionFactory() {
@@ -35,6 +36,7 @@ public class HibernateUtil {
                 break;
             case (MYSQL):
                 configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+                configuration.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
                 break;
             case (POSTGRESQL):
                 configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
@@ -51,7 +53,10 @@ public class HibernateUtil {
                 configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
                 configuration.setProperty("hibernate.connection.driver_class", "org.postgresql.Driver");
                 configuration.setProperty("hibernate.connection.ssl", "true");
-
+                break;
+            case (H2DATABASE):
+                configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+                configuration.setProperty("hibernate.connection.driver_class", "org.h2.Driver");
             default:
         }
         configuration.setProperty("hibernate.connection.url", serverUrl);
@@ -76,7 +81,7 @@ public class HibernateUtil {
         configuration.setProperty("hibernate.show_sql", "false");
         configuration.setProperty("hibernate.hbm2ddl.auto", "update");
 
-        for (Class cl : DatabaseClassList.classList) {
+        for (Class cl : DatabaseUtil.CLASSES_LIST) {
             configuration.addAnnotatedClass(cl);
         }
 
@@ -115,6 +120,13 @@ public class HibernateUtil {
                 url.append("/");
                 url.append(dbName);
                 break;
+            case (H2DATABASE):
+                url.append("h2tcp://");
+                url.append(serverAddress);
+                url.append(":");
+                url.append(serverPort);
+                url.append("/");
+                url.append(dbName);
             default:
                 break;
         }

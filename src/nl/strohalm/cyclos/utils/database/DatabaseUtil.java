@@ -3,15 +3,27 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package nl.strohalm.cyclos;
+package nl.strohalm.cyclos.utils.database;
+
+import javax.persistence.EntityManager;
 
 /**
  *
  * @author henry
  */
-public class DatabaseClassList {
+public class DatabaseUtil {
 
-    final static Class[] classList = new Class[]{
+    private static boolean isHibernate = true;
+    private static boolean isMariaDB = true;
+    private static String host = "localhost";
+    private static String dbName = "CyclosDB";
+    private static String dbPort = "3307";
+    private static String username = "root";
+    private static String password = "1234";
+
+    private static boolean isOpen = false;
+
+    final static Class[] CLASSES_LIST = new Class[]{
         //nl.strohalm.cyclos.entities
         nl.strohalm.cyclos.entities.Application.class,
         nl.strohalm.cyclos.entities.IndexOperation.class,
@@ -219,6 +231,90 @@ public class DatabaseClassList {
         nl.strohalm.cyclos.entities.sms.SmsLog.class,
         nl.strohalm.cyclos.entities.sms.SmsMailing.class,
         nl.strohalm.cyclos.entities.sms.SmsType.class
-
     };
+
+    public static void openDatabase() {
+        if (!isOpen) {
+            if (isHibernate) {
+                HibernateUtil.setUser(username);
+                HibernateUtil.setPwd(password);
+                HibernateUtil.setServerUrl(host, dbPort, dbName);
+                HibernateUtil.getSession().close();
+            }
+            isOpen = true;
+        }
+    }
+
+    public static EntityManager getEntityManager() {
+        openDatabase();
+        if (isHibernate) {
+            return HibernateUtil.getSession();
+        }
+        return null;
+    }
+
+    public static EntityManager getCurrentEntityManager() {
+        openDatabase();
+        if (isHibernate) {
+            return HibernateUtil.getCurrentSession();
+        }
+        return null;
+    }
+
+    public static boolean isIsHibernate() {
+        return isHibernate;
+    }
+
+    public static void setIsHibernate(boolean isHibernate) {
+        DatabaseUtil.isHibernate = isHibernate;
+    }
+
+    public static boolean isIsMariaDB() {
+        return isMariaDB;
+    }
+
+    public static void setIsMariaDB(boolean isMariaDB) {
+        DatabaseUtil.isMariaDB = isMariaDB;
+    }
+
+    public static String getHost() {
+        return host;
+    }
+
+    public static void setHost(String host) {
+        DatabaseUtil.host = host;
+    }
+
+    public static String getDbName() {
+        return dbName;
+    }
+
+    public static void setDbName(String dbName) {
+        DatabaseUtil.dbName = dbName;
+    }
+
+    public static String getUsername() {
+        return username;
+    }
+
+    public static void setUsername(String username) {
+        DatabaseUtil.username = username;
+    }
+
+    public static String getPassword() {
+        return password;
+    }
+
+    public static void setPassword(String password) {
+        DatabaseUtil.password = password;
+    }
+
+    public static String getDbPort() {
+        return dbPort;
+    }
+
+    public static void setDbPort(String dbPort) {
+        DatabaseUtil.dbPort = dbPort;
+    }
+
 }
