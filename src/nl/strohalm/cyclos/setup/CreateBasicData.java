@@ -32,6 +32,10 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Root;
 
 import nl.strohalm.cyclos.CyclosConfiguration;
 import nl.strohalm.cyclos.access.AdminMemberPermission;
@@ -73,9 +77,9 @@ import org.apache.commons.lang.StringUtils;
  */
 public class CreateBasicData implements Runnable {
 
-    private static List<Permission> unwantedAccountAdminPermissions;
-    private static List<Permission> unwantedAdminPermissions;
-    private static List<Permission> unwantedMemberPermissions;
+    private static final List<Permission> unwantedAccountAdminPermissions;
+    private static final List<Permission> unwantedAdminPermissions;
+    private static final List<Permission> unwantedMemberPermissions;
 
     static {
         /* Unwanted account admin permissions */
@@ -118,7 +122,7 @@ public class CreateBasicData implements Runnable {
                 AdminSystemPermission.STATUS_VIEW_CONNECTED_OPERATORS
         );
 
-        unwantedAdminPermissions = new ArrayList<Permission>();
+        unwantedAdminPermissions = new ArrayList();
         unwantedAdminPermissions.addAll(unwantedAdminPermissionsList);
         unwantedAdminPermissions.addAll(Module.ADMIN_MEMBER_DOCUMENTS.getPermissions());
         unwantedAdminPermissions.addAll(Module.ADMIN_MEMBER_GUARANTEES.getPermissions());
@@ -167,7 +171,12 @@ public class CreateBasicData implements Runnable {
     public static void createChannels(final EntityManager session, final ResourceBundle bundle) {
         final List<Channel> builtinChannels = getBuiltinChannels(bundle);
         for (final Channel channel : builtinChannels) {
-            Number count = (Number) session.createQuery("select count(*) from Channel c where c.internalName = :name").setParameter("name", channel.getInternalName()).getSingleResult();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery query = cb.createQuery(Channel.class);
+            Root<Setting> rootQuery = query.from(Channel.class);
+            query.select(cb.count(query.from(Channel.class))).where(cb.equal(rootQuery.get("internalName"), cb.parameter(String.class)));
+            //Number count = (Number) session.createQuery("select count(*) from Channel c where c.internalName = :name").setParameter("name", channel.getInternalName()).getSingleResult();
+            Number count = (Number) session.createQuery(query).setParameter("internalName", channel.getInternalName()).getSingleResult();
             if (count.intValue() == 0) {
                 session.merge(channel);
             }
@@ -229,7 +238,7 @@ public class CreateBasicData implements Runnable {
     }
 
     public static List<Channel> getBuiltinChannels(final ResourceBundle bundle) {
-        final List<Channel> channels = new ArrayList<Channel>();
+        final List<Channel> channels = new ArrayList();
         channels.add(buildChannel(bundle, Channel.WEB, Principal.USER, Credentials.DEFAULT));
         channels.add(buildChannel(bundle, Channel.REST, Principal.USER, Credentials.DEFAULT));
         channels.add(buildChannel(bundle, Channel.WAP2, Principal.USER, Credentials.DEFAULT));
@@ -241,7 +250,7 @@ public class CreateBasicData implements Runnable {
     }
 
     public static List<SmsType> getBuiltinSmsTypes(final ResourceBundle bundle) {
-        final List<SmsType> smsTypes = new ArrayList<SmsType>();
+        final List<SmsType> smsTypes = new ArrayList();
         try {
             for (SmsTypeCode smsTypeCode : SmsTypeCode.values()) {
                 smsTypes.add(buildSmsType(bundle, smsTypeCode));
@@ -278,7 +287,7 @@ public class CreateBasicData implements Runnable {
 
         // If the "channels" collection does not exist, create a new one and set it on the member group
         if (channels == null) {
-            channels = new ArrayList<Channel>();
+            channels = new ArrayList();
             memberGroup.setChannels(channels);
         }
 
@@ -290,7 +299,7 @@ public class CreateBasicData implements Runnable {
 
         // If the "default channels" collection does not exist, create a new one and set it on the member group
         if (defaultChannels == null) {
-            defaultChannels = new ArrayList<Channel>();
+            defaultChannels = new ArrayList();
             memberGroup.setDefaultChannels(defaultChannels);
         }
 
@@ -301,7 +310,15 @@ public class CreateBasicData implements Runnable {
     static void createSetting(final EntityManager session, final Setting.Type type, final String name, final String value) {
         final String newValue = StringUtils.trimToEmpty(value);
 
-        Setting setting = (Setting) session.createQuery("from Setting s where s.type=:type and s.name=:name").setParameter("type", type).setParameter("name", name).getSingleResult();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery query = cb.createQuery(Setting.class);
+        Root<Setting> rootQuery = query.from(Setting.class);
+        ParameterExpression<Setting.Type> typeParameter = cb.parameter(Setting.Type.class);
+        ParameterExpression<String> stringParameter = cb.parameter(String.class);
+        query.select(rootQuery).where(cb.and(cb.equal(rootQuery.get("type"), typeParameter), cb.equal(rootQuery.get("name"), stringParameter)));
+
+        Setting setting = (Setting) session.createQuery(query).setParameter("type", type).setParameter("name", name).getSingleResult();
+        //Setting setting = (Setting) session.createQuery("from Setting s where s.type=:type and s.name=:name").setParameter("type", type).setParameter("name", name).getSingleResult();
 
         if (setting == null) {
             setting = new Setting();
@@ -344,7 +361,10 @@ public class CreateBasicData implements Runnable {
     @Override
     public void run() {
         // Check if the basic data is already there
-        if (session.getCriteriaBuilder().createCriteria(Application.class).getSingleResult() != null) {
+        CriteriaQuery<Application> cq = session.getCriteriaBuilder().createQuery(Application.class);
+        cq.from(Application.class);
+        session.createQuery(cq).getSingleResult();
+        if (session.createQuery(cq).getSingleResult() != null) {
             Setup.out.println(bundle.getString("basic-data.error.already"));
             return;
         }
@@ -373,7 +393,12 @@ public class CreateBasicData implements Runnable {
 
     private void associateGroupToChannel(final String channelStr, final MemberGroup memberGroup) {
         // Get the channel
-        final Channel channel = (Channel) session.getCriteriaBuilder().createQuery().createCriteria(Channel.class).add(Restrictions.eq("internalName", channelStr)).getSingleResult();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery queryC = criteriaBuilder.createQuery(Channel.class);
+        Root<Channel> rootChannel = queryC.from(Channel.class);
+        queryC.select(rootChannel).where(criteriaBuilder.equal(rootChannel.get("internalName"), criteriaBuilder.parameter(String.class)));
+        final Channel channel = (Channel) session.createQuery(queryC).setParameter("internalName", channelStr).getSingleResult();
+        //final Channel channel = (Channel) session.getCriteriaBuilder().createQuery().createCriteria(Channel.class).add(Restrictions.eq("internalName", channelStr)).getSingleResult();
 
         associateGroupToChannel(channel, memberGroup);
     }
@@ -424,7 +449,7 @@ public class CreateBasicData implements Runnable {
         session.merge(group);
         if (moduleTypes != null && moduleTypes.length > 0) {
             if (group.getPermissions() == null) {
-                group.setPermissions(new HashSet<Permission>());
+                group.setPermissions(new HashSet());
             }
             for (final ModuleType moduleType : moduleTypes) {
                 for (Module module : moduleType.getModules()) {
@@ -477,8 +502,8 @@ public class CreateBasicData implements Runnable {
         final List<MemberGroup> allMemberGroups = Arrays.asList(fullMembers, inactiveMembers, disabledMembers, removedMembers, fullBrokers, disabledBrokers, removedBrokers);
 
         // Set the default permissions to manage member group
-        systemAdmins.setManagesGroups(new ArrayList<MemberGroup>(allMemberGroups));
-        accountAdmins.setManagesGroups(new ArrayList<MemberGroup>(allMemberGroups));
+        systemAdmins.setManagesGroups(new ArrayList(allMemberGroups));
+        accountAdmins.setManagesGroups(new ArrayList(allMemberGroups));
 
         // Allow admins to see each other
         systemAdmins.setViewConnectedAdminsOf(Arrays.asList(systemAdmins, accountAdmins));

@@ -43,12 +43,14 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * The context for a given web service call
+ *
  * @author luis
  */
 public class WebServiceContext {
 
     /**
      * Contains the type of web service being accessed
+     *
      * @author luis
      */
     public enum ContextType {
@@ -77,7 +79,8 @@ public class WebServiceContext {
     }
 
     /**
-     * Returns the {@link Channel} for which the current {@link ServiceClient} is restricted, or null when none
+     * Returns the {@link Channel} for which the current {@link ServiceClient}
+     * is restricted, or null when none
      */
     public static Channel getChannel() {
         return assertContext(null).channel;
@@ -100,7 +103,8 @@ public class WebServiceContext {
     }
 
     /**
-     * Returns the {@link Member} for which the current {@link ServiceClient} is restricted, or null when none
+     * Returns the {@link Member} for which the current {@link ServiceClient} is
+     * restricted, or null when none
      */
     public static Member getMember() {
         return assertContext(null).member;
@@ -171,9 +175,12 @@ public class WebServiceContext {
     }
 
     /**
-     * Returns true if the web service context has been initialized. This method doesn't ensure that the context is ready for use.
-     * @see #isReadyForUse() por ejemplo, cuando ocurre un error en un in-interceptor necesitamos inicializarlo con el soap message de entrada para
-     * que los fault interceptors puedan trabajar.
+     * Returns true if the web service context has been initialized. This method
+     * doesn't ensure that the context is ready for use.
+     *
+     * @see #isReadyForUse() por ejemplo, cuando ocurre un error en un
+     * in-interceptor necesitamos inicializarlo con el soap message de entrada
+     * para que los fault interceptors puedan trabajar.
      * @return
      */
     public static boolean isInitialized() {
@@ -185,7 +192,9 @@ public class WebServiceContext {
     }
 
     /**
-     * Returns true if the web service context has been initialized and is ready to be used by POS or Web Service Client.
+     * Returns true if the web service context has been initialized and is ready
+     * to be used by POS or Web Service Client.
+     *
      * @return
      */
     public static boolean isReadyForUse() {
@@ -211,7 +220,8 @@ public class WebServiceContext {
 
     /**
      * Sets the thread local's current context.<br>
-     * The context for a REST web service operation is initialized by this method<br>
+     * The context for a REST web service operation is initialized by this
+     * method<br>
      */
     public static void set(final Member member, final ServletContext servletContext, final HttpServletRequest request, final HttpServletResponse response) {
         HOLDER.set(new WebServiceContext(member, servletContext, request, response));
@@ -219,7 +229,8 @@ public class WebServiceContext {
 
     /**
      * Sets the thread local's current context.<br>
-     * The context for a POS web service operation is initialized by this method<br>
+     * The context for a POS web service operation is initialized by this
+     * method<br>
      * In case of POS web service the web services clients are not used.
      */
     public static void set(final Pos pos, final ServletContext servletContext, final HttpServletRequest request, final SoapMessage soapMessage) {
@@ -236,7 +247,8 @@ public class WebServiceContext {
 
     /**
      * Sets the thread local's current context.<br>
-     * It's invoked when there's neither a POS or web service client, but minimal information like the request.
+     * It's invoked when there's neither a POS or web service client, but
+     * minimal information like the request.
      */
     public static void set(final ServletContext servletContextOf, final HttpServletRequest requestOf, final SoapMessage message) {
         HOLDER.set(new WebServiceContext((Member) null, servletContextOf, requestOf, message));
@@ -260,23 +272,24 @@ public class WebServiceContext {
         return context;
     }
 
-    private Member              member;
-    private ServiceClient       client;
-    private Pos                 pos;
+    private Member member;
+    private ServiceClient client;
+    private Pos pos;
     /* In case of POS access it's the POS build-in channel otherwise it's the client's channel */
-    private Channel             channel;
-    private HttpServletRequest  request;
+    private Channel channel;
+    private HttpServletRequest request;
     private HttpServletResponse response;
-    private ServletContext      servletContext;
-    private SoapMessage         soapMessage;
-    private ContextType         contextType;
-    private Object              parameter;
-    private String              serviceName;
+    private ServletContext servletContext;
+    private SoapMessage soapMessage;
+    private ContextType contextType;
+    private Object parameter;
+    private String serviceName;
 
-    private String              methodName;
+    private String methodName;
 
     /**
      * Constructor for a REST services context
+     *
      * @param response
      */
     private WebServiceContext(final Member member, final ServletContext servletContext, final HttpServletRequest request, final HttpServletResponse response) {
@@ -348,7 +361,8 @@ public class WebServiceContext {
     }
 
     private Channel loadChannel(final String internalName) {
-        final ChannelService channelService = WebApplicationContextUtils.getWebApplicationContext(servletContext).getBean("channelService", ChannelService.class);
-        return channelService.loadByInternalName(Channel.REST);
+        //final ChannelService channelService = WebApplicationContextUtils.getWebApplicationContext(servletContext).getBean("channelService", ChannelService.class);
+        //return channelService.loadByInternalName(Channel.REST);
+        return null;
     }
 }

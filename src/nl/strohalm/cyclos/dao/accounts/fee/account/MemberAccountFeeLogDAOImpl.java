@@ -27,6 +27,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import nl.strohalm.cyclos.dao.BaseDAOImpl;
 import nl.strohalm.cyclos.dao.JDBCCallback;
@@ -52,7 +56,7 @@ import org.apache.commons.lang.mutable.MutableInt;
 
 /**
  * Implementation for {@link MemberAccountFeeLogDAO}
- * 
+ *
  * @author luis
  */
 public class MemberAccountFeeLogDAOImpl extends BaseDAOImpl<MemberAccountFeeLog> implements MemberAccountFeeLogDAO {
@@ -72,7 +76,7 @@ public class MemberAccountFeeLogDAOImpl extends BaseDAOImpl<MemberAccountFeeLog>
         hql.append("   and l.success = true");
         hql.append("   and l.transfer.id is null");
         hql.append("   and l.invoice.id is null");
-        return this.<Integer> uniqueResult(hql.toString(), params);
+        return this.<Integer>uniqueResult(hql.toString(), params);
     }
 
     @Override
@@ -91,7 +95,7 @@ public class MemberAccountFeeLogDAOImpl extends BaseDAOImpl<MemberAccountFeeLog>
         params.put("member", member);
         params.put("fee", fee);
         String hql = "select ml.accountFeeLog from MemberAccountFeeLog ml where ml.member = :member and ml.accountFeeLog.accountFee = :fee order by ml.accountFeeLog.date desc, ml.id";
-        return this.<AccountFeeLog> uniqueResult(hql, params);
+        return this.<AccountFeeLog>uniqueResult(hql, params);
     }
 
     @Override
@@ -102,7 +106,7 @@ public class MemberAccountFeeLogDAOImpl extends BaseDAOImpl<MemberAccountFeeLog>
         hql.append(" from MemberAccountFeeLog l");
         hql.append(" where l.accountFeeLog = :log");
         hql.append(" and l.transfer.id is not null");
-        return this.<TransactionSummaryVO> uniqueResult(hql.toString(), params);
+        return this.<TransactionSummaryVO>uniqueResult(hql.toString(), params);
     }
 
     @Override
@@ -110,7 +114,7 @@ public class MemberAccountFeeLogDAOImpl extends BaseDAOImpl<MemberAccountFeeLog>
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("log", log);
         params.put("member", member);
-        return this.<MemberAccountFeeLog> uniqueResult("from MemberAccountFeeLog ml where ml.accountFeeLog = :log and ml.member = :member", params);
+        return this.<MemberAccountFeeLog>uniqueResult("from MemberAccountFeeLog ml where ml.accountFeeLog = :log and ml.member = :member", params);
     }
 
     @Override
@@ -134,7 +138,11 @@ public class MemberAccountFeeLogDAOImpl extends BaseDAOImpl<MemberAccountFeeLog>
     @Override
     @SuppressWarnings("unchecked")
     public List<Member> nextToCharge(final AccountFeeLog feeLog, final int count) {
-        return getSession().createFilter(feeLog.getPendingToCharge(), "where 1=1").setMaxResults(count).list();
+        CriteriaBuilder cb = getSession().getCriteriaBuilder();
+        CriteriaQuery cq = cb.createQuery(AccountFeeLog.class);
+        Root<AccountFeeLog> re = cq.from(AccountFeeLog.class);
+        return getSession().createQuery(cq.select(re.get("pending_to_charge"))).setMaxResults(count).getResultList();
+        //return getSession().createFilter(feeLog.getPendingToCharge(), "where 1=1").setMaxResults(count).list();
     }
 
     @Override
@@ -145,34 +153,33 @@ public class MemberAccountFeeLogDAOImpl extends BaseDAOImpl<MemberAccountFeeLog>
             return 0;
         }
         final MutableInt result = new MutableInt();
-        runNative(new JDBCCallback() {
-            @Override
-            public void execute(final JDBCWrapper jdbc) throws SQLException {
-                String[] placeHolders = new String[groupIds.length];
-                Arrays.fill(placeHolders, "?");
+        String[] placeHolders = new String[groupIds.length];
+        Arrays.fill(placeHolders, "?");
 
-                StringBuilder sql = new StringBuilder();
-                sql.append(" insert into members_pending_charge");
-                sql.append(" (account_fee_log_id, member_id)");
-                sql.append(" select ?, id");
-                sql.append(" from members m");
-                sql.append(" where m.subclass = ?");
-                sql.append(" and m.group_id in (").append(StringUtils.join(placeHolders, ",")).append(')');
+        StringBuilder sql = new StringBuilder();
+        sql.append(" insert into members_pending_charge");
+        sql.append(" (account_fee_log_id, member_id)");
+        sql.append(" select ?, id");
+        sql.append(" from members m");
+        sql.append(" where m.subclass = ?");
+        sql.append(" and m.group_id in (").append(StringUtils.join(placeHolders, ",")).append(')');
 
-                List<Object> args = new ArrayList<Object>(groupIds.length + 2);
-                args.add(log.getId());
-                args.add("M");
-                CollectionUtils.addAll(args, groupIds);
-                int totalMembers = jdbc.execute(sql.toString(), args.toArray());
-                result.setValue(totalMembers);
-            }
-        });
-        return result.intValue();
+        List<Object> args = new ArrayList<Object>(groupIds.length + 2);
+        args.add(log.getId());
+        args.add("M");
+        CollectionUtils.addAll(args, groupIds);
+        Query query = getSession().createQuery(sql.toString());
+        int i = 0;
+        for (Object arg : args) {
+            query.setParameter(i, arg);
+            i++;
+        }
+        return (int) query.getSingleResult();
     }
 
     @Override
     public void remove(final AccountFeeLog log, final Member member) {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap();
         params.put("log", log);
         params.put("member", member);
         bulkUpdate("delete from MemberAccountFeeLog ml where ml.accountFeeLog = :log and ml.member = :member", params);
@@ -180,17 +187,14 @@ public class MemberAccountFeeLogDAOImpl extends BaseDAOImpl<MemberAccountFeeLog>
 
     @Override
     public void removePendingCharge(final AccountFeeLog feeLog, final Member member) {
-        runNative(new JDBCCallback() {
-            @Override
-            public void execute(final JDBCWrapper jdbc) throws SQLException {
-                jdbc.execute("delete from members_pending_charge where account_fee_log_id = ? and member_id = ?", feeLog.getId(), member.getId());
-            }
-        });
+        getSession().createQuery("delete from members_pending_charge where account_fee_log_id = ? and member_id = ?").
+                setParameter(0, feeLog.getId()).
+                setParameter(1, member.getId()).executeUpdate();
     }
 
     @Override
     public List<MemberAccountFeeLog> search(final MemberAccountFeeLogQuery query, final MemberResultDisplay sort) {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap();
         StringBuilder hql = HibernateHelper.getInitialQuery(getEntityType(), "m", query.getFetch());
         HibernateHelper.addParameterToQuery(hql, params, "m.accountFeeLog", query.getAccountFeeLog());
         HibernateHelper.addInParameterToQuery(hql, params, "m.member.group", query.getGroups());
@@ -238,7 +242,7 @@ public class MemberAccountFeeLogDAOImpl extends BaseDAOImpl<MemberAccountFeeLog>
         } else {
             hql.append(" and l.invoice.id is not null");
         }
-        return this.<TransactionSummaryVO> uniqueResult(hql.toString(), params);
+        return this.<TransactionSummaryVO>uniqueResult(hql.toString(), params);
     }
 
 }

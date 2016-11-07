@@ -26,6 +26,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import nl.strohalm.cyclos.dao.BaseDAOImpl;
 import nl.strohalm.cyclos.entities.customization.fields.MemberCustomField;
@@ -57,7 +60,7 @@ public class SmsMailingDAOImpl extends BaseDAOImpl<SmsMailing> implements SmsMai
         final Collection<MemberGroup> groups = smsMailing.getGroups();
         final Member broker = (Member) (LoggedUser.isBroker() ? LoggedUser.element() : null);
 
-        final List<Object> params = new ArrayList<Object>();
+        final List<Object> params = new ArrayList();
         params.add(smsMailing.getId());
         params.add(smsCustomField.getId());
 
@@ -117,11 +120,18 @@ public class SmsMailingDAOImpl extends BaseDAOImpl<SmsMailing> implements SmsMai
 
     @Override
     public Member nextMemberToSend(final SmsMailing smsMailing) {
-        return (Member) getSession().createFilter(smsMailing.getPendingToSend(), "where 1=1").setMaxResults(1).uniqueResult();
+        CriteriaBuilder cb = getSession().getCriteriaBuilder();
+        CriteriaQuery cq = cb.createQuery(SmsMailing.class);
+        Root<SmsMailing> re = cq.from(SmsMailing.class);
+        return (Member) getSession().createQuery(cq.select(re.get("pending_to_send"))).setMaxResults(1).getSingleResult();
+        //return (Member) getSession().createFilter(smsMailing.getPendingToSend(), "where 1=1").setMaxResults(1).uniqueResult();
     }
 
     @Override
     public void removeMemberFromPending(final SmsMailing smsMailing, final Member member) {
+        CriteriaBuilder cb = getSession().getCriteriaBuilder();
+        CriteriaQuery cq = cb.createQuery(SmsMailing.class);
+        Root<SmsMailing> re = cq.from(SmsMailing.class);
         DatabaseUtil.getCurrentEntityManager().createQuery("delete from sms_mailings_pending_to_send where sms_mailing_id = ? and member_id = ?").
                 setParameter(0, smsMailing.getId()).
                 setParameter(1, member.getId()).executeUpdate();
