@@ -49,7 +49,7 @@ import nl.strohalm.cyclos.utils.Period;
 import nl.strohalm.cyclos.utils.TimePeriod;
 import nl.strohalm.cyclos.utils.conversion.CoercionHelper;
 import nl.strohalm.cyclos.utils.database.HibernateCustomFieldHandler;
-import nl.strohalm.cyclos.utils.database.HibernateHelper;
+import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 import nl.strohalm.cyclos.utils.lucene.Filters;
 import nl.strohalm.cyclos.utils.lucene.LuceneUtils;
 
@@ -180,7 +180,7 @@ public class AdDAOImpl extends IndexedDAOImpl<Ad> implements AdDAO {
     public Integer getNumberOfCreatedAds(final Period period, final Collection<? extends Group> groups) {
         final Map<String, Object> namedParameters = new HashMap<String, Object>();
         final StringBuilder hql = new StringBuilder("select count(ad.id) from Ad ad where 1=1");
-        HibernateHelper.addPeriodParameterToQuery(hql, namedParameters, "ad.creationDate", period);
+        DatabaseHelper.addPeriodParameterToQuery(hql, namedParameters, "ad.creationDate", period);
         if (!CollectionUtils.isEmpty(groups)) {
             hql.append(" and ad.owner.group in (:groups) ");
             namedParameters.put("groups", groups);
@@ -201,7 +201,7 @@ public class AdDAOImpl extends IndexedDAOImpl<Ad> implements AdDAO {
         hql.append(" from Ad ad inner join ad.owner m left join ad.category c1 left join c1.parent c2 left join c2.parent c3 ");
         hibernateCustomFieldHandler.appendJoins(hql, "ad.customValues", query.getAdValues());
         hibernateCustomFieldHandler.appendJoins(hql, "m.customValues", query.getMemberValues());
-        HibernateHelper.appendJoinFetch(hql, getEntityType(), "ad", query.getFetch());
+        DatabaseHelper.appendJoinFetch(hql, getEntityType(), "ad", query.getFetch());
         hql.append(" where 1=1");
         if (query.getCategory() != null) {
             hql.append(" and (c1 = :adCategory or c2 = :adCategory or c3 = :adCategory)");
@@ -211,27 +211,27 @@ public class AdDAOImpl extends IndexedDAOImpl<Ad> implements AdDAO {
             hql.append(" and ad.deleteDate is null ");
         }
 
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "ad.category.active", true);
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "ad.id", query.getId());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "ad.membersNotified", query.getMembersNotified());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "ad.externalPublication", query.getExternalPublication());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "m", query.getOwner());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "ad.category.active", true);
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "ad.id", query.getId());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "ad.membersNotified", query.getMembersNotified());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "ad.externalPublication", query.getExternalPublication());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "m", query.getOwner());
         // Group filters are handled at service level
-        HibernateHelper.addInParameterToQuery(hql, namedParameters, "m.group", query.getGroups());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "ad.tradeType", query.getTradeType());
-        HibernateHelper.addParameterToQueryOperator(hql, namedParameters, "ad.price", ">=", query.getInitialPrice());
-        HibernateHelper.addParameterToQueryOperator(hql, namedParameters, "ad.price", "<=", query.getFinalPrice());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "ad.currency", query.getCurrency());
-        HibernateHelper.addPeriodParameterToQuery(hql, namedParameters, "ad.publicationPeriod.begin", Period.day(query.getBeginDate()));
-        HibernateHelper.addPeriodParameterToQuery(hql, namedParameters, "ad.publicationPeriod.end", Period.day(query.getEndDate()));
+        DatabaseHelper.addInParameterToQuery(hql, namedParameters, "m.group", query.getGroups());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "ad.tradeType", query.getTradeType());
+        DatabaseHelper.addParameterToQueryOperator(hql, namedParameters, "ad.price", ">=", query.getInitialPrice());
+        DatabaseHelper.addParameterToQueryOperator(hql, namedParameters, "ad.price", "<=", query.getFinalPrice());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "ad.currency", query.getCurrency());
+        DatabaseHelper.addPeriodParameterToQuery(hql, namedParameters, "ad.publicationPeriod.begin", Period.day(query.getBeginDate()));
+        DatabaseHelper.addPeriodParameterToQuery(hql, namedParameters, "ad.publicationPeriod.end", Period.day(query.getEndDate()));
 
         final Calendar now = Calendar.getInstance();
         // Since
         if (query.getSince() != null && query.getSince().getNumber() > 0) {
             final Calendar since = DateHelper.truncate(query.getSince().remove(now));
-            HibernateHelper.addParameterToQueryOperator(hql, namedParameters, "ad.publicationPeriod.begin", ">=", since);
+            DatabaseHelper.addParameterToQueryOperator(hql, namedParameters, "ad.publicationPeriod.begin", ">=", since);
         }
-        HibernateHelper.addPeriodParameterToQuery(hql, namedParameters, "ad.publicationPeriod.begin", query.getPeriod());
+        DatabaseHelper.addPeriodParameterToQuery(hql, namedParameters, "ad.publicationPeriod.begin", query.getPeriod());
 
         // With Images Only
         if (query.isWithImagesOnly()) {
@@ -240,7 +240,7 @@ public class AdDAOImpl extends IndexedDAOImpl<Ad> implements AdDAO {
 
         // Check the history date
         final Calendar historyDate = (Calendar) ObjectUtils.defaultIfNull(query.getHistoryDate(), Calendar.getInstance());
-        HibernateHelper.addParameterToQueryOperator(hql, namedParameters, "ad.creationDate", "<=", historyDate);
+        DatabaseHelper.addParameterToQueryOperator(hql, namedParameters, "ad.creationDate", "<=", historyDate);
         hql.append(" and (ad.deleteDate is null or ad.deleteDate >= :historyDate)");
         namedParameters.put("historyDate", historyDate);
 
@@ -273,9 +273,9 @@ public class AdDAOImpl extends IndexedDAOImpl<Ad> implements AdDAO {
 
         // Handle order
         if (query.isRandomOrder()) {
-            HibernateHelper.appendOrder(hql, "rand()");
+            DatabaseHelper.appendOrder(hql, "rand()");
         } else {
-            HibernateHelper.appendOrder(hql, "ad.publicationPeriod.begin desc, ad.id desc");
+            DatabaseHelper.appendOrder(hql, "ad.publicationPeriod.begin desc, ad.id desc");
         }
         return list(query, hql.toString(), namedParameters);
     }
@@ -290,7 +290,7 @@ public class AdDAOImpl extends IndexedDAOImpl<Ad> implements AdDAO {
         }
         final Map<String, Object> namedParameters = new HashMap<String, Object>();
         final StringBuilder hql = new StringBuilder("select " + projection + " from Ad ad where 1=1");
-        HibernateHelper.addParameterToQueryOperator(hql, namedParameters, "ad.creationDate", "<=", date);
+        DatabaseHelper.addParameterToQueryOperator(hql, namedParameters, "ad.creationDate", "<=", date);
         hql.append(" and (ad.deleteDate is null or ad.deleteDate > :date)");
         if (!CollectionUtils.isEmpty(groups)) {
             hql.append(" and ad.owner.group in (:groups) ");
@@ -306,11 +306,11 @@ public class AdDAOImpl extends IndexedDAOImpl<Ad> implements AdDAO {
                 hql.append(" and ad.permanent = true");
                 break;
             case EXPIRED:
-                HibernateHelper.addParameterToQueryOperator(hql, namedParameters, "ad.publicationPeriod.begin", "<=", date);
-                HibernateHelper.addParameterToQueryOperator(hql, namedParameters, "ad.publicationPeriod.end", "<=", date);
+                DatabaseHelper.addParameterToQueryOperator(hql, namedParameters, "ad.publicationPeriod.begin", "<=", date);
+                DatabaseHelper.addParameterToQueryOperator(hql, namedParameters, "ad.publicationPeriod.end", "<=", date);
                 break;
             case SCHEDULED:
-                HibernateHelper.addParameterToQueryOperator(hql, namedParameters, "ad.publicationPeriod.begin", ">", date);
+                DatabaseHelper.addParameterToQueryOperator(hql, namedParameters, "ad.publicationPeriod.begin", ">", date);
                 break;
         }
         namedParameters.put("date", date);

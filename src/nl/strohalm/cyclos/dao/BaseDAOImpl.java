@@ -47,8 +47,8 @@ import nl.strohalm.cyclos.utils.ClassHelper;
 import nl.strohalm.cyclos.utils.DataIteratorHelper;
 import nl.strohalm.cyclos.utils.EntityHelper;
 import nl.strohalm.cyclos.utils.database.DatabaseUtil;
-import nl.strohalm.cyclos.utils.database.HibernateHelper;
-import nl.strohalm.cyclos.utils.database.HibernateQueryHandler;
+import nl.strohalm.cyclos.utils.database.DatabaseHelper;
+import nl.strohalm.cyclos.utils.database.DatabaseQueryHandler;
 import nl.strohalm.cyclos.utils.query.PageParameters;
 import nl.strohalm.cyclos.utils.query.QueryParameters;
 import nl.strohalm.cyclos.utils.query.QueryParameters.ResultType;
@@ -70,7 +70,7 @@ import org.hibernate.ObjectNotFoundException;
 public abstract class BaseDAOImpl<E extends Entity> implements BaseDAO<E>, InsertableDAO<E>, UpdatableDAO<E>, DeletableDAO<E> {
 
     private FetchDAO fetchDao;
-    private HibernateQueryHandler databaseQueryHandler;
+    private DatabaseQueryHandler databaseQueryHandler;
     private boolean hasCache;
     protected Class<E> entityClass;
     private String queryCacheRegion;
@@ -240,7 +240,7 @@ public abstract class BaseDAOImpl<E extends Entity> implements BaseDAO<E>, Inser
         return fetchDao;
     }
 
-    public HibernateQueryHandler getDatabaseQueryHandler() {
+    public DatabaseQueryHandler getDatabaseQueryHandler() {
         return databaseQueryHandler;
     }
 
@@ -299,8 +299,8 @@ public abstract class BaseDAOImpl<E extends Entity> implements BaseDAO<E>, Inser
             if (!hasCache && !ArrayUtils.isEmpty(fetch)) {
                 // Perform a query
                 final Map<String, Object> namedParams = new HashMap();
-                final StringBuilder hql = HibernateHelper.getInitialQuery(getEntityType(), "e", Arrays.asList(fetch));
-                HibernateHelper.addParameterToQuery(hql, namedParams, "e.id", id);
+                final StringBuilder hql = DatabaseHelper.getInitialQuery(getEntityType(), "e", Arrays.asList(fetch));
+                DatabaseHelper.addParameterToQuery(hql, namedParams, "e.id", id);
                 final List<E> list = list(ResultType.LIST, hql.toString(), namedParams, PageParameters.unique(), fetch);
                 if (list.isEmpty()) {
                     throw new EntityNotFoundException(this.getEntityType(), id);
@@ -344,8 +344,8 @@ public abstract class BaseDAOImpl<E extends Entity> implements BaseDAO<E>, Inser
         this.fetchDao = fetchDao;
     }
 
-    public void setHibernateQueryHandler(final HibernateQueryHandler hibernateQueryHandler) {
-        this.databaseQueryHandler = hibernateQueryHandler;
+    public void setDatabaseQueryHandler(final DatabaseQueryHandler DatabaseQueryHandler) {
+        this.databaseQueryHandler = DatabaseQueryHandler;
     }
 
     @Override
@@ -455,7 +455,7 @@ public abstract class BaseDAOImpl<E extends Entity> implements BaseDAO<E>, Inser
      * parameters as bean properties, the pagination parameters and the
      * properties to fetch
      * @param hql The HQL query
-     * @return A list, as returned by {@link HibernateQueryHandler}
+     * @return A list, as returned by {@link DatabaseQueryHandler}
      */
     protected <T> List<T> list(final QueryParameters query, final String hql) {
         return list(query, hql, query);
@@ -468,7 +468,7 @@ public abstract class BaseDAOImpl<E extends Entity> implements BaseDAO<E>, Inser
      * @param query The query parameters contains the result type, the
      * pagination parameters and the properties to fetch
      * @param hql The HQL query
-     * @return A list, as returned by {@link HibernateQueryHandler}
+     * @return A list, as returned by {@link DatabaseQueryHandler}
      */
     protected <T> List<T> list(final QueryParameters query, final String hql, final Object namedParameters) {
         return list(query.getResultType(), hql, namedParameters, query.getPageParameters(), fetchArray(query));
@@ -483,7 +483,7 @@ public abstract class BaseDAOImpl<E extends Entity> implements BaseDAO<E>, Inser
      * @param pageParameters The pagination parameters, if any. It affects any
      * ResultType, by limiting the number of results the same way as pages
      * @param fetch The relationships to fetch
-     * @return A list, as returned by {@link HibernateQueryHandler}
+     * @return A list, as returned by {@link DatabaseQueryHandler}
      */
     protected <T> List<T> list(final ResultType resultType, final String hql, final Object namedParameters, final PageParameters pageParameters, final Relationship... fetch) {
         try {
@@ -570,7 +570,7 @@ public abstract class BaseDAOImpl<E extends Entity> implements BaseDAO<E>, Inser
     }
 
     private void process(final Query query, final Object namedParameters) {
-        /*hibernateQueryHandler.setQueryParameters(query, namedParameters);
+        /*DatabaseQueryHandler.setQueryParameters(query, namedParameters);
         if (queryCacheRegion != null) {
             query.setCacheable(true);
             query.setCacheRegion(queryCacheRegion);

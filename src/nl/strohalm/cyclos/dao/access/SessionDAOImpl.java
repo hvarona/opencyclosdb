@@ -36,7 +36,7 @@ import nl.strohalm.cyclos.entities.exceptions.EntityNotFoundException;
 import nl.strohalm.cyclos.entities.groups.Group;
 import nl.strohalm.cyclos.entities.groups.Group.Nature;
 import nl.strohalm.cyclos.utils.IteratorListImpl;
-import nl.strohalm.cyclos.utils.database.HibernateHelper;
+import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 import nl.strohalm.cyclos.utils.query.IteratorList;
 import nl.strohalm.cyclos.utils.query.PageParameters;
 import nl.strohalm.cyclos.utils.query.QueryParameters.ResultType;
@@ -115,7 +115,7 @@ public class SessionDAOImpl extends BaseDAOImpl<Session> implements SessionDAO {
             for (Nature nature : natures) {
                 values.add(nature.getDiscriminator());
             }
-            HibernateHelper.addInParameterToQuery(hql, params, "s.user.element.group.class", values);
+            DatabaseHelper.addInParameterToQuery(hql, params, "s.user.element.group.class", values);
         }
 
         // Apply the filter by group, which has a distinct semantic on operators
@@ -131,7 +131,7 @@ public class SessionDAOImpl extends BaseDAOImpl<Session> implements SessionDAO {
             params.put("groups", query.getGroups());
         } else {
             // Group filter will apply directly
-            HibernateHelper.addInParameterToQuery(hql, params, "s.user.element.group", query.getGroups());
+            DatabaseHelper.addInParameterToQuery(hql, params, "s.user.element.group", query.getGroups());
         }
 
         // Filter by operator member
@@ -144,7 +144,7 @@ public class SessionDAOImpl extends BaseDAOImpl<Session> implements SessionDAO {
             hql.append(")");
             params.put("member", query.getMember());
         }
-        HibernateHelper.appendOrder(hql, "s.user.element.name");
+        DatabaseHelper.appendOrder(hql, "s.user.element.name");
         return list(query, hql.toString(), params);
     }
 

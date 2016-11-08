@@ -41,7 +41,7 @@ import nl.strohalm.cyclos.entities.groups.Group;
 import nl.strohalm.cyclos.entities.members.Element;
 import nl.strohalm.cyclos.entities.members.Member;
 import nl.strohalm.cyclos.services.transactions.TransactionContext;
-import nl.strohalm.cyclos.utils.database.HibernateHelper;
+import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 
 import org.apache.commons.collections.CollectionUtils;
 
@@ -88,9 +88,9 @@ public class TransferTypeDAOImpl extends BaseDAOImpl<TransferType> implements Tr
         final Map<String, Object> namedParameters = new HashMap<String, Object>();
         namedParameters.put("system", AccountType.Nature.SYSTEM.getValue());
         final Set<Relationship> fetch = query.getFetch();
-        final StringBuilder hql = HibernateHelper.getInitialQuery(getEntityType(), "tt", fetch);
-        HibernateHelper.addLikeParameterToQuery(hql, namedParameters, "tt.description", query.getDescription());
-        HibernateHelper.addLikeParameterToQuery(hql, namedParameters, "tt.name", query.getName());
+        final StringBuilder hql = DatabaseHelper.getInitialQuery(getEntityType(), "tt", fetch);
+        DatabaseHelper.addLikeParameterToQuery(hql, namedParameters, "tt.description", query.getDescription());
+        DatabaseHelper.addLikeParameterToQuery(hql, namedParameters, "tt.name", query.getName());
 
         // Context
         final TransactionContext context = query.getContext();
@@ -217,8 +217,8 @@ public class TransferTypeDAOImpl extends BaseDAOImpl<TransferType> implements Tr
         }
 
         // Account types
-        HibernateHelper.addInParameterToQuery(hql, namedParameters, "tt.from", query.getFromAccountTypes());
-        HibernateHelper.addInParameterToQuery(hql, namedParameters, "tt.to", query.getToAccountTypes());
+        DatabaseHelper.addInParameterToQuery(hql, namedParameters, "tt.from", query.getFromAccountTypes());
+        DatabaseHelper.addInParameterToQuery(hql, namedParameters, "tt.to", query.getToAccountTypes());
         final Collection<? extends AccountType> accountTypes = query.getFromOrToAccountTypes();
         if (accountTypes != null && !accountTypes.isEmpty()) {
             hql.append(" and (tt.to in (:fromOrToAT) or tt.from in (:fromOrToAT))");
@@ -268,7 +268,7 @@ public class TransferTypeDAOImpl extends BaseDAOImpl<TransferType> implements Tr
             namedParameters.put("_possible", query.getPossibleTransferTypes());
         }
 
-        HibernateHelper.appendOrder(hql, "tt.name");
+        DatabaseHelper.appendOrder(hql, "tt.name");
         return list(query, hql.toString(), namedParameters);
     }
 }

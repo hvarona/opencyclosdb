@@ -41,7 +41,7 @@ import nl.strohalm.cyclos.entities.members.messages.MessageBox;
 import nl.strohalm.cyclos.entities.members.messages.MessageQuery;
 import nl.strohalm.cyclos.utils.EntityHelper;
 import nl.strohalm.cyclos.utils.JDBCWrapper;
-import nl.strohalm.cyclos.utils.database.HibernateHelper;
+import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -153,7 +153,7 @@ public class MessageDAOImpl extends BaseDAOImpl<Message> implements MessageDAO {
     @Override
     public List<Message> search(final MessageQuery query) {
         final Map<String, Object> namedParameters = new HashMap<String, Object>();
-        final StringBuilder hql = HibernateHelper.getInitialQuery(getEntityType(), "m", query.getFetch());
+        final StringBuilder hql = DatabaseHelper.getInitialQuery(getEntityType(), "m", query.getFetch());
 
         // Apply the getter member (null when admin)
         Element getter = query.getGetter();
@@ -177,7 +177,7 @@ public class MessageDAOImpl extends BaseDAOImpl<Message> implements MessageDAO {
                 } else if (query.getRootType() == Message.RootType.MEMBER) {
                     hql.append(" and m.toMember is not null ");
                 } else if (query.getRootType() == Message.RootType.SYSTEM) {
-                    HibernateHelper.addInParameterToQuery(hql, namedParameters, "m.type", Message.Type.listByRootType(Message.RootType.SYSTEM));
+                    DatabaseHelper.addInParameterToQuery(hql, namedParameters, "m.type", Message.Type.listByRootType(Message.RootType.SYSTEM));
                 }
                 hql.append(" and m.direction = :outgoing and m.removedAt is null");
                 break;
@@ -190,7 +190,7 @@ public class MessageDAOImpl extends BaseDAOImpl<Message> implements MessageDAO {
                     hql.append(" and m.toMember = :getter");
                 }
                 hql.append(" and m.direction = :incoming and m.removedAt is null");
-                HibernateHelper.addInParameterToQuery(hql, namedParameters, "m.type", Message.Type.listByRootType(query.getRootType()));
+                DatabaseHelper.addInParameterToQuery(hql, namedParameters, "m.type", Message.Type.listByRootType(query.getRootType()));
                 break;
             case TRASH:
                 hql.append(" and m.removedAt is not null");
@@ -227,9 +227,9 @@ public class MessageDAOImpl extends BaseDAOImpl<Message> implements MessageDAO {
         }
 
         // Apply simple parameters
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "m.read", query.getRead());
-        HibernateHelper.addInParameterToQuery(hql, namedParameters, "m.category", query.getCategories());
-        HibernateHelper.appendOrder(hql, "m.date desc");
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "m.read", query.getRead());
+        DatabaseHelper.addInParameterToQuery(hql, namedParameters, "m.category", query.getCategories());
+        DatabaseHelper.appendOrder(hql, "m.date desc");
         return list(query, hql.toString(), namedParameters);
     }
 

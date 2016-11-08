@@ -27,7 +27,7 @@ import nl.strohalm.cyclos.dao.BaseDAOImpl;
 import nl.strohalm.cyclos.entities.services.ServiceClient;
 import nl.strohalm.cyclos.entities.services.ServiceClientQuery;
 import nl.strohalm.cyclos.utils.InternetAddressHelper;
-import nl.strohalm.cyclos.utils.database.HibernateHelper;
+import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 
 /**
  * DAO implementation for service clients
@@ -42,7 +42,7 @@ public class ServiceClientDAOImpl extends BaseDAOImpl<ServiceClient> implements 
 
     public List<ServiceClient> search(final ServiceClientQuery query) {
         final Map<String, Object> namedParameters = new HashMap<String, Object>();
-        final StringBuilder hql = HibernateHelper.getInitialQuery(ServiceClient.class, "c", query.getFetch());
+        final StringBuilder hql = DatabaseHelper.getInitialQuery(ServiceClient.class, "c", query.getFetch());
         final String address = query.getAddress();
         if (InternetAddressHelper.isSimpleIp(address)) {
             hql.append(" and :address between c.addressBegin and c.addressEnd");
@@ -71,7 +71,7 @@ public class ServiceClientDAOImpl extends BaseDAOImpl<ServiceClient> implements 
             }
         }
 
-        HibernateHelper.appendOrder(hql, "c.name");
+        DatabaseHelper.appendOrder(hql, "c.name");
         return list(query, hql.toString(), namedParameters);
     }
 }

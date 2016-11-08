@@ -31,7 +31,7 @@ import nl.strohalm.cyclos.entities.accounts.Currency;
 import nl.strohalm.cyclos.services.accounts.rates.WhatRate;
 import nl.strohalm.cyclos.utils.DateHelper;
 import nl.strohalm.cyclos.utils.Period;
-import nl.strohalm.cyclos.utils.database.HibernateHelper;
+import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 
 /**
  * Implementation for {@link AccountRatesDAO}
@@ -56,7 +56,7 @@ public class AccountRatesDAOImpl extends BaseDAOImpl<AccountRates> implements Ac
         // strictly seen, this could be omitted (and replaced by 1=1) because it just matters if the id is in the subquery, and it will be even
         // without the account clause
         hql.append(" (t.from.id = :account or t.to.id = :account) ");
-        HibernateHelper.addPeriodParameterToQuery(hql, namedParameters, "t.processDate", period);
+        DatabaseHelper.addPeriodParameterToQuery(hql, namedParameters, "t.processDate", period);
         hql.append(" )      ");
         bulkUpdate(hql.toString(), namedParameters);
     }
@@ -97,7 +97,7 @@ public class AccountRatesDAOImpl extends BaseDAOImpl<AccountRates> implements Ac
         // same construction with subQuery here
         hql.append(" and lastTransfer in ");
         hql.append("      (from Transfer t where 1 = 1 ");
-        HibernateHelper.addPeriodParameterToQuery(hql, namedParameters, "t.processDate", period);
+        DatabaseHelper.addPeriodParameterToQuery(hql, namedParameters, "t.processDate", period);
         hql.append(" )      ");
         bulkUpdate(hql.toString(), namedParameters);
     }
@@ -137,7 +137,7 @@ public class AccountRatesDAOImpl extends BaseDAOImpl<AccountRates> implements Ac
         hql.append(" where 1=1 ");
         hql.append(" and r.account = :account ");
         params.put("account", account);
-        HibernateHelper.addPeriodParameterToQuery(hql, params, "r.lastTransfer.processDate", period);
+        DatabaseHelper.addPeriodParameterToQuery(hql, params, "r.lastTransfer.processDate", period);
         hql.append(" order by r.lastTransfer.processDate desc");
         List<AccountRates> list = list(hql.toString(), params);
         AccountRates entity = null;
@@ -192,7 +192,7 @@ public class AccountRatesDAOImpl extends BaseDAOImpl<AccountRates> implements Ac
         hql.append(" where 1=1 ");
         hql.append(" and r.account = :account ");
         params.put("account", account);
-        HibernateHelper.addPeriodParameterToQuery(hql, params, "r.lastTransfer.processDate", period);
+        DatabaseHelper.addPeriodParameterToQuery(hql, params, "r.lastTransfer.processDate", period);
         hql.append(" order by r.lastTransfer.processDate desc");
         AccountRates result = uniqueResult(hql.toString(), params);
         if (result == null) {

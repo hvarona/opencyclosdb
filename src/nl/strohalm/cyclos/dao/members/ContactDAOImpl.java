@@ -29,7 +29,7 @@ import nl.strohalm.cyclos.entities.exceptions.EntityNotFoundException;
 import nl.strohalm.cyclos.entities.groups.MemberGroup;
 import nl.strohalm.cyclos.entities.members.Contact;
 import nl.strohalm.cyclos.entities.members.Member;
-import nl.strohalm.cyclos.utils.database.HibernateHelper;
+import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 import nl.strohalm.cyclos.utils.query.QueryParameters.ResultType;
 
 /**
@@ -49,10 +49,10 @@ public class ContactDAOImpl extends BaseDAOImpl<Contact> implements ContactDAO {
     public List<Contact> listByMember(Member owner) {
         owner = getFetchDao().fetch(owner);
         final Map<String, Object> namedParameters = new HashMap<String, Object>();
-        final StringBuilder hql = HibernateHelper.getInitialQuery(getEntityType(), "c");
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "c.owner", owner);
-        HibernateHelper.addInParameterToQuery(hql, namedParameters, "c.contact.group", ((MemberGroup) owner.getGroup()).getCanViewProfileOfGroups());
-        HibernateHelper.appendOrder(hql, "c.contact.user.username");
+        final StringBuilder hql = DatabaseHelper.getInitialQuery(getEntityType(), "c");
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "c.owner", owner);
+        DatabaseHelper.addInParameterToQuery(hql, namedParameters, "c.contact.group", ((MemberGroup) owner.getGroup()).getCanViewProfileOfGroups());
+        DatabaseHelper.appendOrder(hql, "c.contact.user.username");
         return list(ResultType.LIST, hql.toString(), namedParameters, null, FETCH);
     }
 

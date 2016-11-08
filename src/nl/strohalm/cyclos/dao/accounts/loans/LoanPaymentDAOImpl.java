@@ -29,8 +29,8 @@ import nl.strohalm.cyclos.entities.accounts.loans.LoanPayment.Status;
 import nl.strohalm.cyclos.entities.accounts.loans.LoanPaymentQuery;
 import nl.strohalm.cyclos.entities.exceptions.DaoException;
 import nl.strohalm.cyclos.services.transactions.TransactionSummaryVO;
-import nl.strohalm.cyclos.utils.database.HibernateCustomFieldHandler;
-import nl.strohalm.cyclos.utils.database.HibernateHelper;
+import nl.strohalm.cyclos.utils.database.DatabaseCustomFieldHandler;
+import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 
 /**
  * Implementation DAO for loan payments
@@ -38,13 +38,13 @@ import nl.strohalm.cyclos.utils.database.HibernateHelper;
  */
 public class LoanPaymentDAOImpl extends BaseDAOImpl<LoanPayment> implements LoanPaymentDAO {
 
-    private HibernateCustomFieldHandler hibernateCustomFieldHandler;
+    private DatabaseCustomFieldHandler hibernateCustomFieldHandler;
 
     public LoanPaymentDAOImpl() {
         super(LoanPayment.class);
     }
 
-    public HibernateCustomFieldHandler getHibernateCustomFieldHandler() {
+    public DatabaseCustomFieldHandler getHibernateCustomFieldHandler() {
         return hibernateCustomFieldHandler;
     }
 
@@ -68,11 +68,11 @@ public class LoanPaymentDAOImpl extends BaseDAOImpl<LoanPayment> implements Loan
         final StringBuilder hql = new StringBuilder();
         hql.append("select lp");
         buildQuery(query, namedParameters, hql);
-        HibernateHelper.appendOrder(hql, "lp.expirationDate");
+        DatabaseHelper.appendOrder(hql, "lp.expirationDate");
         return list(query, hql.toString(), namedParameters);
     }
 
-    public void setHibernateCustomFieldHandler(final HibernateCustomFieldHandler hibernateCustomFieldHandler) {
+    public void setHibernateCustomFieldHandler(final DatabaseCustomFieldHandler hibernateCustomFieldHandler) {
         this.hibernateCustomFieldHandler = hibernateCustomFieldHandler;
     }
 
@@ -82,20 +82,20 @@ public class LoanPaymentDAOImpl extends BaseDAOImpl<LoanPayment> implements Loan
     private void buildQuery(final LoanPaymentQuery query, final Map<String, Object> namedParameters, final StringBuilder hql) {
         hql.append(" from LoanPayment lp inner join lp.loan l inner join l.transfer t");
         hibernateCustomFieldHandler.appendJoins(hql, "t.customValues", query.getLoanCustomValues());
-        HibernateHelper.appendJoinFetch(hql, getEntityType(), "lp", query.getFetch());
+        DatabaseHelper.appendJoinFetch(hql, getEntityType(), "lp", query.getFetch());
         hql.append(", MemberAccount a inner join a.member m ");
         hibernateCustomFieldHandler.appendJoins(hql, "m.customValues", query.getMemberCustomValues());
         hql.append(" where t.to = a ");
-        HibernateHelper.addInParameterToQuery(hql, namedParameters, "lp.status", query.getStatusList());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "a.member", query.getMember());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "a.member.broker", query.getBroker());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "l.loanGroup", query.getLoanGroup());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "t.type", query.getTransferType());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "t.status", query.getTransferStatus());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "t.to.type", query.getAccountType());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "t.transactionNumber", query.getTransactionNumber());
-        HibernateHelper.addPeriodParameterToQuery(hql, namedParameters, "lp.expirationDate", query.getExpirationPeriod());
-        HibernateHelper.addPeriodParameterToQuery(hql, namedParameters, "lp.repaymentDate", query.getRepaymentPeriod());
+        DatabaseHelper.addInParameterToQuery(hql, namedParameters, "lp.status", query.getStatusList());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "a.member", query.getMember());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "a.member.broker", query.getBroker());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "l.loanGroup", query.getLoanGroup());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "t.type", query.getTransferType());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "t.status", query.getTransferStatus());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "t.to.type", query.getAccountType());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "t.transactionNumber", query.getTransactionNumber());
+        DatabaseHelper.addPeriodParameterToQuery(hql, namedParameters, "lp.expirationDate", query.getExpirationPeriod());
+        DatabaseHelper.addPeriodParameterToQuery(hql, namedParameters, "lp.repaymentDate", query.getRepaymentPeriod());
         if (query.getGroups() != null && !query.getGroups().isEmpty()) {
             hql.append(" and a.member.group in (:groups) ");
             namedParameters.put("groups", query.getGroups());

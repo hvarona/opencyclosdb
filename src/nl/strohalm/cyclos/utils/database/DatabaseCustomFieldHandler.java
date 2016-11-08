@@ -39,7 +39,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author luis
  */
-public class HibernateCustomFieldHandler {
+public class DatabaseCustomFieldHandler {
 
     private FetchDAO fetchDao;
     private CustomFieldPossibleValueDAO customFieldPossibleValueDao;

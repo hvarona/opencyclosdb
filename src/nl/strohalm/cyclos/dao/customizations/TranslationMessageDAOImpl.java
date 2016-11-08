@@ -33,7 +33,7 @@ import nl.strohalm.cyclos.entities.exceptions.DaoException;
 import nl.strohalm.cyclos.entities.exceptions.EntityNotFoundException;
 import nl.strohalm.cyclos.utils.DataIteratorHelper;
 import nl.strohalm.cyclos.utils.SortedProperties;
-import nl.strohalm.cyclos.utils.database.HibernateHelper;
+import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -84,13 +84,13 @@ public class TranslationMessageDAOImpl extends BaseDAOImpl<TranslationMessage> i
 
     public List<TranslationMessage> search(final TranslationMessageQuery query) {
         final Map<String, Object> namedParameters = new HashMap<String, Object>();
-        final StringBuilder hql = HibernateHelper.getInitialQuery(getEntityType(), "m");
-        HibernateHelper.addLikeParameterToQuery(hql, namedParameters, "m.key", query.getKey());
-        HibernateHelper.addLikeParameterToQuery(hql, namedParameters, "m.value", query.getValue());
+        final StringBuilder hql = DatabaseHelper.getInitialQuery(getEntityType(), "m");
+        DatabaseHelper.addLikeParameterToQuery(hql, namedParameters, "m.key", query.getKey());
+        DatabaseHelper.addLikeParameterToQuery(hql, namedParameters, "m.value", query.getValue());
         if (query.isShowOnlyEmpty()) {
             hql.append(" and (m.value is null or length(m.value) = 0)");
         }
-        HibernateHelper.appendOrder(hql, "m.key");
+        DatabaseHelper.appendOrder(hql, "m.key");
         return list(query, hql.toString(), namedParameters);
     }
 

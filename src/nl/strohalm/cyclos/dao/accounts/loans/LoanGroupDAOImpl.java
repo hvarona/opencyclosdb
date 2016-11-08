@@ -27,8 +27,8 @@ import nl.strohalm.cyclos.dao.BaseDAOImpl;
 import nl.strohalm.cyclos.entities.accounts.loans.Loan;
 import nl.strohalm.cyclos.entities.accounts.loans.LoanGroup;
 import nl.strohalm.cyclos.entities.accounts.loans.LoanGroupQuery;
-import nl.strohalm.cyclos.utils.database.HibernateCustomFieldHandler;
-import nl.strohalm.cyclos.utils.database.HibernateHelper;
+import nl.strohalm.cyclos.utils.database.DatabaseCustomFieldHandler;
+import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 
 /**
  * Implamentation DAO class for Loan Groups
@@ -36,7 +36,7 @@ import nl.strohalm.cyclos.utils.database.HibernateHelper;
  */
 public class LoanGroupDAOImpl extends BaseDAOImpl<LoanGroup> implements LoanGroupDAO {
 
-    private HibernateCustomFieldHandler hibernateCustomFieldHandler;
+    private DatabaseCustomFieldHandler hibernateCustomFieldHandler;
 
     public LoanGroupDAOImpl() {
         super(LoanGroup.class);
@@ -49,10 +49,10 @@ public class LoanGroupDAOImpl extends BaseDAOImpl<LoanGroup> implements LoanGrou
         hql.append(" select lg");
         hql.append(" from ").append(getEntityType().getName()).append(" lg ");
         hibernateCustomFieldHandler.appendJoins(hql, "lg.customValues", query.getCustomValues());
-        HibernateHelper.appendJoinFetch(hql, getEntityType(), "lg", query.getFetch());
+        DatabaseHelper.appendJoinFetch(hql, getEntityType(), "lg", query.getFetch());
         hql.append(" where 1=1");
-        HibernateHelper.addLikeParameterToQuery(hql, namedParameters, "lg.description", query.getDescription());
-        HibernateHelper.addLikeParameterToQuery(hql, namedParameters, "lg.name", query.getName());
+        DatabaseHelper.addLikeParameterToQuery(hql, namedParameters, "lg.description", query.getDescription());
+        DatabaseHelper.addLikeParameterToQuery(hql, namedParameters, "lg.name", query.getName());
         if (query.getMember() != null) {
             if (query.isNotOfMember()) {
                 hql.append(" and :notMember not in elements(lg.members) ");
@@ -71,11 +71,11 @@ public class LoanGroupDAOImpl extends BaseDAOImpl<LoanGroup> implements LoanGrou
             }
         }
         hibernateCustomFieldHandler.appendConditions(hql, namedParameters, query.getCustomValues());
-        HibernateHelper.appendOrder(hql, "lg.name");
+        DatabaseHelper.appendOrder(hql, "lg.name");
         return list(query, hql.toString(), namedParameters);
     }
 
-    public void setHibernateCustomFieldHandler(final HibernateCustomFieldHandler hibernateCustomFieldHandler) {
+    public void setHibernateCustomFieldHandler(final DatabaseCustomFieldHandler hibernateCustomFieldHandler) {
         this.hibernateCustomFieldHandler = hibernateCustomFieldHandler;
     }
 

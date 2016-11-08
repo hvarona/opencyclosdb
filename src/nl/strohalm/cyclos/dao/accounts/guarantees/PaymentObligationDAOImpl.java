@@ -27,7 +27,7 @@ import nl.strohalm.cyclos.dao.BaseDAOImpl;
 import nl.strohalm.cyclos.entities.accounts.guarantees.PaymentObligation;
 import nl.strohalm.cyclos.entities.accounts.guarantees.PaymentObligationQuery;
 import nl.strohalm.cyclos.entities.exceptions.DaoException;
-import nl.strohalm.cyclos.utils.database.HibernateHelper;
+import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 
 import org.apache.commons.collections.CollectionUtils;
 
@@ -43,8 +43,8 @@ public class PaymentObligationDAOImpl extends BaseDAOImpl<PaymentObligation> imp
 
         final StringBuilder hql = new StringBuilder("SELECT po FROM PaymentObligation po where 1=1");
 
-        HibernateHelper.addInParameterToQuery(hql, namedParameters, "po.id", (Object[]) ids);
-        HibernateHelper.appendOrder(hql, "po.expirationDate");
+        DatabaseHelper.addInParameterToQuery(hql, namedParameters, "po.id", (Object[]) ids);
+        DatabaseHelper.appendOrder(hql, "po.expirationDate");
 
         return list(hql.toString(), namedParameters);
     }
@@ -52,23 +52,23 @@ public class PaymentObligationDAOImpl extends BaseDAOImpl<PaymentObligation> imp
     @Override
     public List<PaymentObligation> search(final PaymentObligationQuery queryParameters) throws DaoException {
         final Map<String, Object> namedParameters = new HashMap<String, Object>();
-        final StringBuilder hql = HibernateHelper.getInitialQuery(getEntityType(), "po", queryParameters.getFetch());
+        final StringBuilder hql = DatabaseHelper.getInitialQuery(getEntityType(), "po", queryParameters.getFetch());
 
-        HibernateHelper.addInParameterToQuery(hql, namedParameters, "po.status", queryParameters.getStatusList());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "po.buyer", queryParameters.getBuyer());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "po.currency", queryParameters.getCurrency());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "po.seller", queryParameters.getSeller());
-        HibernateHelper.addParameterToQueryOperator(hql, namedParameters, "po.amount", ">=", queryParameters.getAmountLowerLimit());
-        HibernateHelper.addParameterToQueryOperator(hql, namedParameters, "po.amount", "<=", queryParameters.getAmountUpperLimit());
+        DatabaseHelper.addInParameterToQuery(hql, namedParameters, "po.status", queryParameters.getStatusList());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "po.buyer", queryParameters.getBuyer());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "po.currency", queryParameters.getCurrency());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "po.seller", queryParameters.getSeller());
+        DatabaseHelper.addParameterToQueryOperator(hql, namedParameters, "po.amount", ">=", queryParameters.getAmountLowerLimit());
+        DatabaseHelper.addParameterToQueryOperator(hql, namedParameters, "po.amount", "<=", queryParameters.getAmountUpperLimit());
 
         if (queryParameters.isApplyExpirationToMaxPublishDate()) {
             final StringBuilder tmp1 = new StringBuilder("1=1");
             final StringBuilder tmp2 = new StringBuilder("1=1");
-            HibernateHelper.addPeriodParameterToQuery(tmp1, namedParameters, "po.expirationDate", queryParameters.getExpiration());
-            HibernateHelper.addPeriodParameterToQuery(tmp2, namedParameters, "po.maxPublishDate", queryParameters.getExpiration());
+            DatabaseHelper.addPeriodParameterToQuery(tmp1, namedParameters, "po.expirationDate", queryParameters.getExpiration());
+            DatabaseHelper.addPeriodParameterToQuery(tmp2, namedParameters, "po.maxPublishDate", queryParameters.getExpiration());
             hql.append(" and (").append(tmp1).append(" or ").append(tmp2).append(")");
         } else {
-            HibernateHelper.addPeriodParameterToQuery(hql, namedParameters, "po.expirationDate", queryParameters.getExpiration());
+            DatabaseHelper.addPeriodParameterToQuery(hql, namedParameters, "po.expirationDate", queryParameters.getExpiration());
         }
 
         // this was added to support a member who has the two roles buyer and seller at the same time
@@ -83,7 +83,7 @@ public class PaymentObligationDAOImpl extends BaseDAOImpl<PaymentObligation> imp
             namedParameters.put("groups_", queryParameters.getManagedMemberGroups());
         }
 
-        HibernateHelper.appendOrder(hql, "po.expirationDate");
+        DatabaseHelper.appendOrder(hql, "po.expirationDate");
 
         return list(queryParameters, hql.toString(), namedParameters);
     }

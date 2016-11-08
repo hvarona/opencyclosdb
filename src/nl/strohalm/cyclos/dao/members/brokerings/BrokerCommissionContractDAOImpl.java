@@ -27,7 +27,7 @@ import java.util.Map;
 import nl.strohalm.cyclos.dao.BaseDAOImpl;
 import nl.strohalm.cyclos.entities.members.brokerings.BrokerCommissionContract;
 import nl.strohalm.cyclos.entities.members.brokerings.BrokerCommissionContractQuery;
-import nl.strohalm.cyclos.utils.database.HibernateHelper;
+import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 
 import org.apache.commons.collections.CollectionUtils;
 
@@ -73,26 +73,26 @@ public class BrokerCommissionContractDAOImpl extends BaseDAOImpl<BrokerCommissio
 
     @Override
     public List<BrokerCommissionContract> search(final BrokerCommissionContractQuery query) {
-        final StringBuilder hql = HibernateHelper.getInitialQuery(getEntityType(), "bcc", query.getFetch());
+        final StringBuilder hql = DatabaseHelper.getInitialQuery(getEntityType(), "bcc", query.getFetch());
         final Map<String, Object> namedParameters = new HashMap<String, Object>();
 
         // Broker
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "bcc.brokering.broker", query.getBroker());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "bcc.brokering.broker", query.getBroker());
 
         // Member
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "bcc.brokering.brokered", query.getMember());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "bcc.brokering.brokered", query.getMember());
 
         // Broker commission
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "bcc.brokerCommission", query.getBrokerCommission());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "bcc.brokerCommission", query.getBrokerCommission());
 
         // Start period
-        HibernateHelper.addPeriodParameterToQuery(hql, namedParameters, "bcc.period.begin", query.getStartPeriod());
+        DatabaseHelper.addPeriodParameterToQuery(hql, namedParameters, "bcc.period.begin", query.getStartPeriod());
 
         // End period
-        HibernateHelper.addPeriodParameterToQuery(hql, namedParameters, "bcc.period.end", query.getEndPeriod());
+        DatabaseHelper.addPeriodParameterToQuery(hql, namedParameters, "bcc.period.end", query.getEndPeriod());
 
         // Status list
-        HibernateHelper.addInParameterToQuery(hql, namedParameters, "bcc.status", query.getStatusList());
+        DatabaseHelper.addInParameterToQuery(hql, namedParameters, "bcc.status", query.getStatusList());
 
         if (CollectionUtils.isNotEmpty(query.getManagedMemberGroups())) {
             hql.append(" and (bcc.brokering.broker.group in (:groups_) or bcc.brokering.brokered.group in (:groups_))");
@@ -100,7 +100,7 @@ public class BrokerCommissionContractDAOImpl extends BaseDAOImpl<BrokerCommissio
 
         }
 
-        HibernateHelper.appendOrder(hql, "bcc.brokerCommission.name");
+        DatabaseHelper.appendOrder(hql, "bcc.brokerCommission.name");
         return list(query, hql.toString(), namedParameters);
     }
 

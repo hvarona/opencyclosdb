@@ -30,7 +30,7 @@ import nl.strohalm.cyclos.entities.ads.imports.ImportedAd;
 import nl.strohalm.cyclos.entities.ads.imports.ImportedAdQuery;
 import nl.strohalm.cyclos.entities.ads.imports.ImportedAdQuery.Status;
 import nl.strohalm.cyclos.entities.members.imports.ImportedMember;
-import nl.strohalm.cyclos.utils.database.HibernateHelper;
+import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 
 public class ImportedAdDAOImpl extends BaseDAOImpl<ImportedAd> implements ImportedAdDAO {
 
@@ -44,15 +44,15 @@ public class ImportedAdDAOImpl extends BaseDAOImpl<ImportedAd> implements Import
             return Collections.emptyList();
         }
         final Map<String, Object> namedParameters = new HashMap<String, Object>();
-        final StringBuilder hql = HibernateHelper.getInitialQuery(getEntityType(), "a", params.getFetch());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "a.import", adImport);
+        final StringBuilder hql = DatabaseHelper.getInitialQuery(getEntityType(), "a", params.getFetch());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "a.import", adImport);
         final Status status = params.getStatus();
         if (status != null && status != Status.ALL) {
             final String operator = status == Status.ERROR ? "<>" : "=";
-            HibernateHelper.addParameterToQueryOperator(hql, namedParameters, "a.status", operator, ImportedMember.Status.SUCCESS);
+            DatabaseHelper.addParameterToQueryOperator(hql, namedParameters, "a.status", operator, ImportedMember.Status.SUCCESS);
         }
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "a.lineNumber", params.getLineNumber());
-        HibernateHelper.appendOrder(hql, "a.lineNumber");
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "a.lineNumber", params.getLineNumber());
+        DatabaseHelper.appendOrder(hql, "a.lineNumber");
         return list(params, hql.toString(), namedParameters);
     }
 

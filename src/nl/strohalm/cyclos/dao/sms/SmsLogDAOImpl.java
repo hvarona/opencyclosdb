@@ -36,7 +36,7 @@ import nl.strohalm.cyclos.entities.sms.SmsLogStatus;
 import nl.strohalm.cyclos.entities.sms.SmsLogType;
 import nl.strohalm.cyclos.entities.sms.SmsMailingType;
 import nl.strohalm.cyclos.entities.sms.SmsType;
-import nl.strohalm.cyclos.utils.database.HibernateHelper;
+import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 
 import org.apache.commons.collections.CollectionUtils;
 
@@ -71,18 +71,18 @@ public class SmsLogDAOImpl extends BaseDAOImpl<SmsLog> implements SmsLogDAO {
         final StringBuilder hql = new StringBuilder();
         hql.append(" select l");
         processQuery(query, hql, namedParameters, true);
-        HibernateHelper.appendOrder(hql, "l.date desc");
+        DatabaseHelper.appendOrder(hql, "l.date desc");
         return list(query, hql.toString(), namedParameters);
     }
 
     private void processQuery(final SmsLogQuery query, final StringBuilder hql, final Map<String, Object> namedParameters, final boolean addFetch) {
         hql.append(" from SmsLog l left join l.smsMailing m left join m.by b");
         if (addFetch) {
-            HibernateHelper.appendJoinFetch(hql, entityClass, "l", query.getFetch());
+            DatabaseHelper.appendJoinFetch(hql, entityClass, "l", query.getFetch());
         }
         hql.append(" where 1=1");
 
-        HibernateHelper.addPeriodParameterToQuery(hql, namedParameters, "l.date", query.getPeriod());
+        DatabaseHelper.addPeriodParameterToQuery(hql, namedParameters, "l.date", query.getPeriod());
 
         final Member member = query.getMember();
         if (member != null) {
@@ -123,7 +123,7 @@ public class SmsLogDAOImpl extends BaseDAOImpl<SmsLog> implements SmsLogDAO {
                         for (final SmsMailingType mailingType : mailingTypes) {
                             mailingTypesStr.add(mailingType.name());
                         }
-                        HibernateHelper.addInParameterToQuery(hql, namedParameters, expr.toString(), mailingTypesStr);
+                        DatabaseHelper.addInParameterToQuery(hql, namedParameters, expr.toString(), mailingTypesStr);
                     }
                     break;
                 case NOTIFICATION:
@@ -134,7 +134,7 @@ public class SmsLogDAOImpl extends BaseDAOImpl<SmsLog> implements SmsLogDAO {
                     if (CollectionUtils.isEmpty(messageTypes)) {
                         hql.append(" and l.messageType is not null");
                     } else {
-                        HibernateHelper.addInParameterToQuery(hql, namedParameters, "l.messageType", messageTypes);
+                        DatabaseHelper.addInParameterToQuery(hql, namedParameters, "l.messageType", messageTypes);
                     }
                     break;
                 case SMS_OPERATION:
@@ -145,7 +145,7 @@ public class SmsLogDAOImpl extends BaseDAOImpl<SmsLog> implements SmsLogDAO {
                     if (CollectionUtils.isEmpty(smsTypes)) {
                         hql.append(" and l.smsType is not null");
                     } else {
-                        HibernateHelper.addInParameterToQuery(hql, namedParameters, "l.smsType", smsTypes);
+                        DatabaseHelper.addInParameterToQuery(hql, namedParameters, "l.smsType", smsTypes);
                     }
                     break;
             }

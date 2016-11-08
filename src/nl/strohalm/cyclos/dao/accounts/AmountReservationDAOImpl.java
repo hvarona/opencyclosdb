@@ -28,7 +28,7 @@ import nl.strohalm.cyclos.entities.accounts.Account;
 import nl.strohalm.cyclos.entities.accounts.AmountReservation;
 import nl.strohalm.cyclos.utils.BigDecimalHelper;
 import nl.strohalm.cyclos.utils.Period;
-import nl.strohalm.cyclos.utils.database.HibernateHelper;
+import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 
 /**
  * Implementation for {@link AmountReservationDAO}
@@ -47,7 +47,7 @@ public class AmountReservationDAOImpl extends BaseDAOImpl<AmountReservation> imp
         params.put("account", account);
         StringBuilder hql = new StringBuilder();
         hql.append("select sum(r.amount) from AmountReservation r where r.account = :account ");
-        HibernateHelper.addPeriodParameterToQuery(hql, params, "r.date", period);
+        DatabaseHelper.addPeriodParameterToQuery(hql, params, "r.date", period);
         BigDecimal sum = uniqueResult(hql.toString(), params);
         return BigDecimalHelper.nvl(sum);
     }

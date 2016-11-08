@@ -31,7 +31,7 @@ import nl.strohalm.cyclos.entities.accounts.fees.transaction.BrokerCommission;
 import nl.strohalm.cyclos.entities.accounts.fees.transaction.TransactionFee;
 import nl.strohalm.cyclos.entities.accounts.fees.transaction.TransactionFee.Nature;
 import nl.strohalm.cyclos.entities.accounts.fees.transaction.TransactionFeeQuery;
-import nl.strohalm.cyclos.utils.database.HibernateHelper;
+import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 
 /**
  * Implementation DAO for transaction fees
@@ -50,10 +50,10 @@ public class TransactionFeeDAOImpl extends BaseDAOImpl<TransactionFee> implement
         if (query.getEntityType() != null) {
             entityType = query.getEntityType();
         }
-        final StringBuilder hql = HibernateHelper.getInitialQuery(entityType, "f", fetch);
-        HibernateHelper.addLikeParameterToQuery(hql, namedParameters, "f.description", query.getDescription());
-        HibernateHelper.addLikeParameterToQuery(hql, namedParameters, "f.name", query.getName());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "f.originalTransferType", query.getTransferType());
+        final StringBuilder hql = DatabaseHelper.getInitialQuery(entityType, "f", fetch);
+        DatabaseHelper.addLikeParameterToQuery(hql, namedParameters, "f.description", query.getDescription());
+        DatabaseHelper.addLikeParameterToQuery(hql, namedParameters, "f.name", query.getName());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "f.originalTransferType", query.getTransferType());
         if (!query.isReturnDisabled()) {
             hql.append(" and f.enabled = true ");
         }
@@ -61,12 +61,12 @@ public class TransactionFeeDAOImpl extends BaseDAOImpl<TransactionFee> implement
         // Search by nature
         final Nature nature = query.getNature();
         if (nature != null) {
-            HibernateHelper.addParameterToQuery(hql, namedParameters, "f.class", nature.getValue());
+            DatabaseHelper.addParameterToQuery(hql, namedParameters, "f.class", nature.getValue());
         }
 
         // Generated transfer type from nature
         final AccountType.Nature genTTFromNature = query.getGeneratedTransferTypeFromNature();
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "f.generatedTransferType.from.class", genTTFromNature == null ? null : genTTFromNature.getValue());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "f.generatedTransferType.from.class", genTTFromNature == null ? null : genTTFromNature.getValue());
 
         // Broker group
         if (entityType == BrokerCommission.class && query.getBrokerGroup() != null) {
@@ -81,7 +81,7 @@ public class TransactionFeeDAOImpl extends BaseDAOImpl<TransactionFee> implement
             hql.append(" ) ");
             namedParameters.put("memberGroup", query.getMemberGroup());
         }
-        HibernateHelper.appendOrder(hql, "f.name");
+        DatabaseHelper.appendOrder(hql, "f.name");
         return list(query, hql.toString(), namedParameters);
     }
 }

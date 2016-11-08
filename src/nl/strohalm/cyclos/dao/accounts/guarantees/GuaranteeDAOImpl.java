@@ -33,14 +33,14 @@ import nl.strohalm.cyclos.entities.exceptions.DaoException;
 import nl.strohalm.cyclos.entities.groups.Group;
 import nl.strohalm.cyclos.entities.groups.MemberGroup;
 import nl.strohalm.cyclos.entities.members.Member;
-import nl.strohalm.cyclos.utils.database.HibernateCustomFieldHandler;
-import nl.strohalm.cyclos.utils.database.HibernateHelper;
+import nl.strohalm.cyclos.utils.database.DatabaseCustomFieldHandler;
+import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 
 import org.apache.commons.collections.CollectionUtils;
 
 public class GuaranteeDAOImpl extends BaseDAOImpl<Guarantee> implements GuaranteeDAO {
 
-    private HibernateCustomFieldHandler hibernateCustomFieldHandler;
+    private DatabaseCustomFieldHandler hibernateCustomFieldHandler;
 
     public GuaranteeDAOImpl() {
         super(Guarantee.class);
@@ -50,8 +50,8 @@ public class GuaranteeDAOImpl extends BaseDAOImpl<Guarantee> implements Guarante
     public Collection<MemberGroup> getBuyers(final Group seller) {
         final Map<String, Object> namedParameters = new HashMap<String, Object>();
 
-        final StringBuilder hql = HibernateHelper.getInitialQuery(Group.class, "buyer");
-        HibernateHelper.addInElementsParameter(hql, namedParameters, "buyer.canBuyWithPaymentObligationsFromGroups", seller);
+        final StringBuilder hql = DatabaseHelper.getInitialQuery(Group.class, "buyer");
+        DatabaseHelper.addInElementsParameter(hql, namedParameters, "buyer.canBuyWithPaymentObligationsFromGroups", seller);
 
         return list(hql.toString(), namedParameters);
     }
@@ -60,8 +60,8 @@ public class GuaranteeDAOImpl extends BaseDAOImpl<Guarantee> implements Guarante
     public Collection<MemberGroup> getIssuers(final GuaranteeType guaranteeType) {
         final Map<String, Object> namedParameters = new HashMap<String, Object>();
 
-        final StringBuilder hql = HibernateHelper.getInitialQuery(Group.class, "issuer");
-        HibernateHelper.addInElementsParameter(hql, namedParameters, "issuer.guaranteeTypes", guaranteeType);
+        final StringBuilder hql = DatabaseHelper.getInitialQuery(Group.class, "issuer");
+        DatabaseHelper.addInElementsParameter(hql, namedParameters, "issuer.guaranteeTypes", guaranteeType);
 
         return list(hql.toString(), namedParameters);
 
@@ -91,8 +91,8 @@ public class GuaranteeDAOImpl extends BaseDAOImpl<Guarantee> implements Guarante
     public Guarantee loadFromTransfer(final Transfer rootTransfer) {
         Map<String, Object> namedParameters = new HashMap<String, Object>();
 
-        final StringBuilder hql = HibernateHelper.getInitialQuery(getEntityType(), "g");
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "g.loan.transfer", rootTransfer);
+        final StringBuilder hql = DatabaseHelper.getInitialQuery(getEntityType(), "g");
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "g.loan.transfer", rootTransfer);
 
         return uniqueResult(hql.toString(), namedParameters);
     }
@@ -105,24 +105,24 @@ public class GuaranteeDAOImpl extends BaseDAOImpl<Guarantee> implements Guarante
         hql.append(" select g");
         hql.append(" from ").append(getEntityType().getName()).append(" g ");
         hibernateCustomFieldHandler.appendJoins(hql, "g.customValues", queryParameters.getCustomValues());
-        HibernateHelper.appendJoinFetch(hql, getEntityType(), "g", queryParameters.getFetch());
+        DatabaseHelper.appendJoinFetch(hql, getEntityType(), "g", queryParameters.getFetch());
         hql.append(" left join g.buyer buyer left join g.seller seller ");
         hql.append(" where 1=1");
-        HibernateHelper.addInParameterToQuery(hql, namedParameters, "g.status", queryParameters.getStatusList());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "g.issuer", queryParameters.getIssuer());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "g.buyer", queryParameters.getBuyer());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "g.seller", queryParameters.getSeller());
-        HibernateHelper.addPeriodParameterToQuery(hql, namedParameters, "g.validity.begin", queryParameters.getStartIn());
-        HibernateHelper.addPeriodParameterToQuery(hql, namedParameters, "g.validity.end", queryParameters.getEndIn());
-        HibernateHelper.addParameterToQueryOperator(hql, namedParameters, "g.amount", ">=", queryParameters.getAmountLowerLimit());
-        HibernateHelper.addParameterToQueryOperator(hql, namedParameters, "g.amount", "<=", queryParameters.getAmountUpperLimit());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "g.certification", queryParameters.getCertification());
+        DatabaseHelper.addInParameterToQuery(hql, namedParameters, "g.status", queryParameters.getStatusList());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "g.issuer", queryParameters.getIssuer());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "g.buyer", queryParameters.getBuyer());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "g.seller", queryParameters.getSeller());
+        DatabaseHelper.addPeriodParameterToQuery(hql, namedParameters, "g.validity.begin", queryParameters.getStartIn());
+        DatabaseHelper.addPeriodParameterToQuery(hql, namedParameters, "g.validity.end", queryParameters.getEndIn());
+        DatabaseHelper.addParameterToQueryOperator(hql, namedParameters, "g.amount", ">=", queryParameters.getAmountLowerLimit());
+        DatabaseHelper.addParameterToQueryOperator(hql, namedParameters, "g.amount", "<=", queryParameters.getAmountUpperLimit());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "g.certification", queryParameters.getCertification());
         if (queryParameters.getGuaranteeType() != null) {
-            HibernateHelper.addParameterToQuery(hql, namedParameters, "g.guaranteeType", queryParameters.getGuaranteeType());
+            DatabaseHelper.addParameterToQuery(hql, namedParameters, "g.guaranteeType", queryParameters.getGuaranteeType());
         } else { // search for (if not null) only the allowed guarantee types
-            HibernateHelper.addInParameterToQuery(hql, namedParameters, "g.guaranteeType", queryParameters.getAllowedGuaranteeTypes());
+            DatabaseHelper.addInParameterToQuery(hql, namedParameters, "g.guaranteeType", queryParameters.getAllowedGuaranteeTypes());
         }
-        HibernateHelper.addPeriodParameterToQuery(hql, namedParameters, "g.registrationDate", queryParameters.getRegisteredIn());
+        DatabaseHelper.addPeriodParameterToQuery(hql, namedParameters, "g.registrationDate", queryParameters.getRegisteredIn());
 
         // if hasn't got loan filter or if it's ALL we don't add filter
         if (queryParameters.getLoanFilter() != null && queryParameters.getLoanFilter() != GuaranteeQuery.LoanFilter.ALL) {
@@ -148,7 +148,7 @@ public class GuaranteeDAOImpl extends BaseDAOImpl<Guarantee> implements Guarante
         hibernateCustomFieldHandler.appendConditions(hql, namedParameters, queryParameters.getCustomValues());
 
         if (queryParameters.isWithBuyerOnly()) {
-            HibernateHelper.addParameterToQuery(hql, namedParameters, "g.guaranteeType.model", GuaranteeType.Model.WITH_BUYER_ONLY);
+            DatabaseHelper.addParameterToQuery(hql, namedParameters, "g.guaranteeType.model", GuaranteeType.Model.WITH_BUYER_ONLY);
         }
 
         if (CollectionUtils.isNotEmpty(queryParameters.getManagedMemberGroups())) {
@@ -156,11 +156,11 @@ public class GuaranteeDAOImpl extends BaseDAOImpl<Guarantee> implements Guarante
             namedParameters.put("groups_", queryParameters.getManagedMemberGroups());
         }
 
-        HibernateHelper.appendOrder(hql, "g.id desc");
+        DatabaseHelper.appendOrder(hql, "g.id desc");
         return list(queryParameters, hql.toString(), namedParameters);
     }
 
-    public void setHibernateCustomFieldHandler(final HibernateCustomFieldHandler hibernateCustomFieldHandler) {
+    public void setHibernateCustomFieldHandler(final DatabaseCustomFieldHandler hibernateCustomFieldHandler) {
         this.hibernateCustomFieldHandler = hibernateCustomFieldHandler;
     }
 }

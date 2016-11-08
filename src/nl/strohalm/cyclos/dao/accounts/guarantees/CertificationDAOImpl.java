@@ -31,7 +31,7 @@ import nl.strohalm.cyclos.entities.accounts.guarantees.CertificationQuery;
 import nl.strohalm.cyclos.entities.accounts.guarantees.Guarantee;
 import nl.strohalm.cyclos.entities.exceptions.DaoException;
 import nl.strohalm.cyclos.entities.members.Member;
-import nl.strohalm.cyclos.utils.database.HibernateHelper;
+import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 
 import org.apache.commons.collections.CollectionUtils;
 
@@ -45,10 +45,10 @@ public class CertificationDAOImpl extends BaseDAOImpl<Certification> implements 
     public List<Certification> getActiveCertificationsForBuyer(final Member buyer, final Currency currency) {
         final Map<String, Object> namedParameters = new HashMap<String, Object>();
 
-        final StringBuilder hql = HibernateHelper.getInitialQuery(getEntityType(), "cert");
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "cert.buyer", buyer);
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "cert.status", Certification.Status.ACTIVE);
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "cert.guaranteeType.currency", currency);
+        final StringBuilder hql = DatabaseHelper.getInitialQuery(getEntityType(), "cert");
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "cert.buyer", buyer);
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "cert.status", Certification.Status.ACTIVE);
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "cert.guaranteeType.currency", currency);
 
         return list(hql.toString(), namedParameters);
     }
@@ -58,8 +58,8 @@ public class CertificationDAOImpl extends BaseDAOImpl<Certification> implements 
         final Map<String, Object> namedParameters = new HashMap<String, Object>();
         final StringBuilder hql = new StringBuilder("SELECT SUM(g.amount) FROM Guarantee g WHERE 1=1");
 
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "g.certification", certification);
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "g.status", Guarantee.Status.ACCEPTED);
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "g.certification", certification);
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "g.status", Guarantee.Status.ACCEPTED);
 
         return uniqueResult(hql.toString(), namedParameters);
     }
@@ -67,24 +67,24 @@ public class CertificationDAOImpl extends BaseDAOImpl<Certification> implements 
     @Override
     public List<Certification> seach(final CertificationQuery queryParameters) throws DaoException {
         final Map<String, Object> namedParameters = new HashMap<String, Object>();
-        final StringBuilder hql = HibernateHelper.getInitialQuery(getEntityType(), "cert", queryParameters.getFetch());
+        final StringBuilder hql = DatabaseHelper.getInitialQuery(getEntityType(), "cert", queryParameters.getFetch());
 
         if (queryParameters.getViewer() != null) { // restricts the result to this viewer
             hql.append("and (cert.buyer = :viewer or cert.issuer = :viewer) ");
             namedParameters.put("viewer", queryParameters.getViewer());
         }
 
-        HibernateHelper.addInParameterToQuery(hql, namedParameters, "cert.status", queryParameters.getStatusList());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "cert.buyer", queryParameters.getBuyer());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "cert.issuer", queryParameters.getIssuer());
-        HibernateHelper.addPeriodParameterToQuery(hql, namedParameters, "cert.validity.begin", queryParameters.getStartIn());
-        HibernateHelper.addPeriodParameterToQuery(hql, namedParameters, "cert.validity.end", queryParameters.getEndIn());
+        DatabaseHelper.addInParameterToQuery(hql, namedParameters, "cert.status", queryParameters.getStatusList());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "cert.buyer", queryParameters.getBuyer());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "cert.issuer", queryParameters.getIssuer());
+        DatabaseHelper.addPeriodParameterToQuery(hql, namedParameters, "cert.validity.begin", queryParameters.getStartIn());
+        DatabaseHelper.addPeriodParameterToQuery(hql, namedParameters, "cert.validity.end", queryParameters.getEndIn());
 
         if (CollectionUtils.isNotEmpty(queryParameters.getManagedMemberGroups())) {
             hql.append(" and (cert.buyer.group in (:groups_) and cert.issuer.group in (:groups_))");
             namedParameters.put("groups_", queryParameters.getManagedMemberGroups());
         }
-        HibernateHelper.appendOrder(hql, "cert.validity.end asc");
+        DatabaseHelper.appendOrder(hql, "cert.validity.end asc");
         return list(queryParameters, hql.toString(), namedParameters);
     }
 }

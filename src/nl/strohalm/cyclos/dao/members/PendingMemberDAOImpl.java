@@ -32,8 +32,8 @@ import nl.strohalm.cyclos.entities.exceptions.EntityNotFoundException;
 import nl.strohalm.cyclos.entities.members.PendingMember;
 import nl.strohalm.cyclos.entities.members.PendingMemberQuery;
 import nl.strohalm.cyclos.utils.DataIteratorHelper;
-import nl.strohalm.cyclos.utils.database.HibernateCustomFieldHandler;
-import nl.strohalm.cyclos.utils.database.HibernateHelper;
+import nl.strohalm.cyclos.utils.database.DatabaseCustomFieldHandler;
+import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -44,7 +44,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class PendingMemberDAOImpl extends BaseDAOImpl<PendingMember> implements PendingMemberDAO {
 
-    private HibernateCustomFieldHandler hibernateCustomFieldHandler;
+    private DatabaseCustomFieldHandler hibernateCustomFieldHandler;
 
     public PendingMemberDAOImpl() {
         super(PendingMember.class);
@@ -73,9 +73,9 @@ public class PendingMemberDAOImpl extends BaseDAOImpl<PendingMember> implements 
         hql.append(" select count(*)");
         hql.append(" from PendingMember pm");
         hql.append(" where 1 = 1");
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "upper(pm.email)", email.toUpperCase());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "upper(pm.email)", email.toUpperCase());
         if (pendingMember != null && pendingMember.isPersistent()) {
-            HibernateHelper.addParameterToQueryOperator(hql, namedParameters, "pm", "<>", pendingMember);
+            DatabaseHelper.addParameterToQueryOperator(hql, namedParameters, "pm", "<>", pendingMember);
         }
         final Number count = uniqueResult(hql.toString(), namedParameters);
         return count != null && count.intValue() > 0;
@@ -98,18 +98,18 @@ public class PendingMemberDAOImpl extends BaseDAOImpl<PendingMember> implements 
         hql.append(" select pm");
         hql.append(" from ").append(getEntityType().getName()).append(" pm ");
         hibernateCustomFieldHandler.appendJoins(hql, "pm.customValues", params.getCustomValues());
-        HibernateHelper.appendJoinFetch(hql, getEntityType(), "pm", params.getFetch());
+        DatabaseHelper.appendJoinFetch(hql, getEntityType(), "pm", params.getFetch());
         hql.append(" where 1=1");
-        HibernateHelper.addLikeParameterToQuery(hql, namedParameters, "pm.name", params.getName());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "pm.broker", params.getBroker());
-        HibernateHelper.addPeriodParameterToQuery(hql, namedParameters, "pm.creationDate", params.getCreationPeriod());
-        HibernateHelper.addInParameterToQuery(hql, namedParameters, "pm.memberGroup", params.getGroups());
+        DatabaseHelper.addLikeParameterToQuery(hql, namedParameters, "pm.name", params.getName());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "pm.broker", params.getBroker());
+        DatabaseHelper.addPeriodParameterToQuery(hql, namedParameters, "pm.creationDate", params.getCreationPeriod());
+        DatabaseHelper.addInParameterToQuery(hql, namedParameters, "pm.memberGroup", params.getGroups());
         hibernateCustomFieldHandler.appendConditions(hql, namedParameters, params.getCustomValues());
-        HibernateHelper.appendOrder(hql, "pm.creationDate desc");
+        DatabaseHelper.appendOrder(hql, "pm.creationDate desc");
         return list(params, hql.toString(), namedParameters);
     }
 
-    public void setHibernateCustomFieldHandler(final HibernateCustomFieldHandler hibernateCustomFieldHandler) {
+    public void setHibernateCustomFieldHandler(final DatabaseCustomFieldHandler hibernateCustomFieldHandler) {
         this.hibernateCustomFieldHandler = hibernateCustomFieldHandler;
     }
 

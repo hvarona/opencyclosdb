@@ -1,20 +1,20 @@
 /*
-    This file is part of Cyclos (www.cyclos.org).
-    A project of the Social Trade Organisation (www.socialtrade.org).
+ This file is part of Cyclos (www.cyclos.org).
+ A project of the Social Trade Organisation (www.socialtrade.org).
 
-    Cyclos is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+ Cyclos is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-    Cyclos is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+ Cyclos is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with Cyclos; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ You should have received a copy of the GNU General Public License
+ along with Cyclos; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
  */
 package nl.strohalm.cyclos.utils.database;
@@ -43,7 +43,6 @@ import nl.strohalm.cyclos.utils.EntityHelper;
 import nl.strohalm.cyclos.utils.FetchingIteratorListImpl;
 import nl.strohalm.cyclos.utils.IteratorListImpl;
 import nl.strohalm.cyclos.utils.PropertyHelper;
-import nl.strohalm.cyclos.utils.ScrollableResultsIterator;
 import nl.strohalm.cyclos.utils.query.IteratorList;
 import nl.strohalm.cyclos.utils.query.Page;
 import nl.strohalm.cyclos.utils.query.PageImpl;
@@ -57,7 +56,7 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author luis
  */
-public class HibernateQueryHandler {
+public class DatabaseQueryHandler {
 
     private final static Pattern FIRST_ALIAS = Pattern.compile("^ *(from +[^ ]+|select(?: +distinct)?) +([^ ]+).*");
     private final static Pattern LEFT_JOIN_FETCH = Pattern.compile("\\^left\\s+join\\s+fetch(\\s+[\\w\\.]+)?(\\s*[\\w]+)?");
@@ -196,15 +195,15 @@ public class HibernateQueryHandler {
 
         }
         /*final Object[] values = metaData.getPropertyValues(source);
-        // Skip the collections
-        final Type[] types = metaData.getPropertyTypes();
-        for (int i = 0; i < types.length; i++) {
-            final Type type = types[i];
-            if (type instanceof CollectionType) {
-                values[i] = null;
-            }
-        }
-        metaData.setPropertyValues(dest, values);*/
+         // Skip the collections
+         final Type[] types = metaData.getPropertyTypes();
+         for (int i = 0; i < types.length; i++) {
+         final Type type = types[i];
+         if (type instanceof CollectionType) {
+         values[i] = null;
+         }
+         }
+         metaData.setPropertyValues(dest, values);*/
     }
 
     /**
@@ -262,41 +261,41 @@ public class HibernateQueryHandler {
      */
     public Object initialize(final Object object) {
         /*if (object instanceof HibernateProxy) {
-            // Reassociate the entity with the current session
-            Entity entity = (Entity) object;
-            return DatabaseUtil.getCurrentEntityManager().find(entity.getClass(), entity);
-            //entity = getHibernateTemplate().load(EntityHelper.getRealClass(entity), entity.getId());
-            // Return the implementation associated with the proxy
-            if (entity instanceof HibernateProxy) {
-                final LazyInitializer lazyInitializer = ((HibernateProxy) entity).getHibernateLazyInitializer();
-                lazyInitializer.initialize();
-                return lazyInitializer.getImplementation();
-            } else {
-                return entity;
-            }
-        } else if (object instanceof PersistentCollection) {
-            // Reassociate the collection with the current session
-            return getHibernateTemplate().execute(new HibernateCallback<Object>() {
-                @Override
-                public Object doInHibernate(final Session session) throws HibernateException {
-                    final PersistentCollection persistentCollection = ((PersistentCollection) object);
-                    Entity owner = (Entity) persistentCollection.getOwner();
-                    final String role = persistentCollection.getRole();
-                    if (owner == null || role == null) {
-                        return persistentCollection;
-                    }
-                    // Retrieve the owner of this persistent collection, associated with the current session
-                    owner = (Entity) session.get(EntityHelper.getRealClass(owner), owner.getId());
-                    // Retrieve the collection through it's role (property name)
-                    final String propertyName = PropertyHelper.lastProperty(role);
-                    final Object currentCollection = PropertyHelper.get(owner, propertyName);
-                    if (currentCollection instanceof PersistentCollection) {
-                        Hibernate.initialize(currentCollection);
-                    }
-                    return currentCollection;
-                }
-            });
-        }*/
+         // Reassociate the entity with the current session
+         Entity entity = (Entity) object;
+         return DatabaseUtil.getCurrentEntityManager().find(entity.getClass(), entity);
+         //entity = getHibernateTemplate().load(EntityHelper.getRealClass(entity), entity.getId());
+         // Return the implementation associated with the proxy
+         if (entity instanceof HibernateProxy) {
+         final LazyInitializer lazyInitializer = ((HibernateProxy) entity).getHibernateLazyInitializer();
+         lazyInitializer.initialize();
+         return lazyInitializer.getImplementation();
+         } else {
+         return entity;
+         }
+         } else if (object instanceof PersistentCollection) {
+         // Reassociate the collection with the current session
+         return getHibernateTemplate().execute(new HibernateCallback<Object>() {
+         @Override
+         public Object doInHibernate(final Session session) throws HibernateException {
+         final PersistentCollection persistentCollection = ((PersistentCollection) object);
+         Entity owner = (Entity) persistentCollection.getOwner();
+         final String role = persistentCollection.getRole();
+         if (owner == null || role == null) {
+         return persistentCollection;
+         }
+         // Retrieve the owner of this persistent collection, associated with the current session
+         owner = (Entity) session.get(EntityHelper.getRealClass(owner), owner.getId());
+         // Retrieve the collection through it's role (property name)
+         final String propertyName = PropertyHelper.lastProperty(role);
+         final Object currentCollection = PropertyHelper.get(owner, propertyName);
+         if (currentCollection instanceof PersistentCollection) {
+         Hibernate.initialize(currentCollection);
+         }
+         return currentCollection;
+         }
+         });
+         }*/
         try {
             //Hibernate.initialize(object);
             return DatabaseUtil.getCurrentEntityManager().find(object.getClass(), object);
@@ -420,9 +419,9 @@ public class HibernateQueryHandler {
         setQueryParameters(query, namedParameters);
         applyPageParameters(pageParameters, query);
         /*if (cacheRegion != null) {
-            query.setCacheable(true);
-            query.setCacheRegion(cacheRegion);
-        }*/
+         query.setCacheable(true);
+         query.setCacheRegion(cacheRegion);
+         }*/
         final List<E> list = query.getResultList();
         if (fetch != null && fetch.length > 0) {
             for (int i = 0; i < list.size(); i++) {
@@ -476,9 +475,9 @@ public class HibernateQueryHandler {
 
     private void setCacheRegion(final Query query, final String cacheRegion) {
         /*if (cacheRegion != null) {
-            query.setCacheable(true);
-            query.setCacheRegion(cacheRegion);
-        }*/
+         query.setCacheable(true);
+         query.setCacheRegion(cacheRegion);
+         }*/
     }
 
 }

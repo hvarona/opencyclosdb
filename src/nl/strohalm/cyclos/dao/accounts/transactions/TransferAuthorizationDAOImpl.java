@@ -27,7 +27,7 @@ import nl.strohalm.cyclos.dao.BaseDAOImpl;
 import nl.strohalm.cyclos.entities.accounts.transactions.TransferAuthorization;
 import nl.strohalm.cyclos.entities.accounts.transactions.TransferAuthorizationQuery;
 import nl.strohalm.cyclos.entities.members.Element;
-import nl.strohalm.cyclos.utils.database.HibernateHelper;
+import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 
 /**
  * Implementation for TransferAuthorizationDAO
@@ -41,7 +41,7 @@ public class TransferAuthorizationDAOImpl extends BaseDAOImpl<TransferAuthorizat
 
     public List<TransferAuthorization> search(final TransferAuthorizationQuery query) {
         final Map<String, Object> namedParameters = new HashMap<String, Object>();
-        final StringBuilder hql = HibernateHelper.getInitialQuery(getEntityType(), "a", query.getFetch());
+        final StringBuilder hql = DatabaseHelper.getInitialQuery(getEntityType(), "a", query.getFetch());
         if (query.isByAdministration()) {
             hql.append(" and a.by.class = :admin");
             namedParameters.put("admin", Element.Nature.ADMIN.getValue());
@@ -51,14 +51,14 @@ public class TransferAuthorizationDAOImpl extends BaseDAOImpl<TransferAuthorizat
             namedParameters.put("by", query.getBy());
         }
 
-        HibernateHelper.addPeriodParameterToQuery(hql, namedParameters, "a.date", query.getPeriod());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "a.action", query.getAction());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "a.transfer.type", query.getTransferType());
+        DatabaseHelper.addPeriodParameterToQuery(hql, namedParameters, "a.date", query.getPeriod());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "a.action", query.getAction());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "a.transfer.type", query.getTransferType());
         if (query.getMember() != null) {
             hql.append(" and exists (select ma.id from MemberAccount ma where ma.member = :member and (ma = a.transfer.from or ma = a.transfer.to))");
             namedParameters.put("member", query.getMember());
         }
-        HibernateHelper.appendOrder(hql, "a.date desc");
+        DatabaseHelper.appendOrder(hql, "a.date desc");
         return list(query, hql.toString(), namedParameters);
     }
 

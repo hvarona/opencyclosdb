@@ -31,7 +31,7 @@ import nl.strohalm.cyclos.entities.members.records.FullTextMemberRecordQuery;
 import nl.strohalm.cyclos.entities.members.records.MemberRecord;
 import nl.strohalm.cyclos.entities.members.records.MemberRecordQuery;
 import nl.strohalm.cyclos.utils.database.HibernateCustomFieldHandler;
-import nl.strohalm.cyclos.utils.database.HibernateHelper;
+import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 import nl.strohalm.cyclos.utils.lucene.Filters;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -98,16 +98,16 @@ public class MemberRecordDAOImpl extends IndexedDAOImpl<MemberRecord> implements
         hql.append(" select mr");
         hql.append(" from ").append(getEntityType().getName()).append(" mr ");
         hibernateCustomFieldHandler.appendJoins(hql, "mr.customValues", query.getCustomValues());
-        HibernateHelper.appendJoinFetch(hql, getEntityType(), "mr", query.getFetch());
+        DatabaseHelper.appendJoinFetch(hql, getEntityType(), "mr", query.getFetch());
         hql.append(" where 1=1");
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "mr.type", query.getType());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "mr.element", query.getElement());
-        HibernateHelper.addInParameterToQuery(hql, namedParameters, "mr.element.group", query.getGroups());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "mr.element.broker", query.getBroker());
-        HibernateHelper.addParameterToQuery(hql, namedParameters, "mr.by", query.getBy());
-        HibernateHelper.addPeriodParameterToQuery(hql, namedParameters, "mr.date", query.getPeriod());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "mr.type", query.getType());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "mr.element", query.getElement());
+        DatabaseHelper.addInParameterToQuery(hql, namedParameters, "mr.element.group", query.getGroups());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "mr.element.broker", query.getBroker());
+        DatabaseHelper.addParameterToQuery(hql, namedParameters, "mr.by", query.getBy());
+        DatabaseHelper.addPeriodParameterToQuery(hql, namedParameters, "mr.date", query.getPeriod());
         hibernateCustomFieldHandler.appendConditions(hql, namedParameters, query.getCustomValues());
-        HibernateHelper.appendOrder(hql, "mr.date desc", "mr.element.name");
+        DatabaseHelper.appendOrder(hql, "mr.date desc", "mr.element.name");
         return list(query, hql.toString(), namedParameters);
     }
 
