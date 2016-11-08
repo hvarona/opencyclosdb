@@ -26,6 +26,8 @@ public class HibernateUtil {
     public static final int POSTGRESQLSSL = 3;
     public static final int POSTGRESQLSSLNOVEF = 4;
     public static final int H2DATABASE = 5;
+    public static final int H2DATABASEEMBEDDED = 6;
+    public static final int H2DATABASEMEMORY = 7;
     private static SessionFactory sessionFactory = null;
 
     private static void rebuildSessionFactory() {
@@ -55,6 +57,8 @@ public class HibernateUtil {
                 configuration.setProperty("hibernate.connection.ssl", "true");
                 break;
             case (H2DATABASE):
+            case (H2DATABASEEMBEDDED):
+            case (H2DATABASEMEMORY):
                 configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
                 configuration.setProperty("hibernate.connection.driver_class", "org.h2.Driver");
             default:
@@ -73,11 +77,11 @@ public class HibernateUtil {
         configuration.setProperty("hibernate.connection.aggressive_release", "false");
 
         /*configuration.setProperty("hibernate.c3p0.acquire_increment", "3");
-        configuration.setProperty("hibernate.c3p0.initialPoolSize", "5");
-        configuration.setProperty("hibernate.c3p0.maxPoolSize", "15");
-        configuration.setProperty("hibernate.c3p0.minPoolSize", "3");
-        configuration.setProperty("hibernate.c3p0.breakAfterAcquireFailure", "false");
-        configuration.setProperty("hibernate.connection.provider_class", "org.hibernate.connection.C3P0ConnectionProvider");*/
+         configuration.setProperty("hibernate.c3p0.initialPoolSize", "5");
+         configuration.setProperty("hibernate.c3p0.maxPoolSize", "15");
+         configuration.setProperty("hibernate.c3p0.minPoolSize", "3");
+         configuration.setProperty("hibernate.c3p0.breakAfterAcquireFailure", "false");
+         configuration.setProperty("hibernate.connection.provider_class", "org.hibernate.connection.C3P0ConnectionProvider");*/
         configuration.setProperty("hibernate.show_sql", "false");
         configuration.setProperty("hibernate.hbm2ddl.auto", "update");
 
@@ -126,6 +130,14 @@ public class HibernateUtil {
                 url.append(":");
                 url.append(serverPort);
                 url.append("/");
+                url.append(dbName);
+                break;
+            case (H2DATABASEEMBEDDED):
+                url.append("h2:");
+                url.append(dbName);
+                break;
+            case (H2DATABASEMEMORY):
+                url.append("h2:mem:");
                 url.append(dbName);
             default:
                 break;

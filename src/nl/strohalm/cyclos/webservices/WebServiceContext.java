@@ -30,7 +30,6 @@ import nl.strohalm.cyclos.entities.accounts.pos.Pos;
 import nl.strohalm.cyclos.entities.members.Member;
 import nl.strohalm.cyclos.entities.services.ServiceClient;
 import nl.strohalm.cyclos.entities.services.ServiceOperation;
-import nl.strohalm.cyclos.services.access.ChannelService;
 import nl.strohalm.cyclos.utils.access.LoggedUser;
 import nl.strohalm.cyclos.utils.logging.WebServiceLogDTO;
 import nl.strohalm.cyclos.webservices.utils.WebServiceHelper;
@@ -39,7 +38,6 @@ import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.common.util.StringUtils;
 import org.apache.cxf.service.model.MessageInfo;
 import org.apache.cxf.service.model.OperationInfo;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * The context for a given web service call

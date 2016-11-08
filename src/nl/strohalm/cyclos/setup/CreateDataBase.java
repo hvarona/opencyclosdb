@@ -21,8 +21,6 @@ package nl.strohalm.cyclos.setup;
 
 import java.util.ResourceBundle;
 
-import org.hibernate.cfg.Configuration;
-import org.hibernate.tool.hbm2ddl.SchemaExport;
 
 /**
  * Creates the database tables
@@ -30,11 +28,9 @@ import org.hibernate.tool.hbm2ddl.SchemaExport;
  */
 public class CreateDataBase implements Runnable {
 
-    private final Configuration  configuration;
     private final ResourceBundle bundle;
 
     public CreateDataBase(final Setup setup) {
-        configuration = setup.getConfiguration();
         bundle = setup.getBundle();
     }
 

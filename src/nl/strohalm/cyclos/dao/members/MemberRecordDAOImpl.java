@@ -30,7 +30,7 @@ import nl.strohalm.cyclos.entities.exceptions.QueryParseException;
 import nl.strohalm.cyclos.entities.members.records.FullTextMemberRecordQuery;
 import nl.strohalm.cyclos.entities.members.records.MemberRecord;
 import nl.strohalm.cyclos.entities.members.records.MemberRecordQuery;
-import nl.strohalm.cyclos.utils.database.HibernateCustomFieldHandler;
+import nl.strohalm.cyclos.utils.database.DatabaseCustomFieldHandler;
 import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 import nl.strohalm.cyclos.utils.lucene.Filters;
 
@@ -52,7 +52,7 @@ import org.apache.lucene.search.SortField;
 public class MemberRecordDAOImpl extends IndexedDAOImpl<MemberRecord> implements MemberRecordDAO {
 
     private static final String[] FIELDS_FULL_TEXT = {"customValues", "element.name", "element.username", "element.email", "by.name", "by.username"};
-    private HibernateCustomFieldHandler hibernateCustomFieldHandler;
+    private DatabaseCustomFieldHandler hibernateCustomFieldHandler;
 
     public MemberRecordDAOImpl() {
         super(MemberRecord.class);
@@ -111,7 +111,7 @@ public class MemberRecordDAOImpl extends IndexedDAOImpl<MemberRecord> implements
         return list(query, hql.toString(), namedParameters);
     }
 
-    public void setHibernateCustomFieldHandler(final HibernateCustomFieldHandler hibernateCustomFieldHandler) {
+    public void setHibernateCustomFieldHandler(final DatabaseCustomFieldHandler hibernateCustomFieldHandler) {
         this.hibernateCustomFieldHandler = hibernateCustomFieldHandler;
     }
 

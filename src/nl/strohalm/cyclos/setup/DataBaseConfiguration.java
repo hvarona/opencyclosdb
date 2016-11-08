@@ -203,7 +203,7 @@ public class DataBaseConfiguration {
                 LOG.info("Database is empty. Running setup to populate it");
                 sessionFactory = configuration.buildSessionFactory();
                 final Locale locale = LocaleConverter.instance().valueOf(properties.getProperty("cyclos.embedded.locale", "en_US"));
-                final Setup setup = new Setup(configuration, sessionFactory);
+                final Setup setup = new Setup();
                 setup.setLocale(locale);
                 setup.setCreateDataBase(true);
                 setup.setCreateBasicData(true);

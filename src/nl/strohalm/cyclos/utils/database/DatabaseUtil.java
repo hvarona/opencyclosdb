@@ -13,8 +13,18 @@ import javax.persistence.EntityManager;
  */
 public class DatabaseUtil {
 
+    public static final int MSSQL = 0;
+    public static final int MYSQL = 1;
+    public static final int MARIADB = 1;
+    public static final int POSTGRESQL = 2;
+    public static final int POSTGRESQLSSL = 3;
+    public static final int POSTGRESQLSSLNOVEF = 4;
+    public static final int H2DATABASE = 5;
+    public static final int H2DATABASEEMBEDDED = 6;
+    public static final int H2DATABASEMEMORY = 7;
+
     private static boolean isHibernate = true;
-    private static boolean isMariaDB = true;
+    private static int dbType = MARIADB;
     private static String host = "localhost";
     private static String dbName = "CyclosDB";
     private static String dbPort = "3307";
@@ -236,10 +246,17 @@ public class DatabaseUtil {
     public static void openDatabase() {
         if (!isOpen) {
             if (isHibernate) {
+                HibernateUtil.setDbType(dbType);
                 HibernateUtil.setUser(username);
                 HibernateUtil.setPwd(password);
                 HibernateUtil.setServerUrl(host, dbPort, dbName);
                 HibernateUtil.getSession().close();
+            } else {
+                OpenJPAUtil.setDbType(dbType);
+                OpenJPAUtil.setUser(username);
+                OpenJPAUtil.setPwd(password);
+                OpenJPAUtil.setServerUrl(host, dbPort, dbName);
+                OpenJPAUtil.getCurrentEntityManager();
             }
             isOpen = true;
         }
@@ -249,16 +266,18 @@ public class DatabaseUtil {
         openDatabase();
         if (isHibernate) {
             return HibernateUtil.getSession();
+        } else {
+            return OpenJPAUtil.getEntityManager();
         }
-        return null;
     }
 
     public static EntityManager getCurrentEntityManager() {
         openDatabase();
         if (isHibernate) {
             return HibernateUtil.getCurrentSession();
+        } else {
+            return OpenJPAUtil.getCurrentEntityManager();
         }
-        return null;
     }
 
     public static boolean isIsHibernate() {
@@ -269,12 +288,12 @@ public class DatabaseUtil {
         DatabaseUtil.isHibernate = isHibernate;
     }
 
-    public static boolean isIsMariaDB() {
-        return isMariaDB;
+    public static int getDbType() {
+        return dbType;
     }
 
-    public static void setIsMariaDB(boolean isMariaDB) {
-        DatabaseUtil.isMariaDB = isMariaDB;
+    public static void setDbType(int dbType) {
+        DatabaseUtil.dbType = dbType;
     }
 
     public static String getHost() {

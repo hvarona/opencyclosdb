@@ -48,7 +48,7 @@ import nl.strohalm.cyclos.utils.EntityHelper;
 import nl.strohalm.cyclos.utils.Period;
 import nl.strohalm.cyclos.utils.TimePeriod;
 import nl.strohalm.cyclos.utils.conversion.CoercionHelper;
-import nl.strohalm.cyclos.utils.database.HibernateCustomFieldHandler;
+import nl.strohalm.cyclos.utils.database.DatabaseCustomFieldHandler;
 import nl.strohalm.cyclos.utils.database.DatabaseHelper;
 import nl.strohalm.cyclos.utils.lucene.Filters;
 import nl.strohalm.cyclos.utils.lucene.LuceneUtils;
@@ -100,7 +100,7 @@ public class AdDAOImpl extends IndexedDAOImpl<Ad> implements AdDAO {
     }
 
     private static final String[]       FIELDS_FULL_TEXT = { "title", "description", "customValues", "owner.name", "owner.email", "owner.username", "owner.customValues" };
-    private HibernateCustomFieldHandler hibernateCustomFieldHandler;
+    private DatabaseCustomFieldHandler DatabaseCustomFieldHandler;
 
     public AdDAOImpl() {
         super(Ad.class);
@@ -199,8 +199,8 @@ public class AdDAOImpl extends IndexedDAOImpl<Ad> implements AdDAO {
         final StringBuilder hql = new StringBuilder();
         hql.append(" select ad");
         hql.append(" from Ad ad inner join ad.owner m left join ad.category c1 left join c1.parent c2 left join c2.parent c3 ");
-        hibernateCustomFieldHandler.appendJoins(hql, "ad.customValues", query.getAdValues());
-        hibernateCustomFieldHandler.appendJoins(hql, "m.customValues", query.getMemberValues());
+        DatabaseCustomFieldHandler.appendJoins(hql, "ad.customValues", query.getAdValues());
+        DatabaseCustomFieldHandler.appendJoins(hql, "m.customValues", query.getMemberValues());
         DatabaseHelper.appendJoinFetch(hql, getEntityType(), "ad", query.getFetch());
         hql.append(" where 1=1");
         if (query.getCategory() != null) {
@@ -268,8 +268,8 @@ public class AdDAOImpl extends IndexedDAOImpl<Ad> implements AdDAO {
             namedParameters.put("keywords", "%" + query.getKeywords() + "%");
         }
         // Custom Values
-        hibernateCustomFieldHandler.appendConditions(hql, namedParameters, query.getAdValues());
-        hibernateCustomFieldHandler.appendConditions(hql, namedParameters, query.getMemberValues());
+        DatabaseCustomFieldHandler.appendConditions(hql, namedParameters, query.getAdValues());
+        DatabaseCustomFieldHandler.appendConditions(hql, namedParameters, query.getMemberValues());
 
         // Handle order
         if (query.isRandomOrder()) {
@@ -280,8 +280,8 @@ public class AdDAOImpl extends IndexedDAOImpl<Ad> implements AdDAO {
         return list(query, hql.toString(), namedParameters);
     }
 
-    public void setHibernateCustomFieldHandler(final HibernateCustomFieldHandler hibernateCustomFieldHandler) {
-        this.hibernateCustomFieldHandler = hibernateCustomFieldHandler;
+    public void setDatabaseCustomFieldHandler(final DatabaseCustomFieldHandler DatabaseCustomFieldHandler) {
+        this.DatabaseCustomFieldHandler = DatabaseCustomFieldHandler;
     }
 
     private Integer count(Calendar date, final Collection<? extends Group> groups, final Ad.Status status, final String projection) {
