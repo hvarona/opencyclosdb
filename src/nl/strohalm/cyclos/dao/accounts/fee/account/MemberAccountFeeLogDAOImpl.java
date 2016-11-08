@@ -132,7 +132,7 @@ public class MemberAccountFeeLogDAOImpl extends BaseDAOImpl<MemberAccountFeeLog>
         hql.append(" where ml.success = false");
         hql.append("   and ml.rechargeAttempt < l.rechargeAttempt");
         hql.append("   and l = :log");
-        return getHibernateQueryHandler().simpleList(null, hql.toString(), parameters, PageParameters.max(count));
+        return getDatabaseQueryHandler().simpleList(null, hql.toString(), parameters, PageParameters.max(count));
     }
 
     @Override

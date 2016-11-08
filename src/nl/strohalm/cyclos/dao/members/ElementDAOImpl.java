@@ -428,7 +428,7 @@ public class ElementDAOImpl extends IndexedDAOImpl<Element> implements ElementDA
                     + " where channel_id in (:channelIds) "
                     + " and member_id in (select id from members where group_id = :groupId) ";
             final javax.persistence.Query query = getSession().createQuery(statement);
-            getHibernateQueryHandler().setQueryParameters(query, parameters);
+            getDatabaseQueryHandler().setQueryParameters(query, parameters);
             query.executeUpdate();
         }
 

@@ -208,7 +208,7 @@ public class ReferenceDAOImpl extends BaseDAOImpl<Reference> implements Referenc
             sqlQuery.addScalar("memberId", StandardBasicTypes.LONG);
             sqlQuery.addScalar("memberName", StandardBasicTypes.STRING);
             sqlQuery.addScalar("memberUsername", StandardBasicTypes.STRING);*/
-            getHibernateQueryHandler().applyPageParameters(pageParameters, sqlQuery);
+            getDatabaseQueryHandler().applyPageParameters(pageParameters, sqlQuery);
 
             // We'll always use an iterator, even if it is for later adding it to a list
             Iterator<PaymentAwaitingFeedbackDTO> iterator = new ScrollableResultsIterator<>(sqlQuery, new Transformer<Object[], PaymentAwaitingFeedbackDTO>() {

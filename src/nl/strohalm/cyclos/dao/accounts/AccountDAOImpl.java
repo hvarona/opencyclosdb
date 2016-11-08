@@ -349,7 +349,7 @@ public class AccountDAOImpl extends BaseDAOImpl<Account> implements AccountDAO {
         /*query.addScalar("type", StandardBasicTypes.STRING);
         query.addScalar("date", StandardBasicTypes.CALENDAR_DATE);
         query.addScalar("amount", StandardBasicTypes.BIG_DECIMAL);*/
-        getHibernateQueryHandler().setQueryParameters(query, params);
+        getDatabaseQueryHandler().setQueryParameters(query, params);
         //ScrollableResults results = query.scroll(ScrollMode.SCROLL_INSENSITIVE);
         //return new IteratorListImpl<AccountDailyDifference>(new DiffsIterator(results));
         //return new IteratorListImpl<AccountDailyDifference>(new DiffsIterator(results));
@@ -540,7 +540,7 @@ public class AccountDAOImpl extends BaseDAOImpl<Account> implements AccountDAO {
         for (final Map.Entry<String, Type> entry : columns.entrySet()) {
             //query.addScalar(entry.getKey(), entry.getValue());
         }
-        getHibernateQueryHandler().setQueryParameters(query, parameters);
+        getDatabaseQueryHandler().setQueryParameters(query, parameters);
 
         // Create a transformer, which will read rows as Object[] and transform them to MemberTransactionDetailsReportData
         final Transformer<Object[], MemberTransactionDetailsReportData> transformer = new Transformer<Object[], MemberTransactionDetailsReportData>() {
@@ -613,7 +613,7 @@ public class AccountDAOImpl extends BaseDAOImpl<Account> implements AccountDAO {
         /*query.addScalar("member_id", StandardBasicTypes.LONG);
         query.addScalar("count", StandardBasicTypes.INTEGER);
         query.addScalar("amount", StandardBasicTypes.BIG_DECIMAL);*/
-        getHibernateQueryHandler().setQueryParameters(query, parameters);
+        getDatabaseQueryHandler().setQueryParameters(query, parameters);
 
         final Transformer<Object[], MemberTransactionSummaryVO> transformer = new Transformer<Object[], MemberTransactionSummaryVO>() {
             @Override

@@ -19,8 +19,11 @@
  */
 package nl.strohalm.cyclos.dao;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,6 +32,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
@@ -50,6 +55,8 @@ import nl.strohalm.cyclos.utils.query.QueryParameters.ResultType;
 import nl.strohalm.cyclos.utils.transaction.CurrentTransactionData;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.derby.iapi.services.io.ArrayInputStream;
+import org.apache.derby.iapi.services.io.ArrayOutputStream;
 import org.hibernate.ObjectNotFoundException;
 
 /**
@@ -63,7 +70,7 @@ import org.hibernate.ObjectNotFoundException;
 public abstract class BaseDAOImpl<E extends Entity> implements BaseDAO<E>, InsertableDAO<E>, UpdatableDAO<E>, DeletableDAO<E> {
 
     private FetchDAO fetchDao;
-    private HibernateQueryHandler hibernateQueryHandler;
+    private HibernateQueryHandler databaseQueryHandler;
     private boolean hasCache;
     protected Class<E> entityClass;
     private String queryCacheRegion;
@@ -73,15 +80,110 @@ public abstract class BaseDAOImpl<E extends Entity> implements BaseDAO<E>, Inser
     }
 
     @Override
-    public Blob createBlob(final InputStream stream, final int length) {
-        return (Blob) DatabaseUtil.getCurrentEntityManager().createQuery("").getResultList();
-        /*return getHibernateTemplate().execute(new HibernateCallback<Blob>() {
-            @Override
-            public Blob doInHibernate(final Session session) throws HibernateException {
-                return session.getLobHelper().createBlob(stream, length);
-            }
-        });*/
+    public Blob createBlob(InputStream stream, int length) {
+        return new Blob() {
+            byte[] data = new byte[length];
 
+            {
+                try {
+                    stream.read(data);
+                } catch (IOException ex) {
+                    Logger.getLogger(BaseDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+            @Override
+            public long length() throws SQLException {
+                return data.length;
+            }
+
+            @Override
+            public byte[] getBytes(long pos, int length) throws SQLException {
+                byte[] toRead = new byte[length];
+                System.arraycopy(data, (int) pos, toRead, 0, length);
+                return toRead;
+            }
+
+            @Override
+            public InputStream getBinaryStream() throws SQLException {
+                return new ArrayInputStream(data);
+            }
+
+            @Override
+            public long position(byte[] pattern, long start) throws SQLException {
+                for (int i = (int) start; i < data.length; i++) {
+                    int j = 0;
+                    boolean find = true;
+                    for (byte pat : pattern) {
+                        if (pat != data[i + j]) {
+                            find = false;
+                            break;
+                        }
+                    }
+                    if (find) {
+                        return i;
+                    }
+                }
+                return -1;
+            }
+
+            @Override
+            public long position(Blob pattern, long start) throws SQLException {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public int setBytes(long pos, byte[] bytes) throws SQLException {
+                int count = 0;
+                for (int i = (int) pos; i < data.length && i - pos < bytes.length; i++) {
+                    data[i] = bytes[i - (int) pos];
+                    count++;
+                }
+                return count;
+            }
+
+            @Override
+            public int setBytes(long pos, byte[] bytes, int offset, int len) throws SQLException {
+                System.arraycopy(data, (int) pos, bytes, offset, len);
+                return len;
+            }
+
+            @Override
+            public OutputStream setBinaryStream(long pos) throws SQLException {
+                try {
+                    ArrayOutputStream out = new ArrayOutputStream(data);
+                    out.setPosition((int) pos);
+                    return out;
+                } catch (IOException ex) {
+                    throw new SQLException(ex);
+                }
+            }
+
+            @Override
+            public void truncate(long len) throws SQLException {
+                if (len < data.length) {
+                    byte[] newData = new byte[(int) len];
+                    System.arraycopy(data, 0, newData, 0, (int) len);
+                    data = newData;
+                }
+            }
+
+            @Override
+            public void free() throws SQLException {
+                data = new byte[0];
+            }
+
+            @Override
+            public InputStream getBinaryStream(long pos, long length) throws SQLException {
+                ArrayInputStream in = new ArrayInputStream(data);
+                try {
+                    in.setLimit((int) pos, (int) length);
+                } catch (IOException ex) {
+                    throw new SQLException(ex);
+                }
+                return in;
+            }
+        };
     }
 
     @Override
@@ -125,7 +227,7 @@ public abstract class BaseDAOImpl<E extends Entity> implements BaseDAO<E>, Inser
             return null;
         }
         final T duplicate = (T) ClassHelper.instantiate(entity.getClass());
-        hibernateQueryHandler.copyProperties(entity, duplicate);
+        databaseQueryHandler.copyProperties(entity, duplicate);
         return duplicate;
     }
 
@@ -138,8 +240,8 @@ public abstract class BaseDAOImpl<E extends Entity> implements BaseDAO<E>, Inser
         return fetchDao;
     }
 
-    public HibernateQueryHandler getHibernateQueryHandler() {
-        return hibernateQueryHandler;
+    public HibernateQueryHandler getDatabaseQueryHandler() {
+        return databaseQueryHandler;
     }
 
     @Override
@@ -153,7 +255,7 @@ public abstract class BaseDAOImpl<E extends Entity> implements BaseDAO<E>, Inser
             if (entity == null || entity.isPersistent()) {
                 throw new UnexpectedEntityException();
             }
-            hibernateQueryHandler.resolveReferences(entity);
+            databaseQueryHandler.resolveReferences(entity);
             DatabaseUtil.getCurrentEntityManager().merge(entity);
             if (flush) {
                 flush();
@@ -175,7 +277,7 @@ public abstract class BaseDAOImpl<E extends Entity> implements BaseDAO<E>, Inser
         if (ids == null) {
             return null;
         }
-        final Collection<T> toReturn = new ArrayList<T>();
+        final Collection<T> toReturn = new ArrayList();
         for (final Long id : ids) {
             T entity = this.<T>load(id, fetch);
             toReturn.add(entity);
@@ -196,7 +298,7 @@ public abstract class BaseDAOImpl<E extends Entity> implements BaseDAO<E>, Inser
             T entity = null;
             if (!hasCache && !ArrayUtils.isEmpty(fetch)) {
                 // Perform a query
-                final Map<String, Object> namedParams = new HashMap<String, Object>();
+                final Map<String, Object> namedParams = new HashMap();
                 final StringBuilder hql = HibernateHelper.getInitialQuery(getEntityType(), "e", Arrays.asList(fetch));
                 HibernateHelper.addParameterToQuery(hql, namedParams, "e.id", id);
                 final List<E> list = list(ResultType.LIST, hql.toString(), namedParams, PageParameters.unique(), fetch);
@@ -243,7 +345,7 @@ public abstract class BaseDAOImpl<E extends Entity> implements BaseDAO<E>, Inser
     }
 
     public void setHibernateQueryHandler(final HibernateQueryHandler hibernateQueryHandler) {
-        this.hibernateQueryHandler = hibernateQueryHandler;
+        this.databaseQueryHandler = hibernateQueryHandler;
     }
 
     @Override
@@ -258,7 +360,7 @@ public abstract class BaseDAOImpl<E extends Entity> implements BaseDAO<E>, Inser
             throw new UnexpectedEntityException();
         }
         try {
-            hibernateQueryHandler.resolveReferences(entity);
+            databaseQueryHandler.resolveReferences(entity);
             final T ret = DatabaseUtil.getCurrentEntityManager().merge(entity);
 
             if (flush) {
@@ -283,7 +385,7 @@ public abstract class BaseDAOImpl<E extends Entity> implements BaseDAO<E>, Inser
         try {
 
             final Query query = DatabaseUtil.getCurrentEntityManager().createQuery(jpql);
-            hibernateQueryHandler.setQueryParameters(query, namedParameters);
+            databaseQueryHandler.setQueryParameters(query, namedParameters);
             int rows = query.executeUpdate();
             if (rows > 0) {
                 CurrentTransactionData.setWrite();
@@ -337,7 +439,7 @@ public abstract class BaseDAOImpl<E extends Entity> implements BaseDAO<E>, Inser
      */
     protected <T> Iterator<T> iterate(final String hql, final Object namedParameters) {
         try {
-            return hibernateQueryHandler.simpleIterator(hql, namedParameters, null);
+            return databaseQueryHandler.simpleIterator(hql, namedParameters, null);
         } catch (final ApplicationException e) {
             throw e;
         } catch (final Exception e) {
@@ -386,7 +488,7 @@ public abstract class BaseDAOImpl<E extends Entity> implements BaseDAO<E>, Inser
     protected <T> List<T> list(final ResultType resultType, final String hql, final Object namedParameters, final PageParameters pageParameters, final Relationship... fetch) {
         try {
 
-            return hibernateQueryHandler.executeQuery(queryCacheRegion, resultType, hql, namedParameters, pageParameters, fetch);
+            return databaseQueryHandler.executeQuery(queryCacheRegion, resultType, hql, namedParameters, pageParameters, fetch);
         } catch (final ApplicationException e) {
             throw e;
         } catch (final Exception e) {
